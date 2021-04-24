@@ -1,4 +1,4 @@
-package com.spochi.DTO;
+package com.spochi.dto;
 
 public class RewardResponseDTO {
 

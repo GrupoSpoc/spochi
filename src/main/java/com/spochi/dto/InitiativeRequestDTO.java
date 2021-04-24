@@ -1,4 +1,4 @@
-package com.spochi.DTO;
+package com.spochi.dto;
 
 public class InitiativeRequestDTO {
 
@@ -6,7 +6,7 @@ public class InitiativeRequestDTO {
     private String description;
     private String image;
     private String date;
-    private int type_id;
+    private Integer type_id;
 
     public InitiativeRequestDTO(){
 
@@ -44,11 +44,11 @@ public class InitiativeRequestDTO {
         this.date = date;
     }
 
-    public int getType_id() {
+    public Integer getType_id() {
         return type_id;
     }
 
-    public void setType_id(int type_id) {
+    public void setType_id(Integer type_id) {
         this.type_id = type_id;
     }
 }

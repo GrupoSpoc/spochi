@@ -1,9 +1,9 @@
-package com.spochi.DTO;
+package com.spochi.dto;
 
 public class UserRequestDTO {
 
     private String nickname;
-    private int type_id;
+    private Integer type_id;
 
     public UserRequestDTO() {
 
@@ -17,11 +17,11 @@ public class UserRequestDTO {
         this.nickname = nickname;
     }
 
-    public int getType_id() {
+    public Integer getType_id() {
         return type_id;
     }
 
-    public void setType_id(int type_id) {
+    public void setType_id(Integer type_id) {
         this.type_id = type_id;
     }
 }
