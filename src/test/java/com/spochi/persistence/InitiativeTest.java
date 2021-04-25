@@ -83,7 +83,7 @@ class InitiativeTest {
     @Test
     @DisplayName("get all | ok")
     void testGetAllOk() {
-        final Initiative.InitiativeBuilder builder = new Initiative.InitiativeBuilder();
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.author("author");
         builder.date(LocalDate.EPOCH);
         builder.description("description");
@@ -109,7 +109,7 @@ class InitiativeTest {
     @Test
     @DisplayName("get by id | ok")
     void testGetByIdOk() {
-        final Initiative.InitiativeBuilder builder = new Initiative.InitiativeBuilder();
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.author("author");
         builder.date(LocalDate.EPOCH);
         builder.description("description");

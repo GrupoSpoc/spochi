@@ -99,7 +99,7 @@ public class UserTest {
     @Test
     @DisplayName("find all | ok")
     void findAllOk() {
-        final User.UserBuilder builder = new User.UserBuilder();
+        final User.UserBuilder builder = User.builder();
         builder.googleId(1234);
         builder.nickname("nickname");
         builder.typeId(UserType.COMPANY.getId());
