@@ -1,16 +1,19 @@
 package com.spochi.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "users")
 public class User {
     @Id
@@ -26,6 +29,12 @@ public class User {
 
     @DBRef(lazy = true)
     private List<Initiative> initiatives;
+
+    public void addInitiative(Initiative i) {
+        final List<Initiative> initiatives = new ArrayList<>(this.initiatives);
+        initiatives.add(i);
+        setInitiatives(initiatives);
+    }
 
 
     public UserType getTypeId() {

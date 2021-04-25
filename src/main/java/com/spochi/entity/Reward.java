@@ -1,13 +1,15 @@
 package com.spochi.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "rewards")
 public class Reward {
     @Id
@@ -25,7 +27,7 @@ public class Reward {
         return UserType.fromIdOrElseThrow(this.userTypeId);
     }
 
-    public void setUserTypeId(UserType userType) {
+    public void setUserType(UserType userType) {
         this.userTypeId = userType.getId();
     }
 }
