@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +31,7 @@ class InitiativeTest {
         final Initiative beforeSave = new Initiative();
 
         beforeSave.setAuthor("author");
-        beforeSave.setDate(LocalDate.EPOCH);
+        beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
         beforeSave.setTitle("title");
         beforeSave.setTypeId(1);
@@ -56,7 +58,7 @@ class InitiativeTest {
         final Initiative beforeSave = new Initiative();
 
         beforeSave.setAuthor("author");
-        beforeSave.setDate(LocalDate.EPOCH);
+        beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
         beforeSave.setTitle("title");
         beforeSave.setTypeId(1);
@@ -85,7 +87,7 @@ class InitiativeTest {
     void testGetAllOk() {
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.author("author");
-        builder.date(LocalDate.EPOCH);
+        builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
         builder.title("title");
         builder.typeId(1);
@@ -111,7 +113,7 @@ class InitiativeTest {
     void testGetByIdOk() {
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.author("author");
-        builder.date(LocalDate.EPOCH);
+        builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
         builder.title("title");
         builder.typeId(1);

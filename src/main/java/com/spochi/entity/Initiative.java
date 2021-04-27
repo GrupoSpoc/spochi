@@ -5,7 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class Initiative {
     private String description;
     private String image;
     private String author;
-    private LocalDate date;
+    private LocalDateTime date;
 
     @Field(name = "user_id")
     private String userId;

@@ -2,7 +2,9 @@ package com.spochi.persistence;
 
 import com.spochi.entity.Initiative;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 public class InitiativeDummyBuilder {
@@ -10,7 +12,7 @@ public class InitiativeDummyBuilder {
         final Initiative initiative = new Initiative();
         initiative.set_id(UUID.randomUUID().toString());
         initiative.setAuthor("author");
-        initiative.setDate(LocalDate.EPOCH);
+        initiative.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         initiative.setDescription("description");
         initiative.setTitle("title");
         initiative.setTypeId(1);
