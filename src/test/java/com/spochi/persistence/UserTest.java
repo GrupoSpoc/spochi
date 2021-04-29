@@ -32,7 +32,7 @@ public class UserTest {
         final User beforeSave = new User();
         beforeSave.setGoogleId(1234);
         beforeSave.setNickname("nickname");
-        beforeSave.setTypeId(UserType.COMPANY);
+        beforeSave.setTypeId(UserType.ORGANIZATION);
 
         final Initiative i1 = InitiativeDummyBuilder.build();
         final Initiative i2 = InitiativeDummyBuilder.build();
@@ -64,7 +64,7 @@ public class UserTest {
         final User user = new User();
         user.setGoogleId(1234);
         user.setNickname("nickname");
-        user.setTypeId(UserType.COMPANY);
+        user.setTypeId(UserType.ORGANIZATION);
 
         final Initiative i1 = InitiativeDummyBuilder.build();
         user.setInitiatives(List.of(i1));
@@ -87,7 +87,7 @@ public class UserTest {
         final User user = new User();
         user.setGoogleId(1234);
         user.setNickname("nickname");
-        user.setTypeId(UserType.COMPANY);
+        user.setTypeId(UserType.ORGANIZATION);
 
         repository.save(user);
 
@@ -102,7 +102,7 @@ public class UserTest {
         final User.UserBuilder builder = User.builder();
         builder.googleId(1234);
         builder.nickname("nickname");
-        builder.typeId(UserType.COMPANY.getId());
+        builder.typeId(UserType.ORGANIZATION.getId());
 
         final User u1 = builder.build();
         final User u2 = builder.build();

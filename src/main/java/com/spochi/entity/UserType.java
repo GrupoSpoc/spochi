@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 public enum UserType {
     PERSON(1),
-    COMPANY(2);
+    ORGANIZATION(2),
+    ADMIN(3);
 
     private final int id;
 
