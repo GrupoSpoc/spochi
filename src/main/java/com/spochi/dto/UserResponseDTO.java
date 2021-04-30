@@ -4,7 +4,6 @@ public class UserResponseDTO {
 
     private String nickname;
     private int type_id;
-    private int points;
 
     public UserResponseDTO(){
 
@@ -16,14 +15,6 @@ public class UserResponseDTO {
 
     public void setType_id(int type_id) {
         this.type_id = type_id;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
     }
 
     public String getNickname() {

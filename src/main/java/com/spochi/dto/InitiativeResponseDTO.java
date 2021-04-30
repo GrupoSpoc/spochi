@@ -6,7 +6,6 @@ public class InitiativeResponseDTO {
     private String description;
     private String image;
     private String date;
-    private int type_id;
     private String nickname;
     private int status_id;
 
@@ -44,14 +43,6 @@ public class InitiativeResponseDTO {
 
     public void setDate(String date) {
         this.date = date;
-    }
-
-    public int getType_id() {
-        return type_id;
-    }
-
-    public void setType_id(int type_id) {
-        this.type_id = type_id;
     }
 
     public String getNickname() {
