@@ -33,7 +33,6 @@ class InitiativeTest {
         beforeSave.setAuthor("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
-        beforeSave.setTitle("title");
         beforeSave.setTypeId(1);
         beforeSave.setStatusId(2);
         beforeSave.setImage("image");
@@ -42,7 +41,6 @@ class InitiativeTest {
         final Initiative afterSave = repository.save(beforeSave);
 
         assertEquals(beforeSave.getAuthor(), afterSave.getAuthor());
-        assertEquals(beforeSave.getTitle(), afterSave.getTitle());
         assertEquals(beforeSave.getDescription(), afterSave.getDescription());
         assertEquals(beforeSave.getDate(), afterSave.getDate());
         assertEquals(beforeSave.getUserId(), afterSave.getUserId());
@@ -60,7 +58,6 @@ class InitiativeTest {
         beforeSave.setAuthor("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
-        beforeSave.setTitle("title");
         beforeSave.setTypeId(1);
         beforeSave.setStatusId(2);
         beforeSave.setImage("image");
@@ -72,7 +69,6 @@ class InitiativeTest {
         final Initiative afterUpdate = repository.save(afterSave);
 
         assertEquals(beforeSave.getAuthor(), afterUpdate.getAuthor());
-        assertEquals(beforeSave.getTitle(), afterUpdate.getTitle());
         assertEquals(beforeSave.getDescription(), afterUpdate.getDescription());
         assertEquals(beforeSave.getDate(), afterUpdate.getDate());
         assertEquals(beforeSave.getUserId(), afterUpdate.getUserId());
@@ -89,7 +85,6 @@ class InitiativeTest {
         builder.author("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
-        builder.title("title");
         builder.typeId(1);
         builder.statusId(2);
         builder.image("image");
@@ -115,7 +110,6 @@ class InitiativeTest {
         builder.author("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
-        builder.title("title");
         builder.typeId(1);
         builder.statusId(2);
         builder.image("image");

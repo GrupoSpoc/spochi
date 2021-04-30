@@ -17,7 +17,6 @@ public class Initiative {
     @Id
     private String _id;
 
-    private String title;
     private String description;
     private String image;
     private String author;
