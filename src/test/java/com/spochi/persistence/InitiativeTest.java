@@ -33,7 +33,6 @@ class InitiativeTest {
         beforeSave.setAuthor("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
-        beforeSave.setTypeId(1);
         beforeSave.setStatusId(2);
         beforeSave.setImage("image");
         beforeSave.setUserId("user-id");
@@ -46,7 +45,6 @@ class InitiativeTest {
         assertEquals(beforeSave.getUserId(), afterSave.getUserId());
         assertEquals(beforeSave.getImage(), afterSave.getImage());
         assertEquals(beforeSave.getStatusId(), afterSave.getStatusId());
-        assertEquals(beforeSave.getTypeId(), afterSave.getTypeId());
         assertEquals(beforeSave.get_id(), afterSave.get_id());
     }
 
@@ -58,7 +56,6 @@ class InitiativeTest {
         beforeSave.setAuthor("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
-        beforeSave.setTypeId(1);
         beforeSave.setStatusId(2);
         beforeSave.setImage("image");
         beforeSave.setUserId("user-id");
@@ -74,7 +71,6 @@ class InitiativeTest {
         assertEquals(beforeSave.getUserId(), afterUpdate.getUserId());
         assertEquals(beforeSave.getImage(), afterUpdate.getImage());
         assertEquals(3, afterSave.getStatusId());
-        assertEquals(beforeSave.getTypeId(), afterUpdate.getTypeId());
         assertEquals(beforeSave.get_id(), afterUpdate.get_id());
     }
 
@@ -85,7 +81,6 @@ class InitiativeTest {
         builder.author("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
-        builder.typeId(1);
         builder.statusId(2);
         builder.image("image");
         builder.userId("user-id");
@@ -110,7 +105,6 @@ class InitiativeTest {
         builder.author("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
-        builder.typeId(1);
         builder.statusId(2);
         builder.image("image");
         builder.userId("user-id");

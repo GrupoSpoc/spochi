@@ -2,7 +2,8 @@ package com.spochi.dto;
 
 public class InitiativeResponseDTO {
 
-    private String title;
+    private String _id;
+
     private String description;
     private String image;
     private String date;
@@ -13,12 +14,8 @@ public class InitiativeResponseDTO {
 
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public String get_id() {
+        return _id;
     }
 
     public String getDescription() {

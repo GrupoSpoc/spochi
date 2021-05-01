@@ -6,7 +6,6 @@ public class InitiativeRequestDTO {
     private String description;
     private String image;
     private String date;
-    private Integer type_id;
 
     public InitiativeRequestDTO(){
 
@@ -44,11 +43,4 @@ public class InitiativeRequestDTO {
         this.date = date;
     }
 
-    public Integer getType_id() {
-        return type_id;
-    }
-
-    public void setType_id(Integer type_id) {
-        this.type_id = type_id;
-    }
 }
