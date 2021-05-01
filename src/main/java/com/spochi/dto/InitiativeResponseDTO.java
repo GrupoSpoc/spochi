@@ -1,8 +1,19 @@
 package com.spochi.dto;
 
+import com.spochi.entity.Initiative;
+
 public class InitiativeResponseDTO {
 
-    private String title;
+    public String get_id() {
+        return _id;
+    }
+
+    public InitiativeResponseDTO set_id(String _id) {
+        this._id = _id;
+        return this;
+    }
+
+    private String _id;
     private String description;
     private String image;
     private String date;
@@ -11,14 +22,6 @@ public class InitiativeResponseDTO {
 
     public InitiativeResponseDTO(){
 
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDescription() {
@@ -59,5 +62,18 @@ public class InitiativeResponseDTO {
 
     public void setStatus_id(int status_id) {
         this.status_id = status_id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof InitiativeResponseDTO)) return false;
+        final InitiativeResponseDTO other = (InitiativeResponseDTO) obj;
+
+        return this.nickname.equals(other.nickname) &&
+                this.date.equals(other.date) &&
+                this.description.equals(other.description) &&
+                this.image.equals(other.image) &&
+                this.status_id == other.status_id &&
+                this._id.equals(other._id);
     }
 }
