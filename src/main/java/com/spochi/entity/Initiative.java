@@ -26,9 +26,6 @@ public class Initiative {
     @Field(name = "user_id")
     private String userId;
 
-    @Field(name = "type_id")
-    private int typeId;
-
     @Field(name = "status_id")
     private int statusId;
 

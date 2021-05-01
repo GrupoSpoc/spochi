@@ -1,19 +1,9 @@
 package com.spochi.dto;
 
-import com.spochi.entity.Initiative;
-
 public class InitiativeResponseDTO {
 
-    public String get_id() {
-        return _id;
-    }
-
-    public InitiativeResponseDTO set_id(String _id) {
-        this._id = _id;
-        return this;
-    }
-
     private String _id;
+
     private String description;
     private String image;
     private String date;
@@ -22,6 +12,16 @@ public class InitiativeResponseDTO {
 
     public InitiativeResponseDTO(){
 
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+
+    public InitiativeResponseDTO set_id(String _id) {
+        this._id = _id;
+        return this;
     }
 
     public String getDescription() {

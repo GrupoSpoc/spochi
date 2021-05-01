@@ -14,7 +14,6 @@ public class InitiativeDummyBuilder {
         initiative.setAuthor("author");
         initiative.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         initiative.setDescription("description");
-        initiative.setTypeId(1);
         initiative.setStatusId(2);
         initiative.setImage("image");
         initiative.setUserId("user-id");
