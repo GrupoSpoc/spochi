@@ -23,11 +23,11 @@ public enum InitiativeSorter {
         return Arrays.stream(values())
                 .filter(v -> v.id == id)
                 .findFirst()
-                .orElseThrow(() -> new InitiativeComparatorNotFoundException(id));
+                .orElseThrow(() -> new InitiativeSorterNotFoundException(id));
     }
 
-    public static class InitiativeComparatorNotFoundException extends RuntimeException {
-        private InitiativeComparatorNotFoundException(int id) {
+    public static class InitiativeSorterNotFoundException extends RuntimeException {
+        private InitiativeSorterNotFoundException(int id) {
             super(String.format("No InitiativeSorter with id [%s] present", id));
         }
     }
