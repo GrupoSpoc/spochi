@@ -55,7 +55,8 @@ class InitiativeIntegrationTest {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        List<InitiativeResponseDTO> actualDTOs = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        List<InitiativeResponseDTO> actualDTOs = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+        });
 
         // assert
         assertEquals(expectedDTOs.size(), actualDTOs.size());

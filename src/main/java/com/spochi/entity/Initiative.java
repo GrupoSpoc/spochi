@@ -32,12 +32,12 @@ public class Initiative {
     public InitiativeResponseDTO toDTO() {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 
-        dto.set_id(this.get_id());
-        dto.setDate(this.getDate().toString());
-        dto.setDescription(this.getDescription());
-        dto.setNickname(this.getAuthor());
-        dto.setStatus_id(this.getStatusId());
-        dto.setImage(this.getImage());
+        dto.set_id(this._id);
+        dto.setDate(this.date.toString());
+        dto.setDescription(this.description);
+        dto.setNickname(this.author);
+        dto.setStatus_id(this.statusId);
+        dto.setImage(this.image);
 
         return dto;
     }

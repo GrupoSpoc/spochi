@@ -6,29 +6,21 @@ import com.spochi.repository.InitiativeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class InitiativeService {
    @Autowired
    InitiativeRepository repository;
 
-   public List<InitiativeResponseDTO> getAll(String date) {
-      final Comparator<Initiative> comparator;
+   public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
+      final Stream<Initiative> initiatives = repository.streamAll();
 
-      if (date != null && date.equals("desc")) {
-         comparator = Comparator.comparing(Initiative::getDate).reversed();
-      } else {
-         comparator = (i1, i2) -> 0;
-      }
-
-      final List<Initiative> initiatives = repository.findAll();
-
-      return initiatives.stream()
-              .sorted(comparator)
+      return initiatives
+              .sorted(sorter)
               .map(Initiative::toDTO)
               .collect(Collectors.toList());
    }
