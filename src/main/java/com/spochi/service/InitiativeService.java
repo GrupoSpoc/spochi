@@ -17,7 +17,7 @@ public class InitiativeService {
    InitiativeRepository repository;
 
    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
-      final Stream<Initiative> initiatives = repository.streamAll();
+      final Stream<Initiative> initiatives = repository.findAll().stream();
 
       return initiatives
               .sorted(sorter)

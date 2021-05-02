@@ -1,6 +1,5 @@
 package com.spochi.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.repository.InitiativeRepository;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,8 +55,7 @@ class InitiativeIntegrationTest {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        List<InitiativeResponseDTO> actualDTOs = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
-        });
+        List<InitiativeResponseDTO> actualDTOs = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO[].class));
 
         // assert
         assertEquals(expectedDTOs.size(), actualDTOs.size());
@@ -68,19 +67,23 @@ class InitiativeIntegrationTest {
     void getAllWithDateParamOk() throws Exception {
         // perform
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
-                .param("date", "desc"))
+                .param("order", "1"))
                 .andDo(print())
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        List<InitiativeResponseDTO> actualDTOs = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        List<InitiativeResponseDTO> actualDTOs = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO[].class));
 
         // assert
-        final InitiativeResponseDTO firstDTO = actualDTOs.get(0);
-        final LocalDateTime firstDTODate = LocalDateTime.parse(firstDTO.getDate());
-
-        assertTrue(actualDTOs.stream()
-                .filter(dto -> !dto.equals(firstDTO))
-                .allMatch(dto -> LocalDateTime.parse(dto.getDate()).isBefore(firstDTODate)));
+        // bubble compare:
+        // recorro todos los DTOs y por cada uno me aseguro que todos los que siguen tengan la misma fecha o anterior
+        for (int i = 0; i < actualDTOs.size(); i++) {
+            final InitiativeResponseDTO currentDto = actualDTOs.get(i);
+            final LocalDateTime currentDate = LocalDateTime.parse(currentDto.getDate());
+            for (int j = i + 1; j + 1  < actualDTOs.size(); j++) {
+                final InitiativeResponseDTO nextDto = actualDTOs.get(j);
+                assertTrue(LocalDateTime.parse(nextDto.getDate()).compareTo(currentDate) <= 0);
+            }
+        }
     }
 }

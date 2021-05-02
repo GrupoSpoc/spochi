@@ -18,15 +18,16 @@ public class InitiativeTestUtil {
         final LocalDateTime epochDate = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
 
         builder.description("description");
-        builder.statusId(0);
+        builder.statusId(2);
         builder.userId("user");
         builder.image("image");
         builder.author("author");
         builder.date(epochDate);
 
-        initiatives.add(builder.build());
-        initiatives.add(builder.statusId(1).build());
+        initiatives.add(builder.date(epochDate.plusYears(10)).build());
+        initiatives.add(builder.statusId(1).date(epochDate.plusYears(20)).build());
         initiatives.add(builder.statusId(2).date(epochDate.plusYears(30)).build());
+        initiatives.add(builder.statusId(3).date(epochDate).build());
     }
 
     public static List<InitiativeResponseDTO> getAllAsDTOs() {
