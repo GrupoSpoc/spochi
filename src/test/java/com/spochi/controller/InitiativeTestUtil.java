@@ -21,7 +21,7 @@ public class InitiativeTestUtil {
         builder.statusId(2);
         builder.userId("user");
         builder.image("image");
-        builder.author("author");
+        builder.nickname("author");
         builder.date(epochDate);
 
         initiatives.add(builder.date(epochDate.plusYears(10)).build());

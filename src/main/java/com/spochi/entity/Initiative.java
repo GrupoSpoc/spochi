@@ -20,7 +20,7 @@ public class Initiative {
 
     private String description;
     private String image;
-    private String author;
+    private String nickname;
     private LocalDateTime date;
 
     @Field(name = "user_id")
@@ -35,7 +35,7 @@ public class Initiative {
         dto.set_id(this._id);
         dto.setDate(this.date.toString());
         dto.setDescription(this.description);
-        dto.setNickname(this.author);
+        dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
 
