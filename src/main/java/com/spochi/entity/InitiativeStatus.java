@@ -1,5 +1,6 @@
 package com.spochi.entity;
 
+import com.spochi.controller.handler.BadRequestException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ public enum InitiativeStatus {
                 .orElseThrow(() -> new InitiativeStatusNotFoundException(id));
     }
 
-    public static class InitiativeStatusNotFoundException extends RuntimeException {
+    public static class InitiativeStatusNotFoundException extends BadRequestException {
         private InitiativeStatusNotFoundException(int id) {
             super(String.format("No InitiativeStatus with id [%s] present", id));
         }

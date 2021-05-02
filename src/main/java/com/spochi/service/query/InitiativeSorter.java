@@ -1,5 +1,6 @@
 package com.spochi.service.query;
 
+import com.spochi.controller.handler.BadRequestException;
 import com.spochi.entity.Initiative;
 import lombok.Getter;
 
@@ -26,7 +27,7 @@ public enum InitiativeSorter {
                 .orElseThrow(() -> new InitiativeSorterNotFoundException(id));
     }
 
-    public static class InitiativeSorterNotFoundException extends RuntimeException {
+    public static class InitiativeSorterNotFoundException extends BadRequestException {
         private InitiativeSorterNotFoundException(int id) {
             super(String.format("No InitiativeSorter with id [%s] present", id));
         }

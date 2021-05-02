@@ -1,5 +1,7 @@
 package com.spochi.entity;
 
+import com.spochi.controller.handler.BadRequestException;
+
 import java.util.Arrays;
 
 public enum UserType {
@@ -24,7 +26,7 @@ public enum UserType {
                 .orElseThrow(() -> new UserTypeNotFoundException(id));
     }
 
-    public static class UserTypeNotFoundException extends RuntimeException {
+    public static class UserTypeNotFoundException extends BadRequestException {
         private UserTypeNotFoundException(int id) {
             super(String.format("No UserType with id [%s] present", id));
         }

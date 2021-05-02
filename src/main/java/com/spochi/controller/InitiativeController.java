@@ -23,6 +23,7 @@ public class InitiativeController {
     @GetMapping("/all")
     public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order) {
         final Comparator<Initiative> sorter;
+
         if (order != null) {
             sorter = InitiativeSorter.fromIdOrElseThrow(order).getComparator();
         } else {
