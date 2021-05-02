@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public class UserTest {
 
         final Initiative i1 = InitiativeDummyBuilder.build();
         final Initiative i2 = InitiativeDummyBuilder.build();
-        beforeSave.setInitiatives(List.of(i1, i2));
+        beforeSave.setInitiatives(Arrays.asList(i1, i2));
 
         final User afterSave = repository.save(beforeSave);
 
@@ -67,7 +69,7 @@ public class UserTest {
         user.setTypeId(UserType.ORGANIZATION);
 
         final Initiative i1 = InitiativeDummyBuilder.build();
-        user.setInitiatives(List.of(i1));
+        user.setInitiatives(Collections.singletonList(i1));
 
         repository.save(user);
 
@@ -76,7 +78,7 @@ public class UserTest {
         final User afterUpdate = repository.save(user);
 
         assertEquals(2, afterUpdate.getInitiatives().size());
-        final List<String> expectedInitiativeIds = List.of(i1.get_id(), i2.get_id());
+        final List<String> expectedInitiativeIds = Arrays.asList(i1.get_id(), i2.get_id());
         assertTrue(afterUpdate.getInitiatives().stream().map(Initiative::get_id)
                 .allMatch(expectedInitiativeIds::contains));
     }
@@ -91,7 +93,7 @@ public class UserTest {
 
         repository.save(user);
 
-        final User result = repository.findById(user.get_id()).orElseThrow();
+        final User result = repository.findById(user.get_id()).orElse(null);
 
         assertEquals(user.get_id(), result.get_id());
     }
@@ -112,7 +114,7 @@ public class UserTest {
         final List<User> result = repository.findAll();
 
         assertEquals(2, result.size());
-        final List<String> expectedIds = List.of(u1.get_id(), u2.get_id());
+        final List<String> expectedIds = Arrays.asList(u1.get_id(), u2.get_id());
         assertTrue(result.stream().map(User::get_id).collect(Collectors.toList()).containsAll(expectedIds));
     }
 }
