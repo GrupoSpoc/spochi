@@ -114,6 +114,7 @@ class InitiativeTest {
         repository.save(initiative);
 
         final Initiative result = repository.findById(initiative.get_id()).orElse(null);
+
         assertNotNull(result);
     }
 }
