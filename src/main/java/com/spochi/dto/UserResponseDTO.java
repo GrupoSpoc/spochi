@@ -4,6 +4,7 @@ public class UserResponseDTO {
 
     private String nickname;
     private int type_id;
+    private int amount_initiavie;
 
     public UserResponseDTO(){
 
@@ -24,4 +25,9 @@ public class UserResponseDTO {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public int getAmount_initiavie() { return amount_initiavie; }
+
+    public void setAmount_initiavie(int amount_initiavie) {this.amount_initiavie = amount_initiavie;}
+
 }
