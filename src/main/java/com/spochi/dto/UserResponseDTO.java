@@ -5,9 +5,18 @@ public class UserResponseDTO {
     private String nickname;
     private int type_id;
     private int amount_initiavies;
+    private boolean isAdmin;
 
     public UserResponseDTO(){
 
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public int getType_id() {
