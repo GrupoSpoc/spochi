@@ -30,7 +30,7 @@ class InitiativeTest {
     void testCreateInitiativeOk() {
         final Initiative beforeSave = new Initiative();
 
-        beforeSave.setAuthor("author");
+        beforeSave.setNickname("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
         beforeSave.setStatusId(2);
@@ -39,7 +39,7 @@ class InitiativeTest {
 
         final Initiative afterSave = repository.save(beforeSave);
 
-        assertEquals(beforeSave.getAuthor(), afterSave.getAuthor());
+        assertEquals(beforeSave.getNickname(), afterSave.getNickname());
         assertEquals(beforeSave.getDescription(), afterSave.getDescription());
         assertEquals(beforeSave.getDate(), afterSave.getDate());
         assertEquals(beforeSave.getUserId(), afterSave.getUserId());
@@ -53,7 +53,7 @@ class InitiativeTest {
     void testUpdateInitiativeOk() {
         final Initiative beforeSave = new Initiative();
 
-        beforeSave.setAuthor("author");
+        beforeSave.setNickname("author");
         beforeSave.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         beforeSave.setDescription("description");
         beforeSave.setStatusId(2);
@@ -65,7 +65,7 @@ class InitiativeTest {
         afterSave.setStatusId(3);
         final Initiative afterUpdate = repository.save(afterSave);
 
-        assertEquals(beforeSave.getAuthor(), afterUpdate.getAuthor());
+        assertEquals(beforeSave.getNickname(), afterUpdate.getNickname());
         assertEquals(beforeSave.getDescription(), afterUpdate.getDescription());
         assertEquals(beforeSave.getDate(), afterUpdate.getDate());
         assertEquals(beforeSave.getUserId(), afterUpdate.getUserId());
@@ -78,7 +78,7 @@ class InitiativeTest {
     @DisplayName("get all | ok")
     void testGetAllOk() {
         final Initiative.InitiativeBuilder builder = Initiative.builder();
-        builder.author("author");
+        builder.nickname("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
         builder.statusId(2);
@@ -102,7 +102,7 @@ class InitiativeTest {
     @DisplayName("get by id | ok")
     void testGetByIdOk() {
         final Initiative.InitiativeBuilder builder = Initiative.builder();
-        builder.author("author");
+        builder.nickname("author");
         builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         builder.description("description");
         builder.statusId(2);
@@ -114,6 +114,7 @@ class InitiativeTest {
         repository.save(initiative);
 
         final Initiative result = repository.findById(initiative.get_id()).orElse(null);
+
         assertNotNull(result);
     }
 }

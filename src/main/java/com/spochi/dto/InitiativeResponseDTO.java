@@ -1,5 +1,7 @@
 package com.spochi.dto;
 
+import static com.spochi.dto.DTOComparisonUtil.nullOrEquals;
+
 public class InitiativeResponseDTO {
 
     private String _id;
@@ -16,6 +18,12 @@ public class InitiativeResponseDTO {
 
     public String get_id() {
         return _id;
+    }
+
+
+    public InitiativeResponseDTO set_id(String _id) {
+        this._id = _id;
+        return this;
     }
 
     public String getDescription() {
@@ -56,5 +64,18 @@ public class InitiativeResponseDTO {
 
     public void setStatus_id(int status_id) {
         this.status_id = status_id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof InitiativeResponseDTO)) return false;
+        final InitiativeResponseDTO other = (InitiativeResponseDTO) obj;
+
+        return nullOrEquals(this.nickname, other.nickname) &&
+                nullOrEquals(this.date, other.date) &&
+                nullOrEquals(this.description, other.description) &&
+                nullOrEquals(this.image, other.image) &&
+                nullOrEquals(this.status_id, other.status_id) &&
+                nullOrEquals(this._id, other._id);
     }
 }

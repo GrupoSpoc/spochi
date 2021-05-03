@@ -11,7 +11,7 @@ public class InitiativeDummyBuilder {
     public static Initiative build() {
         final Initiative initiative = new Initiative();
         initiative.set_id(UUID.randomUUID().toString());
-        initiative.setAuthor("author");
+        initiative.setNickname("author");
         initiative.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
         initiative.setDescription("description");
         initiative.setStatusId(2);

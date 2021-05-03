@@ -15,8 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 public class UserTest {
@@ -95,6 +94,7 @@ public class UserTest {
 
         final User result = repository.findById(user.get_id()).orElse(null);
 
+        assertNotNull(result);
         assertEquals(user.get_id(), result.get_id());
     }
 
