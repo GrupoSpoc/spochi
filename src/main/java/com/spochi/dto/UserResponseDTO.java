@@ -4,9 +4,19 @@ public class UserResponseDTO {
 
     private String nickname;
     private int type_id;
+    private int amount_of_initiavies;
+    private boolean admin;
 
     public UserResponseDTO(){
 
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 
     public int getType_id() {
@@ -24,4 +34,9 @@ public class UserResponseDTO {
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public int getAmount_of_initiavies() { return amount_of_initiavies; }
+
+    public void setAmount_of_initiavies(int amount_initiavies) {this.amount_of_initiavies = amount_initiavies;}
+
 }
