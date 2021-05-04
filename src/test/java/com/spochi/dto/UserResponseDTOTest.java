@@ -13,12 +13,12 @@ class UserResponseDTOTest {
     @Test
     public void resposeDTOtest(){
         UserResponseDTO responseDTO = new UserResponseDTO();
-        responseDTO.setAmount_of_initiavies(AMOUNT_INITIATIVES);
+        responseDTO.setAmount_of_initiatives(AMOUNT_INITIATIVES);
         responseDTO.setNickname(NICKNAME);
         responseDTO.setType_id(TYPE);
         responseDTO.setAdmin(IS_NOT_ADMIN);
 
-        assertEquals(AMOUNT_INITIATIVES,responseDTO.getAmount_of_initiavies());
+        assertEquals(AMOUNT_INITIATIVES,responseDTO.getAmount_of_initiatives());
         assertEquals(NICKNAME,responseDTO.getNickname());
         assertEquals(TYPE,responseDTO.getType_id());
         assertFalse(responseDTO.isAdmin());
