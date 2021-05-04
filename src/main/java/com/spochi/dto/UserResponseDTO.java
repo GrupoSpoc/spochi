@@ -4,7 +4,7 @@ public class UserResponseDTO {
 
     private String nickname;
     private int type_id;
-    private int amount_of_initiavies;
+    private int amount_of_initiatives;
     private boolean admin;
 
     public UserResponseDTO(){
@@ -35,8 +35,8 @@ public class UserResponseDTO {
         this.nickname = nickname;
     }
 
-    public int getAmount_of_initiavies() { return amount_of_initiavies; }
+    public int getAmount_of_initiatives() { return amount_of_initiatives; }
 
-    public void setAmount_of_initiavies(int amount_initiavies) {this.amount_of_initiavies = amount_initiavies;}
+    public void setAmount_of_initiatives(int amount_initiavies) {this.amount_of_initiatives = amount_initiavies;}
 
 }
