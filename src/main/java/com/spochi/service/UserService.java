@@ -16,5 +16,4 @@ public class UserService {
                 .map(User::toDTO)
                 .orElse(null);
     }
-
 }
