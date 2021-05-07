@@ -103,6 +103,13 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.0</version>
+				<configuration combine.self="override">
+					<excludes>com/spochi/config/FirebaseConfig.class,
+						com/spochi/controller/handler/ControllerExceptionHandler.class,
+						com/spochi/service/authenticate/FirebaseTokenProvider.class
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
