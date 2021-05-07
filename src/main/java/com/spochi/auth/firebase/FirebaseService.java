@@ -36,7 +36,12 @@ public class FirebaseService {
 
             final UserResponseDTO user = userService.findByGoogleId(uid);
 
-            return new TokenInfo(jwt, user);
+            final TokenInfo tokenInfo = new TokenInfo();
+            tokenInfo.setJwt(jwt);
+            tokenInfo.setUser(user);
+
+            return tokenInfo;
+
 
         } catch (Exception e) {
             System.out.println("Firebase authentication failed: " + e.getMessage());
