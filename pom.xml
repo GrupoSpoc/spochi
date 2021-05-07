@@ -89,12 +89,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<useSystemClassLoader>false</useSystemClassLoader>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
@@ -111,9 +105,8 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.0</version>
 				<configuration combine.self="override">
-					<excludes>com/spochi/config/FirebaseConfig.class,
-						com/spochi/controller/handler/ControllerExceptionHandler.class,
-						com/spochi/service/authenticate/FirebaseTokenProvider.class
+					<excludes>
+						<exclude>**/com/spochi/config/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
