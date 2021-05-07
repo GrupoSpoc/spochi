@@ -103,13 +103,6 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						com/spochi/config/FirebaseConfig.java.class,
-						com/spochi/controller/handler/ControllerExceptionHandler.java,
-						com/spochi/service/authenticate/FirebaseTokenProvider.java
-					</excludes>
-				</configuration>
 				<executions>
 					<execution>
 						<goals>
