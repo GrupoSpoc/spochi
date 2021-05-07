@@ -1,4 +1,4 @@
-package com.spochi.auth;
+package com.spochi.service.authenticate;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;

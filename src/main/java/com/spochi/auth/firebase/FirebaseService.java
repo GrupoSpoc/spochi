@@ -1,13 +1,12 @@
 
 package com.spochi.auth.firebase;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseToken;
-import com.spochi.auth.JwtUtil;
 import com.spochi.auth.TokenInfo;
 import com.spochi.controller.handler.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.UserService;
+import com.spochi.service.authenticate.FirebaseTokenProvider;
+import com.spochi.service.authenticate.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -18,6 +17,12 @@ public class FirebaseService {
     @Autowired
     UserService userService;
 
+    @Autowired
+    FirebaseTokenProvider firebaseTokenProvider;
+
+    @Autowired
+    JwtUtil jwtUtil;
+
     public TokenInfo parseToken(String firebaseToken) {
 
         if (ObjectUtils.isEmpty(firebaseToken)) {
@@ -25,11 +30,9 @@ public class FirebaseService {
         }
 
         try {
+            String uid = firebaseTokenProvider.getUidFromToken(firebaseToken);
 
-            FirebaseToken token = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
-
-            final String uid = token.getUid();
-            final String jwt = new JwtUtil().generateToken(uid);
+            final String jwt = jwtUtil.generateToken(uid);
 
             final UserResponseDTO user = userService.findByGoogleId(uid);
 
