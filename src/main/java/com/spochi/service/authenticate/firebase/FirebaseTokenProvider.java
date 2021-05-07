@@ -1,4 +1,4 @@
-package com.spochi.service.authenticate;
+package com.spochi.service.authenticate.firebase;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;

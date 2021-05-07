@@ -1,5 +1,6 @@
 package com.spochi.controller.handler;
 
+import com.spochi.controller.exception.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -107,6 +107,8 @@
 				<configuration combine.self="override">
 					<excludes>
 						<exclude>**/com/spochi/config/*</exclude>
+						<exclude>**/com/spochi/controller/handler/*</exclude>
+						<exclude>**/com/spochi/service/authenticate/firebase/*</exclude>
 					</excludes>
 				</configuration>
 				<executions>

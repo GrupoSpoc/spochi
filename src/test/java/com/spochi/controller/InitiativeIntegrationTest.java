@@ -1,7 +1,7 @@
 package com.spochi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spochi.controller.handler.BadRequestException;
+import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.service.query.InitiativeSorter;

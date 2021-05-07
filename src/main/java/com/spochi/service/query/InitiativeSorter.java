@@ -1,6 +1,6 @@
 package com.spochi.service.query;
 
-import com.spochi.controller.handler.BadRequestException;
+import com.spochi.controller.exception.BadRequestException;
 import com.spochi.entity.Initiative;
 import lombok.Getter;
 
