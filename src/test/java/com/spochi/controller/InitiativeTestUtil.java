@@ -2,6 +2,7 @@ package com.spochi.controller;
 
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
