@@ -5,6 +5,7 @@ import com.spochi.service.authenticate.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Profile("!disable-jwt-filter")
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
