@@ -2,6 +2,7 @@ package com.spochi.auth;
 
 import com.spochi.auth.firebase.AuthorizationException;
 import com.spochi.service.authenticate.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
-        } catch (AuthorizationException e) {
+        } catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
         }
