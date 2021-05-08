@@ -45,7 +45,7 @@ public class FirebaseService {
 
         } catch (Exception e) {
             System.out.println("Firebase authentication failed: " + e.getMessage());
-            throw new FirebaseAuthorizationException();
+            throw new AuthorizationException();
         }
     }
 }

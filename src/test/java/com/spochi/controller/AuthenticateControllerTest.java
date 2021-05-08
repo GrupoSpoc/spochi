@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.spochi.service.authenticate.JwtUtil;
 import com.spochi.auth.TokenInfo;
-import com.spochi.auth.firebase.FirebaseAuthorizationException;
+import com.spochi.auth.firebase.AuthorizationException;
 import com.spochi.service.authenticate.firebase.FirebaseTokenProvider;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
@@ -85,7 +85,7 @@ class AuthenticateControllerTest {
                 .andExpect(status().is(HttpStatus.NOT_ACCEPTABLE.value()))
                 .andReturn();
 
-        assertTrue(result.getResolvedException() instanceof FirebaseAuthorizationException);
+        assertTrue(result.getResolvedException() instanceof AuthorizationException);
         assertEquals("Invalid or expired token", result.getResponse().getContentAsString());
     }
 
