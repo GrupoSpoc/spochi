@@ -60,7 +60,7 @@ class JwtFilterTest {
         final MvcResult result = mvc.perform(get("/initiative/all")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + " token"))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(status().is(HttpStatus.NOT_ACCEPTABLE.value()))
                 .andReturn();
 
         assertEquals(JwtFilter.INVALID_TOKEN_MESSAGE, result.getResponse().getContentAsString());
@@ -73,7 +73,7 @@ class JwtFilterTest {
 
         final MvcResult result = mvc.perform(get("/initiative/all"))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(status().is(HttpStatus.NOT_ACCEPTABLE.value()))
                 .andReturn();
 
         assertEquals(JwtFilter.INVALID_TOKEN_MESSAGE, result.getResponse().getContentAsString());
@@ -81,13 +81,13 @@ class JwtFilterTest {
 
     @Test
     @DisplayName("do filter internal | when not sending Bearer sufix | should return status forbidden")
-    void doFilterInternalNoBearerSufix() throws Exception {
+    void doFilterInternalNoBearerSuffix() throws Exception {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
 
         final MvcResult result = mvc.perform(get("/initiative/all")
                 .header(JwtFilter.AUTHORIZATION_HEADER, "no-bearer-token"))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.FORBIDDEN.value()))
+                .andExpect(status().is(HttpStatus.NOT_ACCEPTABLE.value()))
                 .andReturn();
 
         assertEquals(JwtFilter.INVALID_TOKEN_MESSAGE, result.getResponse().getContentAsString());

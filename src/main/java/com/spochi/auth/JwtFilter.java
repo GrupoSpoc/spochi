@@ -73,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
         } catch (AuthorizationException | JwtException e) {
-            httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
+            httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
         }
     }
