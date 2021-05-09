@@ -1,5 +1,6 @@
 package com.spochi.entity;
 
+import com.spochi.dto.UserResponseDTO;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -20,7 +21,7 @@ public class User {
     private String _id;
 
     @Field(name = "google_id")
-    private int googleId;
+    private String googleId;
 
     private String nickname;
 
@@ -37,12 +38,23 @@ public class User {
     }
 
 
-    public UserType getTypeId() {
+    public UserType getType() {
         return UserType.fromIdOrElseThrow(this.typeId);
     }
 
     public void setTypeId(UserType type) {
         this.typeId = type.getId();
+    }
+
+    public UserResponseDTO toDTO() {
+        final UserResponseDTO dto = new UserResponseDTO();
+
+        dto.setNickname(this.nickname);
+        dto.setAdmin(this.getType() == UserType.ADMIN);
+        dto.setType_id(this.getTypeId());
+        dto.setAmount_of_initiatives(this.initiatives != null ? this.initiatives.size() : 0);
+
+        return dto;
     }
 }
 

@@ -1,6 +1,6 @@
 package com.spochi.entity;
 
-import com.spochi.controller.handler.BadRequestException;
+import com.spochi.controller.exception.BadRequestException;
 
 import java.util.Arrays;
 

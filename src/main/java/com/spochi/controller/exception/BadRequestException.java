@@ -1,4 +1,4 @@
-package com.spochi.controller.handler;
+package com.spochi.controller.exception;
 
 public class BadRequestException extends RuntimeException {
     public BadRequestException(String message) {

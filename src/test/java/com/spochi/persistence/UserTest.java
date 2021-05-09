@@ -31,7 +31,7 @@ public class UserTest {
     @DisplayName("create with initiatives | ok")
     void createOk() {
         final User beforeSave = new User();
-        beforeSave.setGoogleId(1234);
+        beforeSave.setGoogleId("1234");
         beforeSave.setNickname("nickname");
         beforeSave.setTypeId(UserType.ORGANIZATION);
 
@@ -43,7 +43,7 @@ public class UserTest {
 
         assertEquals(beforeSave.get_id(), afterSave.get_id());
         assertEquals(beforeSave.getGoogleId(), afterSave.getGoogleId());
-        assertEquals(beforeSave.getTypeId(), afterSave.getTypeId());
+        assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
 
         // los ids de las iniciativas del afterSave deberían ser
@@ -63,7 +63,7 @@ public class UserTest {
     @DisplayName("add initiative | ok")
     void addInitiativeOk() {
         final User user = new User();
-        user.setGoogleId(1234);
+        user.setGoogleId("1234");
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
@@ -86,7 +86,7 @@ public class UserTest {
     @DisplayName("find by id | ok")
     void findByIdOk() {
         final User user = new User();
-        user.setGoogleId(1234);
+        user.setGoogleId("1234");
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
@@ -102,7 +102,7 @@ public class UserTest {
     @DisplayName("find all | ok")
     void findAllOk() {
         final User.UserBuilder builder = User.builder();
-        builder.googleId(1234);
+        builder.googleId("1234");
         builder.nickname("nickname");
         builder.typeId(UserType.ORGANIZATION.getId());
 
