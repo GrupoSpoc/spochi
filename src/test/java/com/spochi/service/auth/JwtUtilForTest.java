@@ -1,4 +1,4 @@
-package com.spochi.service.authenticate;
+package com.spochi.service.auth;
 
 import java.util.function.Supplier;
 

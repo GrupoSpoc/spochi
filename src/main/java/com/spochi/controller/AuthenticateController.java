@@ -1,6 +1,6 @@
 package com.spochi.controller;
 
-import com.spochi.auth.firebase.AuthorizationException;
+import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.firebase.FirebaseService;
 import com.spochi.auth.TokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;

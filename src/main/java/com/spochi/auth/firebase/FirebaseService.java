@@ -1,12 +1,13 @@
 
 package com.spochi.auth.firebase;
 
+import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.TokenInfo;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.UserService;
-import com.spochi.service.authenticate.firebase.FirebaseTokenProvider;
-import com.spochi.service.authenticate.JwtUtil;
+import com.spochi.service.auth.firebase.FirebaseTokenProvider;
+import com.spochi.service.auth.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;

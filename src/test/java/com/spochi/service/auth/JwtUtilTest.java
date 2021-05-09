@@ -1,4 +1,4 @@
-package com.spochi.service.authenticate;
+package com.spochi.service.auth;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

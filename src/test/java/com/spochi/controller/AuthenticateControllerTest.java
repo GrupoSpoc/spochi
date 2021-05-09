@@ -2,10 +2,10 @@ package com.spochi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.spochi.service.authenticate.JwtUtil;
+import com.spochi.service.auth.JwtUtil;
 import com.spochi.auth.TokenInfo;
-import com.spochi.auth.firebase.AuthorizationException;
-import com.spochi.service.authenticate.firebase.FirebaseTokenProvider;
+import com.spochi.auth.AuthorizationException;
+import com.spochi.service.auth.firebase.FirebaseTokenProvider;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.UserService;

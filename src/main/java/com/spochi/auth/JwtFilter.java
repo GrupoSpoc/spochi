@@ -1,7 +1,6 @@
 package com.spochi.auth;
 
-import com.spochi.auth.firebase.AuthorizationException;
-import com.spochi.service.authenticate.JwtUtil;
+import com.spochi.service.auth.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    // Endpoints que NO necesitan ser autorizados con JWT
     private static final List<String> skippedEndpoints;
 
     static {
@@ -44,11 +44,19 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
 
+    /*
+     * Este método se ejecuta en todas las peticiones antes de llegar al controller correspondiente.
+     * Cuando se trata de un endpoint que no está en la lista 'skippedEndpoints', lo que hace es extraer el JWT del header y verificar su validez.
+     * Si es nulo/vacío/inválido/vencido arroja una AuthorizationException que luego cachea para enviar la respuesta de error (status 406)
+     * Si es válido llama al filterChain.doFilter() lo cual significa seguir el curso natural de la petición (ir al controller)
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
 
-            if (!skippedEndpoints.contains(httpServletRequest.getRequestURI())) {
+            final String invokedEndpoint = httpServletRequest.getRequestURI();
+
+            if (!skippedEndpoints.contains(invokedEndpoint)) {
                 String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
 
                 if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_SUFFIX)) {

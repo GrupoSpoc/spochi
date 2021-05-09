@@ -1,4 +1,4 @@
-package com.spochi.service.authenticate;
+package com.spochi.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -40,6 +40,11 @@ public class JwtUtil {
         return extractAllClaims(token).getExpiration();
     }
 
+    /**
+     * Claims es un mapa clave valor con los distintos datos encriptados en el jwt
+     * Tiene claves fijas.
+     * En nuestro caso guardamos la expiración como EXPIRATION y el uid como SUBJECT
+     */
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody();
     }
