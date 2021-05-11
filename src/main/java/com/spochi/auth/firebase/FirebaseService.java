@@ -35,7 +35,7 @@ public class FirebaseService {
 
             final String jwt = jwtUtil.generateToken(uid);
 
-            final UserResponseDTO user = userService.findByGoogleId(uid);
+            final UserResponseDTO user = userService.findByUid(uid);
 
             final TokenInfo tokenInfo = new TokenInfo();
             tokenInfo.setJwt(jwt);

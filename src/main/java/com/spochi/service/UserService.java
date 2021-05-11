@@ -11,8 +11,8 @@ public class UserService {
     @Autowired
     UserRepository repository;
 
-    public UserResponseDTO findByGoogleId(String googleId) {
-        return repository.findByGoogleId(googleId)
+    public UserResponseDTO findByUid(String uid) {
+        return repository.findByGoogleId(uid)
                 .map(User::toDTO)
                 .orElse(null);
     }

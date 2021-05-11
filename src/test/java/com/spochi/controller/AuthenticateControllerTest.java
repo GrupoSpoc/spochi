@@ -99,7 +99,7 @@ class AuthenticateControllerTest {
         expectedDTO.setNickname("user");
         expectedDTO.setType_id(1);
 
-        when(userService.findByGoogleId(anyString())).thenReturn(expectedDTO);
+        when(userService.findByUid(anyString())).thenReturn(expectedDTO);
         when(tokenProvider.getUidFromToken(anyString())).thenReturn("user-uid");
         when(jwtUtil.generateToken(anyString())).thenReturn("jwt");
 

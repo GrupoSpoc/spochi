@@ -36,7 +36,7 @@ class UserServiceTest {
 
         when(repository.findByGoogleId(anyString())).thenReturn(Optional.of(mockedUser));
 
-        final UserResponseDTO actualDTO = service.findByGoogleId("google-id");
+        final UserResponseDTO actualDTO = service.findByUid("google-id");
 
         assertEquals(expectedDto, actualDTO);
     }
@@ -45,6 +45,6 @@ class UserServiceTest {
     @DisplayName("find by google id | when user is not found | should return null | ok")
     void findByGoogleIdNotFound() {
         when(repository.findByGoogleId(anyString())).thenReturn(Optional.empty());
-        assertNull(service.findByGoogleId("google-id"));
+        assertNull(service.findByUid("google-id"));
     }
 }
