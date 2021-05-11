@@ -1,6 +1,6 @@
 package com.spochi.controller;
 
-import com.spochi.auth.firebase.FirebaseAuthorizationException;
+import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.firebase.FirebaseService;
 import com.spochi.auth.TokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +20,8 @@ public class AuthenticateController {
         return ResponseEntity.ok(firebaseService.parseToken(firebaseToken));
     }
 
-    @ExceptionHandler(value = {FirebaseAuthorizationException.class})
-    protected ResponseEntity<String> handleFirebaseAuthorizationException(FirebaseAuthorizationException e) {
+    @ExceptionHandler(value = {AuthorizationException.class})
+    protected ResponseEntity<String> handleFirebaseAuthorizationException(AuthorizationException e) {
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
                 .body("Invalid or expired token");
     }

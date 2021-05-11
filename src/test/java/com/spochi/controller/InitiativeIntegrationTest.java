@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("disable-firebase")
+@ActiveProfiles(profiles = {"disable-firebase", "disable-jwt-filter"})
 class InitiativeIntegrationTest {
 
     @Autowired

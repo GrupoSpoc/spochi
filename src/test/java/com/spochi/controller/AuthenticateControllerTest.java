@@ -2,10 +2,10 @@ package com.spochi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.spochi.service.authenticate.JwtUtil;
+import com.spochi.service.auth.JwtUtil;
 import com.spochi.auth.TokenInfo;
-import com.spochi.auth.firebase.FirebaseAuthorizationException;
-import com.spochi.service.authenticate.firebase.FirebaseTokenProvider;
+import com.spochi.auth.AuthorizationException;
+import com.spochi.service.auth.firebase.FirebaseTokenProvider;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.UserService;
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("disable-firebase")
+@ActiveProfiles(profiles = {"disable-firebase", "disable-jwt-filter"})
 class AuthenticateControllerTest {
     @Autowired
     MockMvc mvc;
@@ -85,7 +85,7 @@ class AuthenticateControllerTest {
                 .andExpect(status().is(HttpStatus.NOT_ACCEPTABLE.value()))
                 .andReturn();
 
-        assertTrue(result.getResolvedException() instanceof FirebaseAuthorizationException);
+        assertTrue(result.getResolvedException() instanceof AuthorizationException);
         assertEquals("Invalid or expired token", result.getResponse().getContentAsString());
     }
 
