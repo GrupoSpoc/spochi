@@ -17,11 +17,15 @@ public class UserDummyBuilder {
     }
 
     public static User build() {
+        return build(GOOGLE_ID);
+    }
+
+    public static User build(String uid) {
         final User user = new User();
 
         user.setNickname("user");
         user.set_id("user-id");
-        user.setGoogleId(GOOGLE_ID);
+        user.setGoogleId(uid);
         user.setTypeId(UserType.ORGANIZATION);
         user.setInitiatives(new ArrayList<>());
 
