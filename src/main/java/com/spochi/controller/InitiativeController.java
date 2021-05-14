@@ -1,14 +1,13 @@
 package com.spochi.controller;
 
+import com.spochi.controller.handler.Uid;
+import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.service.InitiativeService;
 import com.spochi.service.query.InitiativeSorter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
@@ -31,5 +30,12 @@ public class InitiativeController {
         }
 
         return service.getAll(sorter);
+    }
+    @PostMapping
+    public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid){
+
+       final InitiativeResponseDTO responseDTO = service.create(request,uid);
+
+        return  responseDTO;
     }
 }

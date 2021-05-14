@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class Initiative {
     @Id
     private String _id;
-
     private String description;
     private String image;
     private String nickname;
