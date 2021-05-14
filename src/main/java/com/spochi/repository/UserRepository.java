@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, String> {
     // todo cambiar a findByUid cuando se cambie googleId por uid en User
     Optional<User> findByGoogleId(String uid);
+
+    Optional<User> findByNickname(String nickname);
 }

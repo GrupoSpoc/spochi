@@ -37,13 +37,16 @@ public class User {
         setInitiatives(initiatives);
     }
 
-
     public UserType getType() {
         return UserType.fromIdOrElseThrow(this.typeId);
     }
 
     public void setTypeId(UserType type) {
         this.typeId = type.getId();
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 
     public UserResponseDTO toDTO() {

@@ -34,9 +34,30 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("find by google id | when user is not found | should return empty option")
-    void findByGoogleId() {
+    void findByGoogleIdNotFound() {
         final User userFoundByGoogleId = repository.findByGoogleId("not-a-google-id").orElse(null);
 
         assertNull(userFoundByGoogleId);
+    }
+
+    @Test
+    @DisplayName("find by nickname | when user is found | should return option with user")
+    void findByNicknameFound() {
+        final User user = repository.save(UserDummyBuilder.build());
+
+        final User userFoundByNickname = repository.findByNickname(user.getNickname()).orElse(null);
+
+        assertNotNull(userFoundByNickname);
+        assertEquals(userFoundByNickname.toDTO(), userFoundByNickname.toDTO());
+    }
+
+    @Test
+    @DisplayName("find by google id | when user is not found | should return empty option")
+    void findByNicknameNotFound() {
+        final User user = repository.save(UserDummyBuilder.build());
+
+        final User userFoundByNickname = repository.findByNickname(user.getNickname() + "a").orElse(null);
+
+        assertNull(userFoundByNickname);
     }
 }
