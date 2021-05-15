@@ -5,7 +5,6 @@ import static com.spochi.dto.DTOComparisonUtil.nullOrEquals;
 public class InitiativeResponseDTO {
 
     private String _id;
-
     private String description;
     private String image;
     private String date;

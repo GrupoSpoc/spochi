@@ -68,7 +68,7 @@ public class UserTest {
         user.setTypeId(UserType.ORGANIZATION);
 
         final Initiative i1 = InitiativeDummyBuilder.build();
-        user.setInitiatives(Collections.singletonList(i1));
+        user.addInitiative(i1);
 
         repository.save(user);
 
