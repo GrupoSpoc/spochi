@@ -32,11 +32,11 @@ public class User {
     private List<Initiative> initiatives;
 
     public void addInitiative(Initiative i) {
-        final List<Initiative> initiatives = new ArrayList<>(this.initiatives);
+        if (initiatives == null) {
+            initiatives = new ArrayList<>();
+        }
         initiatives.add(i);
-        setInitiatives(initiatives);
     }
-
 
     public UserType getType() {
         return UserType.fromIdOrElseThrow(this.typeId);
