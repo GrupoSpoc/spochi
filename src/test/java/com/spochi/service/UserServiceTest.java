@@ -1,7 +1,9 @@
 package com.spochi.service;
 
+import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
+import com.spochi.entity.UserType;
 import com.spochi.persistence.UserDummyBuilder;
 import com.spochi.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -13,9 +15,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -47,4 +50,86 @@ class UserServiceTest {
         when(repository.findByGoogleId(anyString())).thenReturn(Optional.empty());
         assertNull(service.findByUid("google-id"));
     }
+
+    @Test
+    @DisplayName("create | ok | should return UserResponseDTO | ok")
+    void createOk() {
+        final String uid = "uid";
+        final String nickname = "nickname";
+        final int typeId = 1;
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setNickname(nickname);
+        request.setType_id(typeId);
+
+        when(repository.save(any(User.class)))
+                .thenReturn(User.builder().nickname(nickname).googleId(uid).typeId(typeId).build());
+
+        final UserResponseDTO result = service.create(request, uid);
+
+        assertAll("Expected result",
+                () -> assertEquals(nickname, result.getNickname()),
+                () -> assertEquals(typeId, result.getType_id()),
+                () -> assertEquals(0, result.getAmount_of_initiatives()));
+    }
+
+    @Test
+    @DisplayName("create | given null nickname | should throw UserServiceException")
+    void createNullNickname() {
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setType_id(1);
+
+        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "nickname cannot be null or empty");
+    }
+
+    @Test
+    @DisplayName("create | given already used uid | should throw UserServiceException")
+    void createAlreadyUsedAccount() {
+        final String uid = "uid";
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setNickname("nickname");
+        request.setType_id(1);
+
+        when(repository.findByGoogleId(uid)).thenReturn(Optional.of(mock(User.class)));
+
+        assertThrows(UserServiceException.class, () -> service.create(request, uid), "this google account already has a user");
+    }
+
+    @Test
+    @DisplayName("create | given already used nickname | should throw UserServiceException")
+    void createAlreadyUsedNickname() {
+        final String nickname = "nickname";
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setNickname(nickname);
+        request.setType_id(1);
+
+        when(repository.findByNickname(nickname)).thenReturn(Optional.of(mock(User.class)));
+
+        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken");
+    }
+
+    @Test
+    @DisplayName("create | given null type_id | should throw UserServiceException")
+    void createNullTypeId() {
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setType_id(null);
+        request.setNickname("nickname");
+
+        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "type_id cannot be null");
+    }
+
+    @Test
+    @DisplayName("create | given invalid type_id | should throw UserTypeNotFoundException")
+    void createInvalidTypeId() {
+        final int invalidTypeId = Integer.MIN_VALUE;
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setType_id(invalidTypeId);
+        request.setNickname("nickname");
+
+        assertThrows(UserType.UserTypeNotFoundException.class, () -> service.create(request, "uid"), String.format("No UserType with id [%s] present", invalidTypeId));
+    }
+
 }

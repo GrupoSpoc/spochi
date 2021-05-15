@@ -5,6 +5,7 @@ import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.service.query.InitiativeSorter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,11 @@ class InitiativeIntegrationTest {
     @BeforeEach
     public void beforeEach() {
         InitiativeTestUtil.getInitiatives().forEach(initiative -> repository.save(initiative));
+    }
+
+    @AfterEach
+    void clearDB() {
+        repository.deleteAll();
     }
 
     @Test

@@ -46,6 +46,10 @@ public class User {
         this.typeId = type.getId();
     }
 
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
+
     public UserResponseDTO toDTO() {
         final UserResponseDTO dto = new UserResponseDTO();
 

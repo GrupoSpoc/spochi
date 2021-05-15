@@ -20,9 +20,8 @@ public class InitiativeResponseDTO {
     }
 
 
-    public InitiativeResponseDTO set_id(String _id) {
+    public void set_id(String _id) {
         this._id = _id;
-        return this;
     }
 
     public String getDescription() {
