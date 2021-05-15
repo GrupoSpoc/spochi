@@ -60,8 +60,8 @@ public class InitiativeService {
         );
 
         user.addInitiative(initiative);
-        userRepository.save(user);
         initiativeRepository.save(initiative);
+        userRepository.save(user);
         responseDTO = initiative.toDTO();
 
         return responseDTO;
