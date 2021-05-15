@@ -28,6 +28,15 @@ public class Initiative {
     @Field(name = "status_id")
     private int statusId;
 
+    public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId) {
+        this.description = description;
+        this.image = image;
+        this.nickname = nickname;
+        this.date = date;
+        this.userId = userId;
+        this.statusId = statusId;
+    }
+
     public InitiativeResponseDTO toDTO() {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 

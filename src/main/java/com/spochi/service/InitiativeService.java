@@ -1,6 +1,7 @@
 package com.spochi.service;
 
 import com.spochi.controller.exception.BadRequestException;
+import com.spochi.controller.handler.Uid;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -9,11 +10,13 @@ import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,76 +38,54 @@ public class InitiativeService {
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
-         final User user;
-         final Initiative initiative;
+        final User user;
+        final Initiative initiative;
+        final InitiativeResponseDTO responseDTO;
 
+        validateFields(request);
+        final Optional<User> userOpt = userRepository.findByGoogleId(uid);
 
-            // esto lo puedo poner en otro metodo que sea validarDto() y use adentro estos métodos?
-            validateImage(request);
-            validateDate(request);
-            validateDescription(request);
-            validateBase64nature(request);
+        if (!userOpt.isPresent()) {
+            throw new BadServiceException("User not found");
+        }
 
-            //recuperar al usario siempre que exista en el repositorio
-            if(!userRepository.findByGoogleId(uid).isPresent()) {
-               throw new BadServiceException("User not foud");
-            }
-            user = userRepository.findByGoogleId(uid).get();
-            initiative = new Initiative(
-                    request.get_id(),
-                    request.getDescription(),
-                    request.getImage(),
-                    user.getNickname(),
-                    LocalDateTime.parse(request.getDate()),
-                    user.get_id(),
-                    InitiativeStatus.PENDING.getId()
+        user = userOpt.get();
+        initiative = new Initiative(
+                request.getDescription(),
+                request.getImage(),
+                user.getNickname(),
+                LocalDateTime.parse(request.getDate()),
+                user.get_id(),
+                InitiativeStatus.PENDING.getId()
+        );
 
-            );
+        user.addInitiative(initiative);
+        userRepository.save(user);
+        initiativeRepository.save(initiative);
+        responseDTO = initiative.toDTO();
 
-            // agregarle al user la iniciativa
-            user.addInitiative(initiative);
-
-            // mandarle al repository del user el user
-
-            //initiativeRepository.save();
-
-            // generar el response
-
-
-
-
-        return null;
+        return responseDTO;
     }
 
-    protected boolean validateDescription(InitiativeRequestDTO request) throws BadServiceException {
+    private void validateFields(InitiativeRequestDTO request) throws BadServiceException {
+
+
         if (request.getDescription().isEmpty()) {
             throw new BadServiceException("Initiative Description");
         }
-        return true;
-    }
 
-    protected boolean validateImage(InitiativeRequestDTO request) throws BadServiceException {
         if (request.getImage().isEmpty()) {
             throw new BadServiceException("Initiative Image-Empty");
         }
-        return true;
-    }
-
-    protected boolean validateBase64nature(InitiativeRequestDTO request) throws BadServiceException {
         if (!Base64.isBase64(request.getImage())) {
             throw new BadServiceException("Initiative Image-Base64");
 
         }
-        return true;
-    }
-    // todo: validar que la fecha no sea del futuro
-    protected boolean validateDate(InitiativeRequestDTO request) throws BadServiceException {
-
         if (request.getDate().isEmpty()) {
             throw new BadServiceException("Initiative Date-Empty");
 
         }
-      return true;
+        //todo: agregar la validacion para el caso en que la fecha sea una fecha del futuro
     }
 
 
@@ -114,5 +95,4 @@ public class InitiativeService {
         }
     }
 
-}
 }

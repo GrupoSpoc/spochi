@@ -31,11 +31,9 @@ public class InitiativeController {
 
         return service.getAll(sorter);
     }
+
     @PostMapping
     public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid){
-
-       final InitiativeResponseDTO responseDTO = service.create(request,uid);
-
-        return  responseDTO;
+        return service.create(request,uid);
     }
 }
