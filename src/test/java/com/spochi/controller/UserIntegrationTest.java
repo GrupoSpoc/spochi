@@ -6,6 +6,7 @@ import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import com.spochi.repository.UserRepository;
+import com.spochi.service.UserServiceException;
 import com.spochi.service.auth.JwtUtil;
 import net.minidev.json.JSONValue;
 import org.junit.jupiter.api.AfterEach;
@@ -122,5 +123,51 @@ public class UserIntegrationTest {
                 () -> assertEquals(uid, createdUser.getGoogleId()),
                 () -> assertEquals(createdUser.toDTO(), response)
         );
+    }
+
+    @Test
+    @DisplayName("create | when nickname is null | bad request")
+    void createNicknameNull() throws Exception {
+        final String uid = "uid";
+        final String jwt = "jwt";
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setType_id(1);
+
+        when(jwtUtil.extractUid(jwt)).thenReturn(uid);
+
+        final MvcResult result = mvc.perform(post(PATH)
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(request))
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andReturn();
+
+        assertTrue(result.getResolvedException() instanceof UserServiceException);
+        assertEquals("nickname cannot be null or empty", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @DisplayName("create | when uid is already used | bad request")
+    void createUidAlreadyUsed() throws Exception {
+        final String uid = "uid";
+        final String jwt = "jwt";
+
+        repository.save(User.builder().nickname("nickname").typeId(1).googleId(uid).build());
+
+        final UserRequestDTO request = new UserRequestDTO();
+        request.setType_id(1);
+
+        when(jwtUtil.extractUid(jwt)).thenReturn(uid);
+
+        final MvcResult result = mvc.perform(post(PATH)
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(request))
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andReturn();
+
+        assertTrue(result.getResolvedException() instanceof UserServiceException);
+        assertEquals("this google account already has a user", result.getResponse().getContentAsString());
     }
 }
