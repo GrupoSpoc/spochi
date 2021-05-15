@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
+import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -79,7 +80,7 @@ class UserServiceTest {
         final UserRequestDTO request = new UserRequestDTO();
         request.setType_id(1);
 
-        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "nickname cannot be null or empty");
+        assertException(UserServiceException.class, () -> service.create(request, "uid"), "nickname cannot be null or empty");
     }
 
     @Test
@@ -93,7 +94,7 @@ class UserServiceTest {
 
         when(repository.findByGoogleId(uid)).thenReturn(Optional.of(mock(User.class)));
 
-        assertThrows(UserServiceException.class, () -> service.create(request, uid), "this google account already has a user");
+        assertException(UserServiceException.class, () -> service.create(request, uid), "this google account already has a user");
     }
 
     @Test
@@ -107,7 +108,7 @@ class UserServiceTest {
 
         when(repository.findByNickname(nickname)).thenReturn(Optional.of(mock(User.class)));
 
-        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken");
+        assertException(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken");
     }
 
     @Test
@@ -117,7 +118,7 @@ class UserServiceTest {
         request.setType_id(null);
         request.setNickname("nickname");
 
-        assertThrows(UserServiceException.class, () -> service.create(request, "uid"), "type_id cannot be null");
+        assertException(UserServiceException.class, () -> service.create(request, "uid"), "type_id cannot be null");
     }
 
     @Test
@@ -129,7 +130,7 @@ class UserServiceTest {
         request.setType_id(invalidTypeId);
         request.setNickname("nickname");
 
-        assertThrows(UserType.UserTypeNotFoundException.class, () -> service.create(request, "uid"), String.format("No UserType with id [%s] present", invalidTypeId));
+        assertException(UserType.UserTypeNotFoundException.class, () -> service.create(request, "uid"), String.format("No UserType with id [%s] present", invalidTypeId));
     }
 
 }
