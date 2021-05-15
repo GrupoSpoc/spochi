@@ -1,6 +1,7 @@
 package com.spochi.controller.handler;
 
 import com.spochi.service.auth.JwtUtil;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 @Component
 public class UidHandler implements HandlerMethodArgumentResolver {
     @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     public UidHandler(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -31,7 +32,7 @@ public class UidHandler implements HandlerMethodArgumentResolver {
 
     // si llegó hasta este punto es porque el JwtFilter validó que el token sea válido, entonces no puede faltar el header
     @Override
-    public Object resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws Exception {
+    public Object resolveArgument(@NotNull MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) {
         HttpServletRequest request = (HttpServletRequest) nativeWebRequest.getNativeRequest();
         final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
         String token = authorizationHeader.substring(BEARER_SUFFIX.length());
