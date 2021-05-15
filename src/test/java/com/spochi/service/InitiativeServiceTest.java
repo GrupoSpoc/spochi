@@ -6,6 +6,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
+import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,49 +36,58 @@ class InitiativeServiceTest {
     @MockBean
     UserRepository userRepository;
 
+    private final String NICKNAME = "nickname";
+    private final String DESCRIPTION = "description";
+    private final String IMAGE_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    private final String USER_ID = "id";
+    private final String DATE = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString();
+    private final String UID = "uid";
+    private final String EMPTY = "";
+    private final int STATUS_DEFAULT = 1;
 
     private InitiativeRequestDTO wrong_initiative = new InitiativeRequestDTO();
     private InitiativeRequestDTO right_initiative = new InitiativeRequestDTO();
-    private String uid = "uid";
+
 
     @Test
     void initiativeDescriptionIsEmpty() {
-        wrong_initiative.setDescription("");
-        assertThrows(InitiativeService.BadServiceException.class, () -> service.create(wrong_initiative, uid));
+        wrong_initiative.setDescription(EMPTY);
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Description is empty");
     }
 
     @Test
     void initiativeImageIsEmpty() {
-        wrong_initiative.setDescription("description");
-        wrong_initiative.setImage("");
-        assertThrows(InitiativeService.BadServiceException.class, () -> service.create(wrong_initiative, uid));
+        wrong_initiative.setDescription(DESCRIPTION);
+        wrong_initiative.setImage(EMPTY);
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Image is empty");
     }
 
     @Test
     void initiativeImageIsNotBase64() {
-        wrong_initiative.setDescription("description");
+        wrong_initiative.setDescription(DESCRIPTION);
         wrong_initiative.setImage("$$$////:");
-        assertThrows(InitiativeService.BadServiceException.class, () -> service.create(wrong_initiative, uid));
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Image is not Base64");
     }
 
     @Test
     void createOK() {
-        right_initiative.setDescription("description");
-        right_initiative.setDate(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString());
-        right_initiative.setImage("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==");
+        right_initiative.setDescription(DESCRIPTION);
+        right_initiative.setDate(DATE);
+        right_initiative.setImage(IMAGE_BASE64);
 
         User user = mock(User.class);
-        when(user.getNickname()).thenReturn("nickname");
-        when(user.get_id()).thenReturn("id");
-        when(userRepository.findByGoogleId(uid)).thenReturn(Optional.of(user));
+        when(user.getNickname()).thenReturn(NICKNAME);
+        when(user.get_id()).thenReturn(USER_ID);
+        when(userRepository.findByGoogleId(UID)).thenReturn(Optional.of(user));
 
-        InitiativeResponseDTO result = service.create(right_initiative, uid);
+        InitiativeResponseDTO result = service.create(right_initiative, UID);
 
-        assertEquals("nickname", result.getNickname());
-        assertEquals(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString(), result.getDate());
-        assertEquals("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", result.getImage());
+        assertEquals(NICKNAME, result.getNickname());
+        assertEquals(DATE, result.getDate());
+        assertEquals(IMAGE_BASE64, result.getImage());
         assertNotNull(result.get_id());
-        assertEquals(1, result.getStatus_id());
+        assertEquals(STATUS_DEFAULT, result.getStatus_id());
 
         Optional<Initiative> initiativeOpt = initiativeRepository.findById(result.get_id());
         assertTrue(initiativeOpt.isPresent());
@@ -85,19 +95,10 @@ class InitiativeServiceTest {
 
     @Test
     void initiativeDateIsEmpty() {
-        wrong_initiative.setDescription("description");
-        wrong_initiative.setDate("");
-        wrong_initiative.setImage("image");
+        wrong_initiative.setDescription(DESCRIPTION);
+        wrong_initiative.setDate(EMPTY);
+        wrong_initiative.setImage(IMAGE_BASE64);
 
-        assertThrows(InitiativeService.BadServiceException.class, () -> service.create(wrong_initiative, uid));
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date is empty");
     }
-
-    @Test
-    void initiativeDateIsFromFuture() {
-        wrong_initiative.setDescription("description");
-        wrong_initiative.setImage("image");
-
-    }
-
-
 }

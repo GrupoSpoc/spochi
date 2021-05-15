@@ -46,7 +46,7 @@ public class InitiativeService {
         final Optional<User> userOpt = userRepository.findByGoogleId(uid);
 
         if (!userOpt.isPresent()) {
-            throw new BadServiceException("User not found");
+            throw new InitiativeServiceException("User not found");
         }
 
         user = userOpt.get();
@@ -67,32 +67,33 @@ public class InitiativeService {
         return responseDTO;
     }
 
-    private void validateFields(InitiativeRequestDTO request) throws BadServiceException {
+    private void validateFields(InitiativeRequestDTO request) throws InitiativeServiceException {
 
 
         if (request.getDescription().isEmpty()) {
-            throw new BadServiceException("Initiative Description");
+            throw new InitiativeServiceException("Initiative Description is empty");
         }
 
         if (request.getImage().isEmpty()) {
-            throw new BadServiceException("Initiative Image-Empty");
+            throw new InitiativeServiceException("Initiative Image is empty");
         }
         if (!Base64.isBase64(request.getImage())) {
-            throw new BadServiceException("Initiative Image-Base64");
+            throw new InitiativeServiceException("Initiative Image is not Base64");
 
         }
         if (request.getDate().isEmpty()) {
-            throw new BadServiceException("Initiative Date-Empty");
+            throw new InitiativeServiceException("Initiative Date is empty");
 
         }
         //todo: agregar la validacion para el caso en que la fecha sea una fecha del futuro
     }
 
 
-    public static class BadServiceException extends BadRequestException {
-        private BadServiceException(String failField) {
-            super(String.format("The Services fail in [%s] ", failField));
+    public static class InitiativeServiceException extends BadRequestException {
+        private InitiativeServiceException(String failField) {
+            super(String.format("The Services fail because : %s", failField));
         }
     }
 
 }
+
