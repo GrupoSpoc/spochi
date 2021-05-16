@@ -42,6 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
         skippedEndpoints.add("/authenticate");
         skippedEndpoints.add("/ping");
         skippedEndpoints.add("/admin/login");
+        skippedEndpoints.add("/initiative/all"); // todo esto es para pedirlas desde el admin, BORRAR
 
     }
 
