@@ -1,6 +1,6 @@
 package com.spochi.service;
 
-import com.spochi.controller.exception.HttpStatus;
+import com.spochi.controller.HttpStatus;
 import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;

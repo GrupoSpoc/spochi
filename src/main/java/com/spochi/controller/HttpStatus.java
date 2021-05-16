@@ -1,11 +1,11 @@
-package com.spochi.controller.exception;
+package com.spochi.controller;
 
 import lombok.Getter;
 
 @Getter
 public enum HttpStatus {
-    BAD_REQUEST(400),
-    NICKNAME_ALREADY_TAKEN(800);
+    BAD_REQUEST(800),
+    NICKNAME_ALREADY_TAKEN(801);
 
     private final int code;
 

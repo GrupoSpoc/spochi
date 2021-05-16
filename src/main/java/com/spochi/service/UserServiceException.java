@@ -1,7 +1,7 @@
 package com.spochi.service;
 
 import com.spochi.controller.exception.BadRequestException;
-import com.spochi.controller.exception.HttpStatus;
+import com.spochi.controller.HttpStatus;
 
 public class UserServiceException extends BadRequestException {
     public UserServiceException(String message) {

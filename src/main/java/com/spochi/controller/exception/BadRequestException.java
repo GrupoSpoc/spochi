@@ -1,7 +1,9 @@
 package com.spochi.controller.exception;
 
+import com.spochi.controller.HttpStatus;
+
 public class BadRequestException extends RuntimeException {
-    private final int statusCode;
+    private final HttpStatus status;
 
     public BadRequestException(String message) {
         this(message, HttpStatus.BAD_REQUEST);
@@ -9,10 +11,10 @@ public class BadRequestException extends RuntimeException {
 
     public BadRequestException(String message, HttpStatus status) {
         super(message);
-        this.statusCode = status.getCode();
+        this.status = status;
     }
 
-    public int getStatusCode() {
-        return statusCode;
+    public HttpStatus getStatus() {
+        return status;
     }
 }

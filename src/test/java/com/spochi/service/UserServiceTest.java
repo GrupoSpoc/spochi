@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
+import static com.spochi.util.AssertUtils.assertBadRequestException;
 import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -108,7 +110,7 @@ class UserServiceTest {
 
         when(repository.findByNickname(nickname)).thenReturn(Optional.of(mock(User.class)));
 
-        assertException(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken");
+        assertBadRequestException(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken", HttpStatus.NICKNAME_ALREADY_TAKEN);
     }
 
     @Test
