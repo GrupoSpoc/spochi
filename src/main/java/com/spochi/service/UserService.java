@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.exception.HttpStatus;
 import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
@@ -42,7 +43,7 @@ public class UserService {
             throw new UserServiceException("nickname cannot be null or empty");
         } else {
             if (repository.findByNickname(request.getNickname()).isPresent()) {
-                throw new UserServiceException("nickname already taken");
+                throw new UserServiceException("nickname already taken", HttpStatus.NICKNAME_ALREADY_TAKEN);
             }
         }
 
