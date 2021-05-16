@@ -20,6 +20,7 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
+    @CrossOrigin(origins = "http://localhost:3000")
     public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order) {
         final Comparator<Initiative> sorter;
 
