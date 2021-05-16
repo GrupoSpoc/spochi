@@ -11,7 +11,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(value = {BadRequestException.class})
     protected ResponseEntity<String> handleBadRequestException(BadRequestException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(e.getStatus().getCode())
                 .body(e.getMessage());
     }
 

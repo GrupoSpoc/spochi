@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -106,7 +107,7 @@ class InitiativeIntegrationTest {
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
                 .param("order", invalidSorterId))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(status().is(BAD_REQUEST.getCode()))
                 .andReturn();
 
         final BadRequestException exception = (BadRequestException) result.getResolvedException();

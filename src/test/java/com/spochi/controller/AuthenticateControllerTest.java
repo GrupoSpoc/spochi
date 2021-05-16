@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -54,7 +55,7 @@ class AuthenticateControllerTest {
     void authenticateNullToken() throws Exception {
         final MvcResult result = mvc.perform(post(PATH))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(status().is(BAD_REQUEST.getCode()))
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof BadRequestException);
@@ -67,7 +68,7 @@ class AuthenticateControllerTest {
         final MvcResult result = mvc.perform(post(PATH)
                 .contentType(MediaType.TEXT_PLAIN).content(""))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(status().is(BAD_REQUEST.getCode()))
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof BadRequestException);

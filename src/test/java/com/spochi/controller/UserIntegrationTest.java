@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
+import static com.spochi.controller.HttpStatus.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -140,7 +141,7 @@ public class UserIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(request))
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(status().is(BAD_REQUEST.getCode()))
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof UserServiceException);
@@ -164,7 +165,7 @@ public class UserIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(request))
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(status().is(BAD_REQUEST.getCode()))
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof UserServiceException);
