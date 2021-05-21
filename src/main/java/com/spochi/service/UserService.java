@@ -5,6 +5,7 @@ import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
+import com.spochi.fiware.FiwareUserService;
 import com.spochi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,11 @@ public class UserService {
     @Autowired
     UserRepository repository;
 
+    @Autowired
+    FiwareUserService fiwareUserService;
+
     public UserResponseDTO findByUid(String uid) {
-        return repository.findByGoogleId(uid)
+        return fiwareUserService.findByUid(uid)
                 .map(User::toDTO)
                 .orElse(null);
     }
