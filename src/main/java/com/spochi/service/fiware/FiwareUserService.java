@@ -2,6 +2,7 @@ package com.spochi.service.fiware;
 
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
+import com.spochi.service.fiware.ngsi.NGSIJson;
 import com.spochi.service.fiware.ngsi.NGSIQueryBuilder;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,11 @@ public class FiwareUserService extends FiwareService<User> {
 
     @Override
     protected String getEntityType() {
-        return "User";
+        return User.getEntityType();
     }
 
     @Override
-    protected User fromNGSIJson(JSONObject json) {
+    protected User fromNGSIJson(NGSIJson json) {
         return User.fromNGSIJson(json);
     }
 

@@ -4,7 +4,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
-import org.json.JSONObject;
+import com.spochi.service.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -126,8 +126,8 @@ public class UserTest {
         final String nickname = "test-nickname";
         final int typeId = 1;
 
-        final JSONObject json = new JSONObject();
-        json.put(User.Fields.ID.getValue(), id);
+        final NGSIJson json = new NGSIJson();
+        json.setId(id);
         json.put(User.Fields.UID.getValue(), uid);
         json.put(User.Fields.NICKNAME.getValue(), nickname);
         json.put(User.Fields.TYPE_ID.getValue(), typeId);
@@ -142,9 +142,24 @@ public class UserTest {
     }
 
     @Test
+    @DisplayName("to NGSIJson | ok")
+    void toNGSIJsonOk() {
+        final User user = UserDummyBuilder.build();
+
+        final NGSIJson json = user.toNGSIJson(UserDummyBuilder.FIWARE_ID);
+
+        assertAll("Expected result",
+                () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
+                () -> assertEquals(user.getGoogleId(), json.getAttributeValueString(User.Fields.UID)),
+                () -> assertEquals(user.getNickname(), json.getAttributeValueString(User.Fields.NICKNAME)),
+                () -> assertEquals(user.getTypeId(), json.getAttributeValueInteger(User.Fields.TYPE_ID))
+        );
+    }
+
+
+    @Test
     @DisplayName("Fields | getValue | ok")
     void fieldsGetValueOk() {
-        assertEquals("id", User.Fields.ID.getValue());
         assertEquals("uid", User.Fields.UID.getValue());
         assertEquals("nickname", User.Fields.NICKNAME.getValue());
         assertEquals("type_id", User.Fields.TYPE_ID.getValue());

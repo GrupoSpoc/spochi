@@ -3,6 +3,7 @@ package com.spochi.entity;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.fiware.ngsi.NGSIField;
 import com.spochi.service.fiware.ngsi.NGSIFieldType;
+import com.spochi.service.fiware.ngsi.NGSIJson;
 import com.spochi.service.fiware.ngsi.NGSISerializable;
 import lombok.*;
 import org.json.JSONObject;
@@ -66,19 +67,25 @@ public class User implements NGSISerializable {
         return dto;
     }
 
-    @Override
-    public String toNGSIJson(String id) {
-        final JSONObject json = new JSONObject();
-        json.put(User.Fields.ID.getValue(), this._id);
-        json.put(User.Fields.UID.getValue(), this.googleId);
-        json.put(User.Fields.NICKNAME.getValue(), this.nickname);
-        json.put(User.Fields.TYPE_ID.getValue(), this.typeId);
-
-        return json.toString();
+    public static final String getEntityType() {
+        return "User";
     }
 
-    public static User fromNGSIJson(JSONObject json) {
-        final String id = json.getString(Fields.ID.getValue()); // todo renombrar
+    @Override
+    public NGSIJson toNGSIJson(String id) {
+        final NGSIJson json = new NGSIJson();
+
+        json.setId(id);
+        json.setType(this.getEntityType());
+        json.addAttribute(Fields.UID, this.googleId);
+        json.addAttribute(Fields.NICKNAME, this.nickname);
+        json.addAttribute(Fields.TYPE_ID, this.typeId);
+
+        return json;
+    }
+
+    public static User fromNGSIJson(NGSIJson json) {
+        final String id = json.getId(); // todo renombrar
         final String uid = json.getString(Fields.UID.getValue());
         final String nickname = json.getString(Fields.NICKNAME.getValue());
         final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.getValue()));
@@ -87,7 +94,6 @@ public class User implements NGSISerializable {
     }
 
     public enum Fields implements NGSIField {
-        ID("id", NGSIFieldType.TEXT),
         UID("uid", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
         TYPE_ID("type_id", NGSIFieldType.NUMBER);

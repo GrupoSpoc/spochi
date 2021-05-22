@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 public class UserDummyBuilder {
     public static final String GOOGLE_ID = "google-id";
+    public static final String FIWARE_ID = "urn:ngsi-ld:User:001";
+
 
     public static User buildWithId() {
         final User user = build();
@@ -24,7 +26,6 @@ public class UserDummyBuilder {
         final User user = new User();
 
         user.setNickname("user");
-        user.set_id("user-id");
         user.setGoogleId(uid);
         user.setTypeId(UserType.ORGANIZATION);
         user.setInitiatives(new ArrayList<>());

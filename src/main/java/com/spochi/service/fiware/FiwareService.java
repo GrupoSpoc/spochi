@@ -1,5 +1,6 @@
 package com.spochi.service.fiware;
 
+import com.spochi.service.fiware.ngsi.NGSIJson;
 import com.spochi.service.fiware.ngsi.NGSIQueryBuilder;
 import com.spochi.service.fiware.ngsi.NGSISerializable;
 import com.spochi.service.fiware.rest.RestPerformer;
@@ -23,20 +24,20 @@ public abstract class FiwareService <T extends NGSISerializable> {
 
     public T save(T instance) {
         final String id = nextId();
-        save(instance.toNGSIJson(id));
+        save(instance.toNGSIJson(id).toString());
         return findById(id).orElseThrow(RuntimeException::new); // todo
     }
 
     // Todo y si no lo encuentra?
     public Optional<T> findById(String id) {
         return performer.get(ENTITIES_URL + id, json -> {
-            final JSONObject jsonObject = new JSONObject(json);
-            return Optional.of(fromNGSIJson(jsonObject));
+            final NGSIJson ngsiJson = new NGSIJson(json);
+            return Optional.of(fromNGSIJson(ngsiJson));
         });
     }
 
     protected abstract String getEntityType();
-    protected abstract T fromNGSIJson(JSONObject json);
+    protected abstract T fromNGSIJson(NGSIJson json);
 
     protected Optional<T> findFirst(NGSIQueryBuilder queryBuilder) {
         final String query = queryBuilder.type(getEntityType())
@@ -57,7 +58,7 @@ public abstract class FiwareService <T extends NGSISerializable> {
     protected Optional<T> findFirst(String url) {
         return performer.get(url, json -> {
             final JSONArray jsonArray = new JSONArray(json);
-            return Optional.of(fromNGSIJson(jsonArray.getJSONObject(0)));
+            return Optional.of(fromNGSIJson(new NGSIJson(jsonArray.getString(0))));
         });
     }
 
@@ -66,7 +67,7 @@ public abstract class FiwareService <T extends NGSISerializable> {
             final JSONArray jsonArray = new JSONArray(json);
 
             List<T> list = new ArrayList<>();
-            jsonArray.forEach(j -> list.add(this.fromNGSIJson((JSONObject) j))); // Todo
+            jsonArray.forEach(j -> list.add(this.fromNGSIJson(new NGSIJson(j.toString())))); // Todo
             return list;
         });
     }
