@@ -1,14 +1,22 @@
 package com.spochi.repository.fiware.ngsi;
 
+import com.spochi.util.AssertUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @DisplayName("NGSIJsonTest | Unit")
 class NGSIJsonTest {
+
+    @Test
+    @DisplayName("instantiate | invalid source | JsonException")
+    void instantiateInvalidSourceException() {
+        assertThrows(JSONException.class, () -> new NGSIJson("not-a-json"));
+    }
 
     @Test
     @DisplayName("set id | ok")
@@ -41,8 +49,23 @@ class NGSIJsonTest {
     }
 
     @Test
-    @DisplayName("add & get attribute | ok")
+    @DisplayName("add attribute | when value is invalid | NGSIJsonException")
     void addAttribute() {
+        final String value = "a-value";
+        final NGSIFieldType type = mock(NGSIFieldType.class);
+        final NGSIField field = mock(NGSIField.class);
+
+        when(field.getType()).thenReturn(type);
+        doThrow(new NGSIFieldType.InvalidValueException("error-message")).when(type).validateValue(value);
+
+        final NGSIJson json = new NGSIJson();
+
+        AssertUtils.assertException(NGSIJson.NGSIJsonException.class, () -> json.addAttribute(field, value), "error-message");
+    }
+
+    @Test
+    @DisplayName("add attribute | ok")
+    void addAttributeOk() {
         final String value = "a-value";
         final NGSIJson json = new NGSIJson();
 
@@ -56,43 +79,50 @@ class NGSIJsonTest {
     }
 
     @Test
-    @DisplayName("get attribute | ok")
-    void getAttributeOk() {
+    @DisplayName("add attribute | when value is null | should not add | ok")
+    void addAttributeNullOk() {
+        final NGSIJson json = new NGSIJson();
+
+        json.addAttribute(NGSITestFields.A_ATTRIBUTE, null);
+
+        assertFalse(json.has(NGSITestFields.A_ATTRIBUTE.getName()));
+    }
+
+    @Test
+    @DisplayName("get int | ok")
+    void getIntOk() {
         final Integer value = 10;
         final NGSIJson json = new NGSIJson();
 
-        json.addAttribute(NGSITestFields.B_ATTRIBUTE, value);
+        json.put(NGSITestFields.B_ATTRIBUTE.getName(), value);
 
-
+        assertEquals(value, json.getInt(NGSITestFields.B_ATTRIBUTE));
     }
 
     @Test
-    @DisplayName("get attribute | when attribute is not present | NGSIJsonException")
-    void getAttributeNotPresentException() {
+    @DisplayName("get int | when key is not present | JsonException ")
+    void getIntKeyNotPresentException() {
+        final NGSIJson json = new NGSIJson();
 
+        assertThrows(JSONException.class, () -> json.getInt(NGSITestFields.A_ATTRIBUTE));
     }
 
     @Test
-    @DisplayName("get attribute | when attribute is not JSONObject | NGSIJsonException")
-    void getAttributeNotJSONObjectException() {
+    @DisplayName("get String | ok ")
+    void getStringOk() {
+        final String value = "a-string";
+        final NGSIJson json = new NGSIJson();
 
+        json.put(NGSITestFields.A_ATTRIBUTE.getName(), value);
+
+        assertEquals(value, json.getString(NGSITestFields.A_ATTRIBUTE));
     }
 
     @Test
-    @DisplayName("get attribute | when mapping function fails | NGSIJsonException")
-    void getAttributeMappingFailsException() {
+    @DisplayName("get String | when key is not present | JsonException ")
+    void getStringKeyNotPresentException() {
+        final NGSIJson json = new NGSIJson();
 
-    }
-
-
-
-    @Test
-    @DisplayName("get attribute value Integer | ok | should call get attribute value")
-    void getAttributeValueInteger() {
-    }
-
-    @Test
-    @DisplayName("get attribute value String | ok | should call get attribute value")
-    void getAttributeValueString() {
+        assertThrows(JSONException.class, () -> json.getString(NGSITestFields.A_ATTRIBUTE));
     }
 }

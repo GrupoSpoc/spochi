@@ -150,9 +150,9 @@ public class UserTest {
 
         assertAll("Expected result",
                 () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
-                () -> assertEquals(user.getUid(), json.getAttributeValueString(User.Fields.UID)),
-                () -> assertEquals(user.getNickname(), json.getAttributeValueString(User.Fields.NICKNAME)),
-                () -> assertEquals(user.getTypeId(), json.getAttributeValueInteger(User.Fields.TYPE_ID))
+                () -> assertEquals(user.getUid(), json.getString(User.Fields.UID)),
+                () -> assertEquals(user.getNickname(), json.getString(User.Fields.NICKNAME)),
+                () -> assertEquals(user.getTypeId(), json.getInt(User.Fields.TYPE_ID))
         );
     }
 

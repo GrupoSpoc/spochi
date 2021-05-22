@@ -4,8 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.function.Function;
-
 public class NGSIJson extends JSONObject {
     public NGSIJson(String source) {
         super(source);
@@ -29,7 +27,9 @@ public class NGSIJson extends JSONObject {
         return this;
     }
 
-    public NGSIJson addAttribute(@NotNull NGSIField field, @NotNull Object value) {
+    public NGSIJson addAttribute(@NotNull NGSIField field, Object value) {
+        if (value == null) return this;
+
         validateValue(field.getType(), value);
 
         final JSONObject attribute = new JSONObject();
@@ -50,22 +50,12 @@ public class NGSIJson extends JSONObject {
         }
     }
 
-    public String getAttributeValueString(NGSIField field) {
-        return getAttributeValue(field, String::valueOf);
+    public String getString(NGSIField field) {
+        return getString(field.getName());
     }
 
-    public Integer getAttributeValueInteger(NGSIField field) {
-        return getAttributeValue(field, o -> Integer.parseInt(String.valueOf(o)));
-    }
-
-    public <T> T getAttributeValue(NGSIField field, Function<Object, T> mappingFunction) {
-        try {
-            final JSONObject attribute = this.getJSONObject(field.getName());
-            return mappingFunction.apply(attribute.get(NGSICommonFields.VALUE.getName()));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new NGSIJsonException(e.getMessage());
-        }
+    public int getInt(NGSIField field) {
+        return getInt(field.getName());
     }
 
     public static final class NGSIJsonException extends JSONException {
