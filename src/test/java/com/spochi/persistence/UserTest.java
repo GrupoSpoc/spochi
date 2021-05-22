@@ -4,6 +4,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.MongoUserRepository;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -150,9 +151,9 @@ public class UserTest {
 
         assertAll("Expected result",
                 () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
-                () -> assertEquals(user.getUid(), json.getString(User.Fields.UID)),
-                () -> assertEquals(user.getNickname(), json.getString(User.Fields.NICKNAME)),
-                () -> assertEquals(user.getTypeId(), json.getInt(User.Fields.TYPE_ID))
+                () -> assertEquals(user.getUid(), json.getJSONObject(User.Fields.UID.getName()).getString(NGSICommonFields.VALUE.getName())),
+                () -> assertEquals(user.getNickname(), json.getJSONObject(User.Fields.NICKNAME.getName()).getString(NGSICommonFields.VALUE.getName())),
+                () -> assertEquals(user.getTypeId(), json.getJSONObject(User.Fields.TYPE_ID.getName()).getInt(NGSICommonFields.VALUE.getName()))
         );
     }
 
