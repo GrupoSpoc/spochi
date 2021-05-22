@@ -48,6 +48,8 @@ public class NGSIQueryBuilder {
 
 
     public String build() {
+        if (params.isEmpty()) return "";
+
         return "?" + this.params.entrySet().stream().map(entry -> {
             String key = entry.getKey();
             String value = entry.getValue();
