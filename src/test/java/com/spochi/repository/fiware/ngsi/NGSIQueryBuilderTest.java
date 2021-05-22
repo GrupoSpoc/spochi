@@ -29,7 +29,7 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with attribute | ok")
     void buildWithAttributeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attribute(UserTestFields.A_ATTRIBUTE, "aValue");
+        queryBuilder.attribute(NGSITestFields.A_ATTRIBUTE, "aValue");
 
         assertEquals("?q=aAttribute==aValue", queryBuilder.build());
     }
@@ -65,7 +65,7 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with get attribute | ok")
     void buildWithGetAttributeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.getAttribute(UserTestFields.A_ATTRIBUTE);
+        queryBuilder.getAttribute(NGSITestFields.A_ATTRIBUTE);
 
         assertEquals("?attr=aAttribute", queryBuilder.build());
     }
@@ -84,8 +84,8 @@ class NGSIQueryBuilderTest {
     void buildWithMultipleParamsOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
         queryBuilder.type("bType")
-                .attribute(UserTestFields.B_ATTRIBUTE, "bValue")
-                .getAttribute(UserTestFields.B_ATTRIBUTE)
+                .attribute(NGSITestFields.B_ATTRIBUTE, "bValue")
+                .getAttribute(NGSITestFields.B_ATTRIBUTE)
                 .keyValues()
                 .orderByDesc("bOrder")
                 .limit(5);
@@ -94,24 +94,4 @@ class NGSIQueryBuilderTest {
         assertEquals("?q=bAttribute==bValue&options=keyValues&limit=5&orderBy=!bOrder&type=bType&attr=bAttribute", queryBuilder.build());
     }
 
-    private enum UserTestFields implements NGSIField {
-        A_ATTRIBUTE("aAttribute"),
-        B_ATTRIBUTE("bAttribute");
-
-        private final String value;
-
-        UserTestFields(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String getValue() {
-            return this.value;
-        }
-
-        @Override
-        public NGSIFieldType getType() {
-            return null;
-        }
-    }
 }

@@ -17,7 +17,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder attribute(NGSIField attribute, String value) {
-        params.put("q=" + attribute.getValue() + "=", value);
+        params.put("q=" + attribute.getName() + "=", value);
         return this;
     }
 
@@ -37,7 +37,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder getAttribute(NGSIField attribute) {
-        params.put("attr", attribute.getValue());
+        params.put("attr", attribute.getName());
         return this;
     }
 

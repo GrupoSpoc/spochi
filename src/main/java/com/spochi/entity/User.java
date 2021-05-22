@@ -85,9 +85,9 @@ public class User implements NGSISerializable {
 
     public static User fromNGSIJson(NGSIJson json) {
         final String id = json.getId(); // todo renombrar
-        final String uid = json.getString(Fields.UID.getValue());
-        final String nickname = json.getString(Fields.NICKNAME.getValue());
-        final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.getValue()));
+        final String uid = json.getString(Fields.UID.getName());
+        final String nickname = json.getString(Fields.NICKNAME.getName());
+        final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.getName()));
 
         return new User(id, uid, nickname, type.getId(), Collections.emptyList());
     }
@@ -95,19 +95,19 @@ public class User implements NGSISerializable {
     public enum Fields implements NGSIField {
         UID("uid", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
-        TYPE_ID("type_id", NGSIFieldType.NUMBER);
+        TYPE_ID("type_id", NGSIFieldType.INTEGER);
 
-        private final String value;
+        private final String name;
         private final NGSIFieldType type;
 
-        Fields(String value, NGSIFieldType type) {
-            this.value = value;
+        Fields(String name, NGSIFieldType type) {
+            this.name = name;
             this.type = type;
         }
 
         @Override
-        public String getValue() {
-            return this.value;
+        public String getName() {
+            return this.name;
         }
 
         @Override

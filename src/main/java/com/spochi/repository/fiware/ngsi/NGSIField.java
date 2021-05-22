@@ -1,6 +1,6 @@
 package com.spochi.repository.fiware.ngsi;
 
 public interface NGSIField {
-    String getValue();
+    String getName();
     NGSIFieldType getType();
 }

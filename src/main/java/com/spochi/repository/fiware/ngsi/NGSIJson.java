@@ -1,12 +1,13 @@
 package com.spochi.repository.fiware.ngsi;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.function.Function;
 
 public class NGSIJson extends JSONObject {
-    public NGSIJson(String source) throws JSONException {
+    public NGSIJson(String source) {
         super(source);
     }
 
@@ -14,31 +15,31 @@ public class NGSIJson extends JSONObject {
         super();
     }
 
-    public NGSIJson setId(String id) {
-        this.put(NGSICommonFields.ID.getValue(), id);
+    public NGSIJson setId(@NotNull String id) {
+        this.put(NGSICommonFields.ID.getName(), id);
         return this;
     }
 
     public String getId() {
-        return this.getString(NGSICommonFields.ID.getValue());
+        return this.getString(NGSICommonFields.ID.getName());
     }
 
-    public NGSIJson setType(String type) {
-        this.put(NGSICommonFields.TYPE.getValue(), type);
+    public NGSIJson setType(@NotNull String type) {
+        this.put(NGSICommonFields.TYPE.getName(), type);
         return this;
     }
 
-    public NGSIJson addAttribute(NGSIField field, Object value) {
+    public NGSIJson addAttribute(@NotNull NGSIField field, @NotNull Object value) {
         final JSONObject attribute = new JSONObject();
-        attribute.put(NGSICommonFields.TYPE.getValue(), field.getType());
-        attribute.put(NGSICommonFields.VALUE.getValue(), value);
 
-        this.put(field.getValue(), attribute);
+        attribute.put(NGSICommonFields.TYPE.getName(), field.getType().getName());
+        attribute.put(NGSICommonFields.VALUE.getName(), value);
+
+        this.put(field.getName(), attribute);
 
         return this;
     }
 
-    // todo null / mapping error
     public String getAttributeValueString(NGSIField field) {
         return getAttributeValue(field, String::valueOf);
     }
@@ -48,8 +49,20 @@ public class NGSIJson extends JSONObject {
     }
 
     public <T> T getAttributeValue(NGSIField field, Function<Object, T> mappingFunction) {
-        final JSONObject attribute = this.getJSONObject(field.getValue());
+        try {
+            final JSONObject attribute = this.getJSONObject(field.getName());
+            return mappingFunction.apply(attribute.get(NGSICommonFields.VALUE.getName()));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new NGSIJsonException(e.getMessage());
+        }
+    }
 
-        return mappingFunction.apply(attribute.get(NGSICommonFields.VALUE.getValue()));
+    public static final class NGSIJsonException extends JSONException {
+        public NGSIJsonException(String message) {
+            super(message);
+        }
     }
 }
+
+

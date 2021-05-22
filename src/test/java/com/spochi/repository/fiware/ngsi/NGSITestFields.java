@@ -1,14 +1,14 @@
 package com.spochi.repository.fiware.ngsi;
 
-public enum NGSICommonFields implements NGSIField {
-    ID("id", NGSIFieldType.TEXT),
-    TYPE("type", NGSIFieldType.TEXT),
-    VALUE("value", NGSIFieldType.TEXT);
+enum NGSITestFields implements NGSIField {
+    A_ATTRIBUTE("aAttribute", NGSIFieldType.TEXT),
+    B_ATTRIBUTE("bAttribute", NGSIFieldType.INTEGER);
 
     private final String name;
     private final NGSIFieldType type;
 
-    NGSICommonFields(String name, NGSIFieldType type) {
+
+    NGSITestFields(String name, NGSIFieldType type) {
         this.name = name;
         this.type = type;
     }
@@ -20,6 +20,6 @@ public enum NGSICommonFields implements NGSIField {
 
     @Override
     public NGSIFieldType getType() {
-        return this.type;
+        return type;
     }
 }

@@ -128,9 +128,9 @@ public class UserTest {
 
         final NGSIJson json = new NGSIJson();
         json.setId(id);
-        json.put(User.Fields.UID.getValue(), uid);
-        json.put(User.Fields.NICKNAME.getValue(), nickname);
-        json.put(User.Fields.TYPE_ID.getValue(), typeId);
+        json.put(User.Fields.UID.getName(), uid);
+        json.put(User.Fields.NICKNAME.getName(), nickname);
+        json.put(User.Fields.TYPE_ID.getName(), typeId);
 
         final User user = User.fromNGSIJson(json);
 
@@ -160,8 +160,8 @@ public class UserTest {
     @Test
     @DisplayName("Fields | getValue | ok")
     void fieldsGetValueOk() {
-        assertEquals("uid", User.Fields.UID.getValue());
-        assertEquals("nickname", User.Fields.NICKNAME.getValue());
-        assertEquals("type_id", User.Fields.TYPE_ID.getValue());
+        assertEquals("uid", User.Fields.UID.getName());
+        assertEquals("nickname", User.Fields.NICKNAME.getName());
+        assertEquals("type_id", User.Fields.TYPE_ID.getName());
     }
 }
