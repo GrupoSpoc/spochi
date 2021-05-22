@@ -1,4 +1,4 @@
-package com.spochi.service.fiware.ngsi;
+package com.spochi.repository.fiware.ngsi;
 
 public enum NGSICommonFields implements NGSIField {
     ID("id", NGSIFieldType.TEXT),

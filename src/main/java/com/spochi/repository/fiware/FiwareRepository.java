@@ -1,20 +1,18 @@
-package com.spochi.service.fiware;
+package com.spochi.repository.fiware;
 
-import com.spochi.service.fiware.ngsi.NGSIJson;
-import com.spochi.service.fiware.ngsi.NGSIQueryBuilder;
-import com.spochi.service.fiware.ngsi.NGSISerializable;
-import com.spochi.service.fiware.rest.RestPerformer;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
+import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
+import com.spochi.repository.fiware.ngsi.NGSISerializable;
+import com.spochi.repository.fiware.rest.RestPerformer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Service
-public abstract class FiwareService <T extends NGSISerializable> {
+public abstract class FiwareRepository<T extends NGSISerializable> {
     // private static final String BASE_URL = "http://46.17.108.37:1026/v2";
     private static final String BASE_URL = "http://localhost:1026/v2";
     private static final String ENTITIES_URL = BASE_URL + "/entities";
@@ -22,7 +20,7 @@ public abstract class FiwareService <T extends NGSISerializable> {
     @Autowired
     private RestPerformer performer;
 
-    public T save(T instance) {
+    public T persist(T instance) {
         final String id = nextId();
         save(instance.toNGSIJson(id).toString());
         return findById(id).orElseThrow(RuntimeException::new); // todo

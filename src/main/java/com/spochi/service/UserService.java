@@ -5,7 +5,6 @@ import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
-import com.spochi.service.fiware.FiwareUserService;
 import com.spochi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,15 +12,11 @@ import org.springframework.util.ObjectUtils;
 
 @Service
 public class UserService {
-
     @Autowired
     UserRepository repository;
 
-    @Autowired
-    FiwareUserService fiwareUserService;
-
     public UserResponseDTO findByUid(String uid) {
-        return fiwareUserService.findByUid(uid)
+        return repository.findByUid(uid)
                 .map(User::toDTO)
                 .orElse(null);
     }
@@ -32,14 +27,14 @@ public class UserService {
         final User user = new User();
         user.setNickname(request.getNickname());
         user.setTypeId(request.getType_id());
-        user.setGoogleId(uid);
+        user.setUid(uid);
 
-        return repository.save(user).toDTO();
+        return repository.persist(user).toDTO();
     }
 
 
     private void validate(UserRequestDTO request, String uid) {
-        if (repository.findByGoogleId(uid).isPresent()) {
+        if (repository.findByUid(uid).isPresent()) {
             throw new UserServiceException("this google account already has a user");
         }
 

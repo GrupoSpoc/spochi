@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 
 public class UserDummyBuilder {
-    public static final String GOOGLE_ID = "google-id";
+    public static final String UID = "uid";
     public static final String FIWARE_ID = "urn:ngsi-ld:User:001";
 
 
@@ -19,14 +19,14 @@ public class UserDummyBuilder {
     }
 
     public static User build() {
-        return build(GOOGLE_ID);
+        return build(UID);
     }
 
     public static User build(String uid) {
         final User user = new User();
 
         user.setNickname("user");
-        user.setGoogleId(uid);
+        user.setUid(uid);
         user.setTypeId(UserType.ORGANIZATION);
         user.setInitiatives(new ArrayList<>());
 

@@ -1,4 +1,4 @@
-package com.spochi.service.fiware.ngsi;
+package com.spochi.repository.fiware.ngsi;
 
 public enum NGSIFieldType {
     TEXT("Text"),

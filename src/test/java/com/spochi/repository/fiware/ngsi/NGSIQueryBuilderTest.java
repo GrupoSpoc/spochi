@@ -1,4 +1,4 @@
-package com.spochi.service.fiware.ngsi;
+package com.spochi.repository.fiware.ngsi;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

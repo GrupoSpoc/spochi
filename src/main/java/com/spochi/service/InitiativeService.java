@@ -1,7 +1,6 @@
 package com.spochi.service;
 
 import com.spochi.controller.exception.BadRequestException;
-import com.spochi.controller.handler.Uid;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -43,7 +42,7 @@ public class InitiativeService {
         final InitiativeResponseDTO responseDTO;
 
         validateFields(request);
-        final Optional<User> userOpt = userRepository.findByGoogleId(uid);
+        final Optional<User> userOpt = userRepository.findByUid(uid);
 
         if (!userOpt.isPresent()) {
             throw new InitiativeServiceException("User not found");
@@ -61,7 +60,7 @@ public class InitiativeService {
 
         user.addInitiative(initiative);
         initiativeRepository.save(initiative);
-        userRepository.save(user);
+        userRepository.persist(user);
         responseDTO = initiative.toDTO();
 
         return responseDTO;

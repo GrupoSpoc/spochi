@@ -1,5 +1,6 @@
 package com.spochi.repository;
 
+import com.spochi.MongoUserRepository;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import org.junit.jupiter.api.*;
@@ -11,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
 @ActiveProfiles("disable-firebase")
-class UserRepositoryTest {
+class MongoEntityRepositoryTest {
 
     @Autowired
-    UserRepository repository;
+    MongoUserRepository repository;
 
     @AfterEach
     void clearDB() {
@@ -22,28 +23,28 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("find by google id | when user is found | should return option with user")
-    void findByGoogleIdFound() {
-        final User user = repository.save(UserDummyBuilder.build());
+    @DisplayName("find by uid | when user is found | should return option with user")
+    void findByUid() {
+        final User user = repository.persist(UserDummyBuilder.build());
 
-        final User userFoundByGoogleId = repository.findByGoogleId(user.getGoogleId()).orElse(null);
+        final User userFoundByUid = repository.findByUid(user.getUid()).orElse(null);
 
-        assertNotNull(userFoundByGoogleId);
-        assertEquals(user.toDTO(), userFoundByGoogleId.toDTO());
+        assertNotNull(userFoundByUid);
+        assertEquals(user.toDTO(), userFoundByUid.toDTO());
     }
 
     @Test
-    @DisplayName("find by google id | when user is not found | should return empty option")
-    void findByGoogleIdNotFound() {
-        final User userFoundByGoogleId = repository.findByGoogleId("not-a-google-id").orElse(null);
+    @DisplayName("find by uid | when user is not found | should return empty option")
+    void findByUidNotFound() {
+        final User userFoundByUid = repository.findByUid("not-a-uid").orElse(null);
 
-        assertNull(userFoundByGoogleId);
+        assertNull(userFoundByUid);
     }
 
     @Test
     @DisplayName("find by nickname | when user is found | should return option with user")
     void findByNicknameFound() {
-        final User user = repository.save(UserDummyBuilder.build());
+        final User user = repository.persist(UserDummyBuilder.build());
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname()).orElse(null);
 
@@ -52,9 +53,9 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("find by google id | when user is not found | should return empty option")
+    @DisplayName("find by nickname id | when user is not found | should return empty option")
     void findByNicknameNotFound() {
-        final User user = repository.save(UserDummyBuilder.build());
+        final User user = repository.persist(UserDummyBuilder.build());
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname() + "a").orElse(null);
 

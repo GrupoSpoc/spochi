@@ -6,7 +6,7 @@ import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.repository.UserRepository;
+import com.spochi.MongoUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,26 +32,26 @@ class UserServiceTest {
     UserService service;
 
     @MockBean
-    UserRepository repository;
+    MongoUserRepository repository;
 
     @Test
-    @DisplayName("find by google id | when user is found | should return UserResponseDTO | ok")
-    void findByGoogleIdFound() {
+    @DisplayName("find by uid | when user is found | should return UserResponseDTO | ok")
+    void findByUidFound() {
         final User mockedUser = UserDummyBuilder.buildWithId();
         final UserResponseDTO expectedDto = mockedUser.toDTO();
 
-        when(repository.findByGoogleId(anyString())).thenReturn(Optional.of(mockedUser));
+        when(repository.findByUid(anyString())).thenReturn(Optional.of(mockedUser));
 
-        final UserResponseDTO actualDTO = service.findByUid("google-id");
+        final UserResponseDTO actualDTO = service.findByUid("uid");
 
         assertEquals(expectedDto, actualDTO);
     }
 
     @Test
-    @DisplayName("find by google id | when user is not found | should return null | ok")
-    void findByGoogleIdNotFound() {
-        when(repository.findByGoogleId(anyString())).thenReturn(Optional.empty());
-        assertNull(service.findByUid("google-id"));
+    @DisplayName("find by uid | when user is not found | should return null | ok")
+    void findByUidNotFound() {
+        when(repository.findByUid(anyString())).thenReturn(Optional.empty());
+        assertNull(service.findByUid("uid"));
     }
 
     @Test
@@ -65,8 +65,8 @@ class UserServiceTest {
         request.setNickname(nickname);
         request.setType_id(typeId);
 
-        when(repository.save(any(User.class)))
-                .thenReturn(User.builder().nickname(nickname).googleId(uid).typeId(typeId).build());
+        when(repository.persist(any(User.class)))
+                .thenReturn(User.builder().nickname(nickname).uid(uid).typeId(typeId).build());
 
         final UserResponseDTO result = service.create(request, uid);
 
@@ -94,7 +94,7 @@ class UserServiceTest {
         request.setNickname("nickname");
         request.setType_id(1);
 
-        when(repository.findByGoogleId(uid)).thenReturn(Optional.of(mock(User.class)));
+        when(repository.findByUid(uid)).thenReturn(Optional.of(mock(User.class)));
 
         assertException(UserServiceException.class, () -> service.create(request, uid), "this google account already has a user");
     }

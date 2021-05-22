@@ -1,7 +1,6 @@
 package com.spochi.auth;
 
 import com.spochi.service.auth.JwtUtil;
-import io.jsonwebtoken.Jwt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

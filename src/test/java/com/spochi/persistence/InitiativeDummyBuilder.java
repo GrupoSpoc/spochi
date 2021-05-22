@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.UUID;
 
 public class InitiativeDummyBuilder {
     public static Initiative build() {

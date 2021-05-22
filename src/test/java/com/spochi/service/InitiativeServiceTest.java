@@ -5,7 +5,7 @@ import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
-import com.spochi.repository.UserRepository;
+import com.spochi.MongoUserRepository;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +33,7 @@ class InitiativeServiceTest {
     InitiativeRepository initiativeRepository;
 
     @MockBean
-    UserRepository userRepository;
+    MongoUserRepository mongoUserRepository;
 
     private final String NICKNAME = "nickname";
     private final String DESCRIPTION = "description";
@@ -79,7 +78,7 @@ class InitiativeServiceTest {
         User user = mock(User.class);
         when(user.getNickname()).thenReturn(NICKNAME);
         when(user.get_id()).thenReturn(USER_ID);
-        when(userRepository.findByGoogleId(UID)).thenReturn(Optional.of(user));
+        when(mongoUserRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
         InitiativeResponseDTO result = service.create(right_initiative, UID);
 

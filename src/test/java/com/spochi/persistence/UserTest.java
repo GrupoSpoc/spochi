@@ -3,8 +3,8 @@ package com.spochi.persistence;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
-import com.spochi.repository.UserRepository;
-import com.spochi.service.fiware.ngsi.NGSIJson;
+import com.spochi.MongoUserRepository;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataMongoTest
 public class UserTest {
     @Autowired
-    UserRepository repository;
+    MongoUserRepository repository;
 
     @AfterEach
     void clearDB() {
@@ -31,7 +31,7 @@ public class UserTest {
     @DisplayName("create with initiatives | ok")
     void createOk() {
         final User beforeSave = new User();
-        beforeSave.setGoogleId("1234");
+        beforeSave.setUid("1234");
         beforeSave.setNickname("nickname");
         beforeSave.setTypeId(UserType.ORGANIZATION);
 
@@ -39,10 +39,10 @@ public class UserTest {
         final Initiative i2 = InitiativeDummyBuilder.build();
         beforeSave.setInitiatives(Arrays.asList(i1, i2));
 
-        final User afterSave = repository.save(beforeSave);
+        final User afterSave = repository.persist(beforeSave);
 
         assertEquals(beforeSave.get_id(), afterSave.get_id());
-        assertEquals(beforeSave.getGoogleId(), afterSave.getGoogleId());
+        assertEquals(beforeSave.getUid(), afterSave.getUid());
         assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
 
@@ -63,18 +63,18 @@ public class UserTest {
     @DisplayName("add initiative | ok")
     void addInitiativeOk() {
         final User user = new User();
-        user.setGoogleId("1234");
+        user.setUid("1234");
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
         final Initiative i1 = InitiativeDummyBuilder.build();
         user.addInitiative(i1);
 
-        repository.save(user);
+        repository.persist(user);
 
         final Initiative i2 = InitiativeDummyBuilder.build();
         user.addInitiative(i2);
-        final User afterUpdate = repository.save(user);
+        final User afterUpdate = repository.persist(user);
 
         assertEquals(2, afterUpdate.getInitiatives().size());
         final List<String> expectedInitiativeIds = Arrays.asList(i1.get_id(), i2.get_id());
@@ -86,11 +86,11 @@ public class UserTest {
     @DisplayName("find by id | ok")
     void findByIdOk() {
         final User user = new User();
-        user.setGoogleId("1234");
+        user.setUid("1234");
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
-        repository.save(user);
+        repository.persist(user);
 
         final User result = repository.findById(user.get_id()).orElse(null);
 
@@ -102,14 +102,14 @@ public class UserTest {
     @DisplayName("find all | ok")
     void findAllOk() {
         final User.UserBuilder builder = User.builder();
-        builder.googleId("1234");
+        builder.uid("1234");
         builder.nickname("nickname");
         builder.typeId(UserType.ORGANIZATION.getId());
 
         final User u1 = builder.build();
         final User u2 = builder.build();
-        repository.save(u1);
-        repository.save(u2);
+        repository.persist(u1);
+        repository.persist(u2);
 
         final List<User> result = repository.findAll();
 
@@ -136,7 +136,7 @@ public class UserTest {
 
         assertAll("Expected user",
                 () -> assertEquals(id, user.get_id()),
-                () -> assertEquals(uid, user.getGoogleId()),
+                () -> assertEquals(uid, user.getUid()),
                 () -> assertEquals(nickname, user.getNickname()),
                 () -> assertEquals(typeId, user.getTypeId()));
     }
@@ -150,7 +150,7 @@ public class UserTest {
 
         assertAll("Expected result",
                 () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
-                () -> assertEquals(user.getGoogleId(), json.getAttributeValueString(User.Fields.UID)),
+                () -> assertEquals(user.getUid(), json.getAttributeValueString(User.Fields.UID)),
                 () -> assertEquals(user.getNickname(), json.getAttributeValueString(User.Fields.NICKNAME)),
                 () -> assertEquals(user.getTypeId(), json.getAttributeValueInteger(User.Fields.TYPE_ID))
         );

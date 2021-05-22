@@ -1,4 +1,4 @@
-package com.spochi.service.fiware.rest;
+package com.spochi.repository.fiware.rest;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;

@@ -1,12 +1,11 @@
 package com.spochi.entity;
 
 import com.spochi.dto.UserResponseDTO;
-import com.spochi.service.fiware.ngsi.NGSIField;
-import com.spochi.service.fiware.ngsi.NGSIFieldType;
-import com.spochi.service.fiware.ngsi.NGSIJson;
-import com.spochi.service.fiware.ngsi.NGSISerializable;
+import com.spochi.repository.fiware.ngsi.NGSIField;
+import com.spochi.repository.fiware.ngsi.NGSIFieldType;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
+import com.spochi.repository.fiware.ngsi.NGSISerializable;
 import lombok.*;
-import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,8 +25,8 @@ public class User implements NGSISerializable {
     @Id
     private String _id;
 
-    @Field(name = "google_id")
-    private String googleId;
+    @Field(name = "uid")
+    private String uid;
 
     private String nickname;
 
@@ -67,7 +66,7 @@ public class User implements NGSISerializable {
         return dto;
     }
 
-    public static final String getEntityType() {
+    public static String getEntityType() {
         return "User";
     }
 
@@ -76,8 +75,8 @@ public class User implements NGSISerializable {
         final NGSIJson json = new NGSIJson();
 
         json.setId(id);
-        json.setType(this.getEntityType());
-        json.addAttribute(Fields.UID, this.googleId);
+        json.setType(getEntityType());
+        json.addAttribute(Fields.UID, this.uid);
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.TYPE_ID, this.typeId);
 
