@@ -26,13 +26,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
-
+    public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
+    public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
+    protected static final List<String> client_list;
     // Endpoints que NO necesitan ser autorizados con JWT
     private static final List<String> skippedEndpoints;
 
@@ -41,6 +42,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         skippedEndpoints.add("/authenticate");
         skippedEndpoints.add("/ping");
+    }
+    static {
+        client_list = new ArrayList<>();
+        client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
     }
 
 
@@ -55,6 +60,10 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
 
             final String invokedEndpoint = httpServletRequest.getRequestURI();
+
+            if(!invokedEndpoint.equals("/ping") && !validateClient(httpServletRequest)){
+                throw new ClientAuthorizationException();
+            }
 
             if (!skippedEndpoints.contains(invokedEndpoint)) {
                 String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
@@ -72,9 +81,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(httpServletRequest, httpServletResponse);
 
-        } catch (AuthorizationException | JwtException e) {
+        }catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
+
+        } catch (ClientAuthorizationException e){
+            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
         }
+    }
+
+    private boolean validateClient(HttpServletRequest request){
+        return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
 }
