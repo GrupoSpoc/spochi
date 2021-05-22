@@ -1,7 +1,5 @@
 package com.spochi.repository.fiware.ngsi;
 
-import com.google.api.client.util.DateTime;
-
 import java.time.LocalDateTime;
 
 public enum NGSIFieldType {
@@ -9,13 +7,18 @@ public enum NGSIFieldType {
     INTEGER("Number", Integer.class),
     DATE("LocalDateTime", String.class) {
         @Override
-        boolean isValueValid(Object value) {
-            if (!super.isValueValid(value)) return false;
+        public void validateValue(Object value) {
+            super.validateValue(value);
+            LocalDateTime localDateTime;
+
             try {
-                final LocalDateTime localDateTime = LocalDateTime.parse(value.toString());
-                return localDateTime.getNano() == 0;
+                localDateTime = LocalDateTime.parse(value.toString());
             } catch (Exception e) {
-                return false;
+                throw new InvalidValueException(String.format("Value [%s] is not a valid LocalDateTime", value.toString()));
+            }
+
+            if (localDateTime.getNano() != 0) {
+                throw new InvalidValueException("Value for LocalDateTime must have 0 nano seconds");
             }
         }
     };
@@ -32,14 +35,20 @@ public enum NGSIFieldType {
         return name;
     }
 
-    boolean isValueValid(Object value) {
-        if (value == null) return false;
+    public void validateValue(Object value) {
+        if (value == null) throw new InvalidValueException("Null values are not allowed");
 
         try {
             clazz.cast(value);
-            return true;
         } catch (Exception e) {
-            return false;
+            throw new InvalidValueException(String.format("Type %s expected an instance of %s but [%s] is a %s", this.name, this.clazz.getSimpleName(), value.toString(), value.getClass().getSimpleName()));
+        }
+    }
+
+    public static class InvalidValueException extends RuntimeException {
+
+        public InvalidValueException(String message) {
+            super(message);
         }
     }
 }

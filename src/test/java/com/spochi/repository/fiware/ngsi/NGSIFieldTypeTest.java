@@ -3,7 +3,10 @@ package com.spochi.repository.fiware.ngsi;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.spochi.repository.fiware.ngsi.NGSIFieldType.*;
+import static com.spochi.util.AssertUtils.assertException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("NGSI Field Type Test | Unit")
 class NGSIFieldTypeTest {
@@ -11,37 +14,39 @@ class NGSIFieldTypeTest {
     @Test
     @DisplayName("get name | ok")
     void getName() {
-        assertEquals("Text", NGSIFieldType.TEXT.getName());
-        assertEquals("Number", NGSIFieldType.INTEGER.getName());
-        assertEquals("LocalDateTime", NGSIFieldType.DATE.getName());
+        assertEquals("Text", TEXT.getName());
+        assertEquals("Number", INTEGER.getName());
+        assertEquals("LocalDateTime", DATE.getName());
     }
 
     @Test
-    @DisplayName("is value valid | when type is TEXT")
-    void isValueValidText() {
-        assertTrue(NGSIFieldType.TEXT.isValueValid("a-text"));
-        assertFalse(NGSIFieldType.TEXT.isValueValid(10));
-        assertFalse(NGSIFieldType.TEXT.isValueValid(null));
+    @DisplayName("validate value | when type is TEXT")
+    void validateValueText() {
+        assertDoesNotThrow(() -> TEXT.validateValue("a-text"));
+
+        assertException(InvalidValueException.class, () -> TEXT.validateValue(10), "Type Text expected an instance of String but [10] is a Integer");
+        assertException(InvalidValueException.class, () -> TEXT.validateValue(null), "Null values are not allowed");
     }
 
     @Test
-    @DisplayName("is value valid | when type is INTEGER")
-    void isValueValidInteger() {
-        assertTrue(NGSIFieldType.INTEGER.isValueValid(10));
-        assertFalse(NGSIFieldType.INTEGER.isValueValid(10.4));
-        assertFalse(NGSIFieldType.INTEGER.isValueValid("a-text"));
-        assertFalse(NGSIFieldType.INTEGER.isValueValid(null));
+    @DisplayName("validate value | when type is INTEGER")
+    void validateValueInteger() {
+        assertDoesNotThrow(() -> INTEGER.validateValue(10));
+
+        assertException(InvalidValueException.class, () -> INTEGER.validateValue(10.4d), "Type Number expected an instance of Integer but [10.4] is a Double");
+        assertException(InvalidValueException.class, () -> INTEGER.validateValue("a-text"), "Type Number expected an instance of Integer but [a-text] is a String");
+        assertException(InvalidValueException.class, () -> INTEGER.validateValue(null), "Null values are not allowed");
     }
 
     @Test
-    @DisplayName("is value valid | when type is DATE")
-    void isValueValidDateTIme() {
-        assertFalse(NGSIFieldType.DATE.isValueValid("a-text"));
-        assertFalse(NGSIFieldType.DATE.isValueValid(10));
-        assertFalse(NGSIFieldType.DATE.isValueValid(null));
-        assertFalse(NGSIFieldType.DATE.isValueValid("2021-05-22T16:53:32.0343"));
-
-        assertTrue(NGSIFieldType.DATE.isValueValid("2021-05-22T16:53:32"));
-        assertTrue(NGSIFieldType.DATE.isValueValid("2019-02-14T20:16:01"));
+    @DisplayName("validate value | when type is DATE")
+    void validateValueDateTIme() {
+        assertDoesNotThrow(() -> DATE.validateValue("2021-05-22T16:53:32"));
+        assertDoesNotThrow(() -> DATE.validateValue("2019-02-14T20:16:01"));
+        
+        assertException(InvalidValueException.class, () -> DATE.validateValue("a-text"), "Value [a-text] is not a valid LocalDateTime");
+        assertException(InvalidValueException.class, () -> DATE.validateValue(10), "Type LocalDateTime expected an instance of String but [10] is a Integer");
+        assertException(InvalidValueException.class, () -> DATE.validateValue(null), "Null values are not allowed");
+        assertException(InvalidValueException.class, () -> DATE.validateValue("2021-05-22T16:53:32.0343"), "Value for LocalDateTime must have 0 nano seconds");
     }
 }

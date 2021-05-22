@@ -30,6 +30,8 @@ public class NGSIJson extends JSONObject {
     }
 
     public NGSIJson addAttribute(@NotNull NGSIField field, @NotNull Object value) {
+        validateValue(field.getType(), value);
+
         final JSONObject attribute = new JSONObject();
 
         attribute.put(NGSICommonFields.TYPE.getName(), field.getType().getName());
@@ -38,6 +40,14 @@ public class NGSIJson extends JSONObject {
         this.put(field.getName(), attribute);
 
         return this;
+    }
+
+    private void validateValue(NGSIFieldType type, Object value) {
+        try {
+            type.validateValue(value);
+        } catch (NGSIFieldType.InvalidValueException e) {
+            throw new NGSIJsonException(e.getMessage());
+        }
     }
 
     public String getAttributeValueString(NGSIField field) {
