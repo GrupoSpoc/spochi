@@ -13,7 +13,7 @@ class NGSIFieldTypeTest {
     void getName() {
         assertEquals("Text", NGSIFieldType.TEXT.getName());
         assertEquals("Number", NGSIFieldType.INTEGER.getName());
-        assertEquals("DateTime", NGSIFieldType.DATE.getName());
+        assertEquals("LocalDateTime", NGSIFieldType.DATE.getName());
     }
 
     @Test
