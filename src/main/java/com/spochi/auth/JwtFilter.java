@@ -84,6 +84,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
+
         } catch (ClientAuthorizationException e){
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
@@ -93,5 +94,4 @@ public class JwtFilter extends OncePerRequestFilter {
     private boolean validateClient(HttpServletRequest request){
         return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
-
 }

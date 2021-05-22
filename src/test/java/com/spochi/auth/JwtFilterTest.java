@@ -43,7 +43,6 @@ class JwtFilterTest {
                 .build();
     }
 
-
     @Test
     @DisplayName("do filter internal | when token is valid | ok")
     void doFilterInternalTokenValid() throws Exception {
@@ -129,6 +128,4 @@ class JwtFilterTest {
 
         assertEquals(JwtFilter.INVALID_CLIENT_MESSAGE, result.getResponse().getContentAsString());
     }
-
-
 }
