@@ -2,9 +2,9 @@ package com.spochi.entity;
 
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.fiware.ngsi.NGSIField;
+import com.spochi.service.fiware.ngsi.NGSIFieldType;
 import com.spochi.service.fiware.ngsi.NGSISerializable;
 import lombok.*;
-import lombok.experimental.FieldNameConstants;
 import org.json.JSONObject;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -68,7 +68,13 @@ public class User implements NGSISerializable {
 
     @Override
     public String toNGSIJson(String id) {
-        return this.toString();
+        final JSONObject json = new JSONObject();
+        json.put(User.Fields.ID.getValue(), this._id);
+        json.put(User.Fields.UID.getValue(), this.googleId);
+        json.put(User.Fields.NICKNAME.getValue(), this.nickname);
+        json.put(User.Fields.TYPE_ID.getValue(), this.typeId);
+
+        return json.toString();
     }
 
     public static User fromNGSIJson(JSONObject json) {
@@ -81,20 +87,27 @@ public class User implements NGSISerializable {
     }
 
     public enum Fields implements NGSIField {
-        ID("id"),
-        UID("uid"),
-        NICKNAME("nickname"),
-        TYPE_ID("type_id");
+        ID("id", NGSIFieldType.TEXT),
+        UID("uid", NGSIFieldType.TEXT),
+        NICKNAME("nickname", NGSIFieldType.TEXT),
+        TYPE_ID("type_id", NGSIFieldType.NUMBER);
 
         private final String value;
+        private final NGSIFieldType type;
 
-        Fields(String value) {
+        Fields(String value, NGSIFieldType type) {
             this.value = value;
+            this.type = type;
         }
 
         @Override
         public String getValue() {
             return this.value;
+        }
+
+        @Override
+        public NGSIFieldType getType() {
+            return this.type;
         }
     }
 }

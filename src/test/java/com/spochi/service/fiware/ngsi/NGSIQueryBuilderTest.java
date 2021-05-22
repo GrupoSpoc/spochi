@@ -108,5 +108,10 @@ class NGSIQueryBuilderTest {
         public String getValue() {
             return this.value;
         }
+
+        @Override
+        public NGSIFieldType getType() {
+            return null;
+        }
     }
 }
