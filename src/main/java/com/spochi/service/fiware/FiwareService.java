@@ -31,12 +31,12 @@ public abstract class FiwareService <T extends NGSISerializable> {
     public Optional<T> findById(String id) {
         return performer.get(ENTITIES_URL + id, json -> {
             final JSONObject jsonObject = new JSONObject(json);
-            return Optional.of(fromNGSIJson(jsonObject.toString()));
+            return Optional.of(fromNGSIJson(jsonObject));
         });
     }
 
     protected abstract String getEntityType();
-    protected abstract T fromNGSIJson(String json);
+    protected abstract T fromNGSIJson(JSONObject json);
 
     protected Optional<T> findFirst(NGSIQueryBuilder queryBuilder) {
         final String query = queryBuilder.type(getEntityType())
@@ -57,7 +57,7 @@ public abstract class FiwareService <T extends NGSISerializable> {
     protected Optional<T> findFirst(String url) {
         return performer.get(url, json -> {
             final JSONArray jsonArray = new JSONArray(json);
-            return Optional.of(fromNGSIJson(jsonArray.get(0).toString()));
+            return Optional.of(fromNGSIJson(jsonArray.getJSONObject(0)));
         });
     }
 
@@ -66,7 +66,7 @@ public abstract class FiwareService <T extends NGSISerializable> {
             final JSONArray jsonArray = new JSONArray(json);
 
             List<T> list = new ArrayList<>();
-            jsonArray.forEach(j -> list.add(this.fromNGSIJson(j.toString())));
+            jsonArray.forEach(j -> list.add(this.fromNGSIJson((JSONObject) j))); // Todo
             return list;
         });
     }

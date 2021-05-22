@@ -4,6 +4,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
+import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,5 +116,37 @@ public class UserTest {
         assertEquals(2, result.size());
         final List<String> expectedIds = Arrays.asList(u1.get_id(), u2.get_id());
         assertTrue(result.stream().map(User::get_id).collect(Collectors.toList()).containsAll(expectedIds));
+    }
+
+    @Test
+    @DisplayName("from NGSIJson | ok")
+    void fromNGSIJsonOk() {
+        final String id = "urn:ngsi-ld:User:001";
+        final String uid = "test-uid";
+        final String nickname = "test-nickname";
+        final int typeId = 1;
+
+        final JSONObject json = new JSONObject();
+        json.put(User.Fields.ID.getValue(), id);
+        json.put(User.Fields.UID.getValue(), uid);
+        json.put(User.Fields.NICKNAME.getValue(), nickname);
+        json.put(User.Fields.TYPE_ID.getValue(), typeId);
+
+        final User user = User.fromNGSIJson(json);
+
+        assertAll("Expected user",
+                () -> assertEquals(id, user.get_id()),
+                () -> assertEquals(uid, user.getGoogleId()),
+                () -> assertEquals(nickname, user.getNickname()),
+                () -> assertEquals(typeId, user.getTypeId()));
+    }
+
+    @Test
+    @DisplayName("Fields | getValue | ok")
+    void fieldsGetValueOk() {
+        assertEquals("id", User.Fields.ID.getValue());
+        assertEquals("uid", User.Fields.UID.getValue());
+        assertEquals("nickname", User.Fields.NICKNAME.getValue());
+        assertEquals("type_id", User.Fields.TYPE_ID.getValue());
     }
 }
