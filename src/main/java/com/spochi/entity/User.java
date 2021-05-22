@@ -1,6 +1,7 @@
 package com.spochi.entity;
 
 import com.spochi.dto.UserResponseDTO;
+import com.spochi.service.fiware.ngsi.NGSISerializable;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "users")
-public class User {
+public class User implements NGSISerializable {
     @Id
     private String _id;
 
@@ -59,6 +60,15 @@ public class User {
         dto.setAmount_of_initiatives(this.initiatives != null ? this.initiatives.size() : 0);
 
         return dto;
+    }
+
+    @Override
+    public String toNGSIJson(String id) {
+        return this.toString();
+    }
+
+    public static User fromNGSIJson(String json) {
+        return new User();
     }
 }
 
