@@ -65,7 +65,7 @@ public class UserIntegrationTest {
 
         final User user = UserDummyBuilder.build(uid);
 
-        repository.persist(user);
+        repository.create(user);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);
 
@@ -156,7 +156,7 @@ public class UserIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
 
-        repository.persist(User.builder().nickname("nickname").typeId(1).uid(uid).build());
+        repository.create(User.builder().nickname("nickname").typeId(1).uid(uid).build());
 
         final UserRequestDTO request = new UserRequestDTO();
         request.setType_id(1);

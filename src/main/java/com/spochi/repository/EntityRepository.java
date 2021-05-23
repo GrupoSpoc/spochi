@@ -4,5 +4,5 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
 public interface EntityRepository<E> {
-    E persist(E entity);
+    E create(E entity);
 }

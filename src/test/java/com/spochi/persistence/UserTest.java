@@ -40,7 +40,7 @@ public class UserTest {
         final Initiative i2 = InitiativeDummyBuilder.build();
         beforeSave.setInitiatives(Arrays.asList(i1, i2));
 
-        final User afterSave = repository.persist(beforeSave);
+        final User afterSave = repository.create(beforeSave);
 
         assertEquals(beforeSave.get_id(), afterSave.get_id());
         assertEquals(beforeSave.getUid(), afterSave.getUid());
@@ -71,11 +71,11 @@ public class UserTest {
         final Initiative i1 = InitiativeDummyBuilder.build();
         user.addInitiative(i1);
 
-        repository.persist(user);
+        repository.create(user);
 
         final Initiative i2 = InitiativeDummyBuilder.build();
         user.addInitiative(i2);
-        final User afterUpdate = repository.persist(user);
+        final User afterUpdate = repository.create(user);
 
         assertEquals(2, afterUpdate.getInitiatives().size());
         final List<String> expectedInitiativeIds = Arrays.asList(i1.get_id(), i2.get_id());
@@ -91,7 +91,7 @@ public class UserTest {
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
-        repository.persist(user);
+        repository.create(user);
 
         final User result = repository.findById(user.get_id()).orElse(null);
 
@@ -109,8 +109,8 @@ public class UserTest {
 
         final User u1 = builder.build();
         final User u2 = builder.build();
-        repository.persist(u1);
-        repository.persist(u2);
+        repository.create(u1);
+        repository.create(u2);
 
         final List<User> result = repository.findAll();
 

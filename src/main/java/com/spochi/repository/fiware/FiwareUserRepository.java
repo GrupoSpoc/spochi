@@ -1,5 +1,6 @@
 package com.spochi.repository.fiware;
 
+import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
@@ -37,6 +38,16 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
         queryBuilder.attribute(User.Fields.NICKNAME, nickname);
 
         return findFirst(queryBuilder);
+    }
+
+    @Override
+    public int getAmountOfInitiatives(String id) {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.type(Initiative.getEntityType())
+                .ref(User.getEntityType(), id)
+                .count();
+
+        return super.count(queryBuilder);
     }
 
     public List<User> findByType(UserType type) {

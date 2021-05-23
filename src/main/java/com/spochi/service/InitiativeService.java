@@ -60,7 +60,7 @@ public class InitiativeService {
 
         user.addInitiative(initiative);
         initiativeRepository.save(initiative);
-        userRepository.persist(user);
+        userRepository.create(user);
         responseDTO = initiative.toDTO();
 
         return responseDTO;

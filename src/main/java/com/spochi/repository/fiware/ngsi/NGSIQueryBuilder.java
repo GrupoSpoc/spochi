@@ -36,13 +36,22 @@ public class NGSIQueryBuilder {
         return this;
     }
 
+    public NGSIQueryBuilder one() {
+        return limit(1);
+    }
+
     public NGSIQueryBuilder getAttribute(NGSIField attribute) {
         params.put("attr", attribute.getName());
         return this;
     }
 
-    public NGSIQueryBuilder orderByDesc(String attribute) {
-        params.put("orderBy", "!" + attribute);
+    public NGSIQueryBuilder orderByDesc(NGSIField attribute) {
+        params.put("orderBy", "!" + attribute.getName());
+        return this;
+    }
+
+    public NGSIQueryBuilder ref(String entityType, String id) {
+        params.put("q=ref" + entityType + "=", id);
         return this;
     }
 

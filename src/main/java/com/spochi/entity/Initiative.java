@@ -37,6 +37,10 @@ public class Initiative {
         this.statusId = statusId;
     }
 
+    public static String getEntityType() {
+        return "Initiative";
+    }
+
     public InitiativeResponseDTO toDTO() {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 

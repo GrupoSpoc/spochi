@@ -10,7 +10,12 @@ import org.springframework.stereotype.Repository;
 @Primary
 public interface MongoUserRepository extends MongoRepository<User, String>, UserRepository {
     @Override
-    default User persist(User user) {
+    default User create(User user) {
         return save(user);
+    }
+
+    @Override
+    default int getAmountOfInitiatives(String id) {
+        return 0;
     }
 }

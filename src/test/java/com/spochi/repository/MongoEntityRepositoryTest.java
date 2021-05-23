@@ -25,7 +25,7 @@ class MongoEntityRepositoryTest {
     @Test
     @DisplayName("find by uid | when user is found | should return option with user")
     void findByUid() {
-        final User user = repository.persist(UserDummyBuilder.build());
+        final User user = repository.create(UserDummyBuilder.build());
 
         final User userFoundByUid = repository.findByUid(user.getUid()).orElse(null);
 
@@ -44,7 +44,7 @@ class MongoEntityRepositoryTest {
     @Test
     @DisplayName("find by nickname | when user is found | should return option with user")
     void findByNicknameFound() {
-        final User user = repository.persist(UserDummyBuilder.build());
+        final User user = repository.create(UserDummyBuilder.build());
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname()).orElse(null);
 
@@ -55,7 +55,7 @@ class MongoEntityRepositoryTest {
     @Test
     @DisplayName("find by nickname id | when user is not found | should return empty option")
     void findByNicknameNotFound() {
-        final User user = repository.persist(UserDummyBuilder.build());
+        final User user = repository.create(UserDummyBuilder.build());
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname() + "a").orElse(null);
 

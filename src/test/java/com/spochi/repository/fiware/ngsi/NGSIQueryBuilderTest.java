@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @DisplayName("NGSIQueryBuilder Test | Unit")
 class NGSIQueryBuilderTest {
@@ -62,6 +64,15 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
+    @DisplayName("build | one | ok")
+    void buildOneOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.one();
+
+        assertEquals("?limit=1", queryBuilder.build());
+    }
+
+    @Test
     @DisplayName("build | with get attribute | ok")
     void buildWithGetAttributeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
@@ -73,8 +84,11 @@ class NGSIQueryBuilderTest {
     @Test
     @DisplayName("build | with order by desc | ok")
     void buildWithOrderByDescOk() {
+        final NGSIField field = mock(NGSIField.class);
+        when(field.getName()).thenReturn("aOrder");
+
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.orderByDesc("aOrder");
+        queryBuilder.orderByDesc(field);
 
         assertEquals("?orderBy=!aOrder", queryBuilder.build());
     }
@@ -82,12 +96,16 @@ class NGSIQueryBuilderTest {
     @Test
     @DisplayName("build | with multiple params | ok")
     void buildWithMultipleParamsOk() {
+        final NGSIField field = mock(NGSIField.class);
+        when(field.getName()).thenReturn("bOrder");
+
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+
         queryBuilder.type("bType")
                 .attribute(NGSITestFields.B_ATTRIBUTE, "bValue")
                 .getAttribute(NGSITestFields.B_ATTRIBUTE)
                 .keyValues()
-                .orderByDesc("bOrder")
+                .orderByDesc(field)
                 .limit(5);
 
 

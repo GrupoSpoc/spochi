@@ -65,7 +65,7 @@ class UserServiceTest {
         request.setNickname(nickname);
         request.setType_id(typeId);
 
-        when(repository.persist(any(User.class)))
+        when(repository.create(any(User.class)))
                 .thenReturn(User.builder().nickname(nickname).uid(uid).typeId(typeId).build());
 
         final UserResponseDTO result = service.create(request, uid);
