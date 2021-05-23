@@ -21,7 +21,7 @@ public class UserService {
         final Optional<User> userOpt = repository.findByUid(uid);
         if (userOpt.isPresent()) {
             final User user = userOpt.get();
-            final int amountOfInitiatives = repository.getAmountOfInitiatives(user.get_id());
+            final int amountOfInitiatives = repository.getAmountOfInitiatives(user.getId());
 
             final UserResponseDTO dto = new UserResponseDTO();
             dto.setNickname(user.getNickname());

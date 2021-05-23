@@ -38,7 +38,7 @@ public class UserTest {
 
         final User afterSave = repository.create(beforeSave);
 
-        assertEquals(beforeSave.get_id(), afterSave.get_id());
+        assertEquals(beforeSave.getId(), afterSave.getId());
         assertEquals(beforeSave.getUid(), afterSave.getUid());
         assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
@@ -55,10 +55,10 @@ public class UserTest {
 
         repository.create(user);
 
-        final User result = repository.findById(user.get_id()).orElse(null);
+        final User result = repository.findById(user.getId()).orElse(null);
 
         assertNotNull(result);
-        assertEquals(user.get_id(), result.get_id());
+        assertEquals(user.getId(), result.getId());
     }
 
     @Test
@@ -77,8 +77,8 @@ public class UserTest {
         final List<User> result = repository.findAll();
 
         assertEquals(2, result.size());
-        final List<String> expectedIds = Arrays.asList(u1.get_id(), u2.get_id());
-        assertTrue(result.stream().map(User::get_id).collect(Collectors.toList()).containsAll(expectedIds));
+        final List<String> expectedIds = Arrays.asList(u1.getId(), u2.getId());
+        assertTrue(result.stream().map(User::getId).collect(Collectors.toList()).containsAll(expectedIds));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class UserTest {
         final User user = User.fromNGSIJson(json);
 
         assertAll("Expected user",
-                () -> assertEquals(id, user.get_id()),
+                () -> assertEquals(id, user.getId()),
                 () -> assertEquals(uid, user.getUid()),
                 () -> assertEquals(nickname, user.getNickname()),
                 () -> assertEquals(typeId, user.getTypeId()));

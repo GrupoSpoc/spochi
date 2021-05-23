@@ -16,7 +16,7 @@ public class User implements NGSISerializable {
     public static NGSIEntityType NGSIType = () -> "User";
 
     @Id
-    private String _id;
+    private String id;
 
     @Field(name = "uid")
     private String uid;

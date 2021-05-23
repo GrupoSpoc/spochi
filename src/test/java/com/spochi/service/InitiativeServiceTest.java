@@ -77,7 +77,7 @@ class InitiativeServiceTest {
 
         User user = mock(User.class);
         when(user.getNickname()).thenReturn(NICKNAME);
-        when(user.get_id()).thenReturn(USER_ID);
+        when(user.getId()).thenReturn(USER_ID);
         when(mongoUserRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
         InitiativeResponseDTO result = service.create(right_initiative, UID);

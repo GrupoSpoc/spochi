@@ -11,7 +11,7 @@ public class UserDummyBuilder {
 
     public static User buildWithId() {
         final User user = build();
-        user.set_id("user-id");
+        user.setId("user-id");
 
         return user;
     }

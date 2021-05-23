@@ -54,7 +54,7 @@ public class InitiativeService {
                 request.getImage(),
                 user.getNickname(),
                 LocalDateTime.parse(request.getDate()),
-                user.get_id(),
+                user.getId(),
                 InitiativeStatus.PENDING.getId()
         );
 
