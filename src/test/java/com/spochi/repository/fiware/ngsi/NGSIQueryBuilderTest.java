@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 @DisplayName("NGSIQueryBuilder Test | Unit")
 class NGSIQueryBuilderTest {
 
+    private static final NGSIEntityType testEntityType = () -> "testEntity";
+
     @Test
     @DisplayName("build | when params is empty | should return empty string")
     void buildParamsEmpty() {
@@ -22,9 +24,9 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with type | ok")
     void buildWithTypeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.type("aType");
+        queryBuilder.type(testEntityType);
 
-        assertEquals("?type=aType", queryBuilder.build());
+        assertEquals("?type=testEntity", queryBuilder.build());
     }
 
     @Test
@@ -73,6 +75,15 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
+    @DisplayName("build | ref | ok")
+    void buildRefOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.ref(testEntityType, "test-id");
+
+        assertEquals("?q=reftestEntity==test-id", queryBuilder.build());
+    }
+
+    @Test
     @DisplayName("build | with get attribute | ok")
     void buildWithGetAttributeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
@@ -101,7 +112,7 @@ class NGSIQueryBuilderTest {
 
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
 
-        queryBuilder.type("bType")
+        queryBuilder.type(testEntityType)
                 .attribute(NGSITestFields.B_ATTRIBUTE, "bValue")
                 .getAttribute(NGSITestFields.B_ATTRIBUTE)
                 .keyValues()
@@ -109,7 +120,7 @@ class NGSIQueryBuilderTest {
                 .limit(5);
 
 
-        assertEquals("?q=bAttribute==bValue&options=keyValues&limit=5&orderBy=!bOrder&type=bType&attr=bAttribute", queryBuilder.build());
+        assertEquals("?q=bAttribute==bValue&options=keyValues&limit=5&orderBy=!bOrder&type=testEntity&attr=bAttribute", queryBuilder.build());
     }
 
 }

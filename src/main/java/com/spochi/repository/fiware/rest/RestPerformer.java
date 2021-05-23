@@ -37,7 +37,7 @@ public class RestPerformer {
     public void postJson(String url, String payload) {
         final Request request = commonRequestBuilder(url).post(RequestBody.create(payload, MediaType.parse("application/json; charset=utf-8"))).build();
         try {
-            final FiwareResponse response = client.execute(request);
+            client.execute(request);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new RestException(e.getMessage());

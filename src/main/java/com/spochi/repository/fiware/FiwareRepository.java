@@ -1,9 +1,6 @@
 package com.spochi.repository.fiware;
 
-import com.spochi.repository.fiware.ngsi.NGSICommonFields;
-import com.spochi.repository.fiware.ngsi.NGSIJson;
-import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
-import com.spochi.repository.fiware.ngsi.NGSISerializable;
+import com.spochi.repository.fiware.ngsi.*;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +14,12 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     private static final String BASE_URL = "http://localhost:1026/v2";
     private static final String ENTITIES_URL = BASE_URL + "/entities";
 
+    private final RestPerformer performer;
+
     @Autowired
-    private RestPerformer performer;
+    public FiwareRepository(RestPerformer performer) {
+        this.performer = performer;
+    }
 
     public T create(T instance) {
         final String id = nextId();
@@ -35,7 +36,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return Optional.of(performer.get(ENTITIES_URL + "/" + id + query, json -> fromNGSIJson(new NGSIJson(json))));
     }
 
-    protected abstract String getEntityType();
+    protected abstract NGSIEntityType getEntityType();
     protected abstract T fromNGSIJson(NGSIJson json);
 
     protected Optional<T> findFirst(NGSIQueryBuilder queryBuilder) {
@@ -103,6 +104,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
     private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
         final JSONArray jsonArray = new JSONArray(arrayString);
-        return jsonArray.toList().stream().map(o -> new NGSIJson(o.toString())).findFirst();
+        if (jsonArray.length() == 0) return Optional.empty();
+        return Optional.of(new NGSIJson(jsonArray.get(0).toString()));
     }
 }

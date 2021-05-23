@@ -11,8 +11,8 @@ public class NGSIQueryBuilder {
         params = new HashMap<>();
     }
 
-    public NGSIQueryBuilder type(String type) {
-        params.put("type", type);
+    public NGSIQueryBuilder type(NGSIEntityType type) {
+        params.put("type", type.getEntityType());
         return this;
     }
 
@@ -50,8 +50,8 @@ public class NGSIQueryBuilder {
         return this;
     }
 
-    public NGSIQueryBuilder ref(String entityType, String id) {
-        params.put("q=ref" + entityType + "=", id);
+    public NGSIQueryBuilder ref(NGSIEntityType type, String id) {
+        params.put("q=ref" + type.getEntityType() + "=", id);
         return this;
     }
 

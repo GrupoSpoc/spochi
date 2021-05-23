@@ -1,6 +1,7 @@
 package com.spochi.entity;
 
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.repository.fiware.ngsi.NGSIEntityType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +16,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Document(collection = "initiatives")
 public class Initiative {
+
+    public static NGSIEntityType NGSIType = () -> "Initiative";
+
     @Id
     private String _id;
     private String description;

@@ -4,8 +4,11 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
+import com.spochi.repository.fiware.ngsi.NGSIEntityType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
+import com.spochi.repository.fiware.rest.RestPerformer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +17,14 @@ import java.util.Optional;
 @Repository
 public class FiwareUserRepository extends FiwareRepository<User> implements UserRepository {
 
+    @Autowired
+    public FiwareUserRepository(RestPerformer performer) {
+        super(performer);
+    }
+
     @Override
-    protected String getEntityType() {
-        return User.getEntityType();
+    protected NGSIEntityType getEntityType() {
+        return User.NGSIType;
     }
 
     @Override
@@ -43,8 +51,8 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     @Override
     public int getAmountOfInitiatives(String id) {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.type(Initiative.getEntityType())
-                .ref(User.getEntityType(), id)
+        queryBuilder.type(Initiative.NGSIType)
+                .ref(getEntityType(), id)
                 .count();
 
         return super.count(queryBuilder);

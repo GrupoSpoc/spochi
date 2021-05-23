@@ -117,11 +117,14 @@ class RestPerformerTest {
 
     @Test
     @DisplayName("count | given response with header invalid value | should throw RestException")
-    void countHeaderInvalidValueException() {
-        Map<String, List<String>> headers = new HashMap<>();
+    void countHeaderInvalidValueException() throws IOException {
+        final RestClient restClient = mock(RestClient.class);
+        final RestPerformer performer = new RestPerformer(restClient);
+
+        final Map<String, List<String>> headers = new HashMap<>();
         headers.put("Fiware-Total-Count", Collections.singletonList("not-a-number"));
 
-        final RestPerformer performer = new RestPerformerForTest(() -> new FiwareResponse("1", headers));
+        when(restClient.execute(any())).thenReturn(new FiwareResponse("1", headers));
 
         assertThrows(RestException.class, () -> performer.count(URL));
     }

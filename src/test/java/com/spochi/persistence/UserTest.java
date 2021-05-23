@@ -120,6 +120,12 @@ public class UserTest {
     }
 
     @Test
+    @DisplayName("NGSIType | ok")
+    void NGSIType() {
+        assertEquals("User", User.NGSIType.getEntityType());
+    }
+
+    @Test
     @DisplayName("from NGSIJson | ok")
     void fromNGSIJsonOk() {
         final String id = "urn:ngsi-ld:User:001";
@@ -156,7 +162,6 @@ public class UserTest {
                 () -> assertEquals(user.getTypeId(), json.getJSONObject(User.Fields.TYPE_ID.getName()).getInt(NGSICommonFields.VALUE.getName()))
         );
     }
-
 
     @Test
     @DisplayName("Fields | getValue | ok")

@@ -1,10 +1,7 @@
 package com.spochi.entity;
 
 import com.spochi.dto.UserResponseDTO;
-import com.spochi.repository.fiware.ngsi.NGSIField;
-import com.spochi.repository.fiware.ngsi.NGSIFieldType;
-import com.spochi.repository.fiware.ngsi.NGSIJson;
-import com.spochi.repository.fiware.ngsi.NGSISerializable;
+import com.spochi.repository.fiware.ngsi.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -22,6 +19,8 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "users")
 public class User implements NGSISerializable {
+    public static NGSIEntityType NGSIType = () -> "User";
+
     @Id
     private String _id;
 
@@ -66,16 +65,12 @@ public class User implements NGSISerializable {
         return dto;
     }
 
-    public static String getEntityType() {
-        return "User";
-    }
-
     @Override
     public NGSIJson toNGSIJson(String id) {
         final NGSIJson json = new NGSIJson();
 
         json.setId(id);
-        json.setType(getEntityType());
+        json.setType(NGSIType.getEntityType());
         json.addAttribute(Fields.UID, this.uid);
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.TYPE_ID, this.typeId);
@@ -115,6 +110,7 @@ public class User implements NGSISerializable {
             return this.type;
         }
     }
+
 }
 
 
