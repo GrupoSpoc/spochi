@@ -88,29 +88,6 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("from NGSIJson | ok")
-    void fromNGSIJsonOk() {
-        final String id = "urn:ngsi-ld:User:001";
-        final String uid = "test-uid";
-        final String nickname = "test-nickname";
-        final int typeId = 1;
-
-        final NGSIJson json = new NGSIJson();
-        json.setId(id);
-        json.put(User.Fields.UID.label(), uid);
-        json.put(User.Fields.NICKNAME.label(), nickname);
-        json.put(User.Fields.TYPE_ID.label(), typeId);
-
-        final User user = User.fromNGSIJson(json);
-
-        assertAll("Expected user",
-                () -> assertEquals(id, user.getId()),
-                () -> assertEquals(uid, user.getUid()),
-                () -> assertEquals(nickname, user.getNickname()),
-                () -> assertEquals(typeId, user.getTypeId()));
-    }
-
-    @Test
     @DisplayName("to NGSIJson | ok")
     void toNGSIJsonOk() {
         final User user = UserDummyBuilder.build();

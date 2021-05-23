@@ -29,7 +29,12 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
 
     @Override
     protected User fromNGSIJson(NGSIJson json) {
-        return User.fromNGSIJson(json);
+        final String id = json.getId();
+        final String uid = json.getString(User.Fields.UID.label());
+        final String nickname = json.getString(User.Fields.NICKNAME.label());
+        final UserType type = UserType.fromIdOrElseThrow(json.getInt(User.Fields.TYPE_ID.label()));
+
+        return new User(id, uid, nickname, type.getId());
     }
 
     @Override

@@ -51,15 +51,6 @@ public class User implements NGSISerializable {
         return json;
     }
 
-    public static User fromNGSIJson(NGSIJson json) {
-        final String id = json.getId();
-        final String uid = json.getString(Fields.UID.label());
-        final String nickname = json.getString(Fields.NICKNAME.label());
-        final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.label()));
-
-        return new User(id, uid, nickname, type.getId());
-    }
-
     public enum Fields implements NGSIField {
         UID("uid", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
