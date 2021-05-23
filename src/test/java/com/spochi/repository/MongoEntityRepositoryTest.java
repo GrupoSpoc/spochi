@@ -1,6 +1,5 @@
 package com.spochi.repository;
 
-import com.spochi.MongoUserRepository;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;

@@ -6,7 +6,7 @@ import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.MongoUserRepository;
+import com.spochi.repository.MongoUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

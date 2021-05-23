@@ -1,4 +1,4 @@
-package com.spochi;
+package com.spochi.repository;
 
 import com.spochi.entity.User;
 import com.spochi.repository.UserRepository;

@@ -1,6 +1,6 @@
 package com.spochi.persistence;
 
-import com.spochi.MongoUserRepository;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;

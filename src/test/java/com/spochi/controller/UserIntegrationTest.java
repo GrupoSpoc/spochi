@@ -5,7 +5,7 @@ import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.MongoUserRepository;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.UserServiceException;
 import com.spochi.service.auth.JwtUtil;
 import net.minidev.json.JSONValue;
