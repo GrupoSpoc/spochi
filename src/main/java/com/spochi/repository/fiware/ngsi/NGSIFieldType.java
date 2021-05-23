@@ -1,7 +1,5 @@
 package com.spochi.repository.fiware.ngsi;
 
-import com.spochi.controller.exception.BadRequestException;
-
 import java.time.LocalDateTime;
 
 public enum NGSIFieldType {
