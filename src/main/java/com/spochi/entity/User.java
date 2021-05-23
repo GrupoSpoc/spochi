@@ -52,7 +52,7 @@ public class User implements NGSISerializable {
     }
 
     public static User fromNGSIJson(NGSIJson json) {
-        final String id = json.getId(); // todo renombrar
+        final String id = json.getId();
         final String uid = json.getString(Fields.UID.label());
         final String nickname = json.getString(Fields.NICKNAME.label());
         final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.label()));
