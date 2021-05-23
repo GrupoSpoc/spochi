@@ -1,11 +1,13 @@
 package com.spochi.repository.fiware.rest;
 
-import okhttp3.*;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Service
@@ -51,14 +53,6 @@ public class RestPerformer {
             System.out.println(e.getMessage());
             throw new RestException(e.getMessage());
         }
-    }
-
-    // para poder mockear
-    protected OkHttpClient buildClient() {
-        return new OkHttpClient.Builder()
-                .connectTimeout(5, TimeUnit.SECONDS)
-                .callTimeout(30, TimeUnit.SECONDS)
-                .build();
     }
 
     private Request.Builder commonRequestBuilder(String url) {
