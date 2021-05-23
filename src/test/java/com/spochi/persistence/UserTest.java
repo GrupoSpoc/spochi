@@ -122,7 +122,7 @@ public class UserTest {
     @Test
     @DisplayName("NGSIType | ok")
     void NGSIType() {
-        assertEquals("User", User.NGSIType.getEntityType());
+        assertEquals("User", User.NGSIType.label());
     }
 
     @Test

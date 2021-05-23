@@ -8,8 +8,6 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Function;
-
 @Service
 public class RestPerformer {
     private final RestClient client;
@@ -19,11 +17,11 @@ public class RestPerformer {
         this.client = client;
     }
 
-    public <T> T get(String url, Function<String, T> mappingFunction) {
+    public String get(String url) {
         final Request request = commonRequestBuilder(url).get().build();
         try {
             final FiwareResponse response = client.execute(request);
-            return mappingFunction.apply(response.getBody());
+            return response.getBody();
         } catch (RestException e) {
             if (e.getCode() != null && e.getCode() == HttpStatus.SC_NOT_FOUND) {
                 return null;

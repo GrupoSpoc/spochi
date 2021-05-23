@@ -1,13 +1,15 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.repository.fiware.ngsi.*;
+import com.spochi.repository.fiware.rest.RestException;
 import com.spochi.repository.fiware.rest.RestPerformer;
+import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public abstract class FiwareRepository<T extends NGSISerializable> {
     // private static final String BASE_URL = "http://46.17.108.37:1026/v2";
@@ -24,16 +26,17 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     public T create(T instance) {
         final String id = nextId();
         create(instance.toNGSIJson(id));
-        return findById(id).orElseThrow(RuntimeException::new); // todo
+        return findById(id).orElseThrow(() ->
+                new RestException(String.format("Fatal: [%s] with id [%s] not found after creation", getEntityType().label(), id), HttpStatus.SC_NOT_FOUND));
     }
 
     public Optional<T> findById(String id) {
         final String query = new NGSIQueryBuilder().type(getEntityType())
                 .keyValues()
-                .one()
                 .build();
 
-        return Optional.of(performer.get(ENTITIES_URL + "/" + id + query, json -> fromNGSIJson(new NGSIJson(json))));
+        final String response = performer.get(ENTITIES_URL + "/" + id + query);
+        return Optional.ofNullable(response).map(r -> fromNGSIJson(new NGSIJson(r)));
     }
 
     protected abstract NGSIEntityType getEntityType();
@@ -63,15 +66,16 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     private Optional<T> findFirst(String url) {
-        return performer.get(url, json ->
-                this.getFirstElementAsNGSIJson(json).map(this::fromNGSIJson));
+        final String response = performer.get(url);
+        return getFirstElementAsNGSIJson(response).map(this::fromNGSIJson);
     }
 
     private List<T> find(String url) {
-        return performer.get(url, json ->
-                new JSONArray(json).toList()
-                        .stream().map(j -> this.fromNGSIJson(new NGSIJson(j.toString())))
-                        .collect(Collectors.toList()));
+        final String response = performer.get(url);
+        final List<T> result = new ArrayList<>();
+
+        new JSONArray(response).forEach(j -> result.add(this.fromNGSIJson(new NGSIJson(j.toString()))));
+        return result;
     }
 
     private String nextId() {
@@ -82,8 +86,8 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
                 .orderByDesc(NGSICommonFields.ID)
                 .build();
 
-        final Optional<String> lastId = performer.get(ENTITIES_URL + query,
-                json -> this.getFirstElementAsNGSIJson(json).map(NGSIJson::getId));
+        final String response = performer.get(ENTITIES_URL + query);
+        final Optional<String> lastId = getFirstElementAsNGSIJson(response).map(NGSIJson::getId);
 
         return lastId.map(this::nextId).orElseGet(this::firstId);
     }
@@ -98,11 +102,11 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return buildId(1);
     }
 
-    private String buildId(int identifier) {
-        return "urn:ngsi-ld:" + getEntityType() + ":" + identifier;
+    protected String buildId(int identifier) {
+        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
     }
 
-    private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
+    protected static Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
         final JSONArray jsonArray = new JSONArray(arrayString);
         if (jsonArray.length() == 0) return Optional.empty();
         return Optional.of(new NGSIJson(jsonArray.get(0).toString()));

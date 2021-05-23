@@ -12,7 +12,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder type(NGSIEntityType type) {
-        params.put("type", type.getEntityType());
+        params.put("type", type.label());
         return this;
     }
 
@@ -51,7 +51,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder ref(NGSIEntityType type, String id) {
-        params.put("q=ref" + type.getEntityType() + "=", id);
+        params.put("q=ref" + type.label() + "=", id);
         return this;
     }
 

@@ -119,4 +119,10 @@ class InitiativeTest {
 
         assertNotNull(result);
     }
+
+    @Test
+    @DisplayName("get entity type | ok")
+    void getEntityTypeOk() {
+        assertEquals("Initiative", Initiative.NGSIType.label());
+    }
 }

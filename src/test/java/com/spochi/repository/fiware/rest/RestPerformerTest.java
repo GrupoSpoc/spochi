@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@DisplayName("Rest performer test | Unit")
 class RestPerformerTest {
     private static final String URL = "http://url";
 
@@ -27,7 +28,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenReturn(new FiwareResponse("1", Collections.emptyMap()));
 
-        assertEquals(Integer.valueOf(1), performer.get(URL, Integer::parseInt));
+        assertEquals("1", performer.get(URL));
     }
 
     @Test
@@ -37,7 +38,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenThrow(new RestException("not-found", HttpStatus.SC_NOT_FOUND));
 
-        assertNull(performer.get(URL, r -> r));
+        assertNull(performer.get(URL));
     }
 
     @Test
@@ -47,7 +48,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenThrow(new RestException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.get(URL, r -> r), "test-error");
+        AssertUtils.assertException(RestException.class, () -> performer.get(URL), "test-error");
     }
 
     @Test
@@ -57,7 +58,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenThrow(new RuntimeException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.get(URL, r -> r), "test-error");
+        AssertUtils.assertException(RestException.class, () -> performer.get(URL), "test-error");
     }
 
 
