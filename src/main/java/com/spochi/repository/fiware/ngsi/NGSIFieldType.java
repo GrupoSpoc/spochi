@@ -47,7 +47,7 @@ public enum NGSIFieldType {
         }
     }
 
-    public static class InvalidValueException extends BadRequestException {
+    public static class InvalidValueException extends RuntimeException {
 
         public InvalidValueException(String message) {
             super(message);
