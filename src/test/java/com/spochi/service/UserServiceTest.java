@@ -38,13 +38,17 @@ class UserServiceTest {
     @DisplayName("find by uid | when user is found | should return UserResponseDTO | ok")
     void findByUidFound() {
         final User mockedUser = UserDummyBuilder.buildWithId();
-        final UserResponseDTO expectedDto = mockedUser.toDTO();
+        final UserResponseDTO expectedDTO = new UserResponseDTO();
+        expectedDTO.setType_id(mockedUser.getTypeId());
+        expectedDTO.setAmount_of_initiatives(0);
+        expectedDTO.setNickname(mockedUser.getNickname());
+        expectedDTO.setAdmin(false);
 
         when(repository.findByUid(anyString())).thenReturn(Optional.of(mockedUser));
 
         final UserResponseDTO actualDTO = service.findByUid("uid");
 
-        assertEquals(expectedDto, actualDTO);
+        assertEquals(expectedDTO, actualDTO);
     }
 
     @Test

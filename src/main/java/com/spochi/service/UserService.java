@@ -44,7 +44,15 @@ public class UserService {
         user.setTypeId(request.getType_id());
         user.setUid(uid);
 
-        return repository.create(user).toDTO();
+        final User persistedUser = repository.create(user);
+
+        final UserResponseDTO dto = new UserResponseDTO();
+        dto.setNickname(persistedUser.getNickname());
+        dto.setAdmin(persistedUser.getType() == UserType.ADMIN);
+        dto.setAmount_of_initiatives(0);
+        dto.setType_id(persistedUser.getTypeId());
+
+        return dto;
     }
 
 

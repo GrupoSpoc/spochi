@@ -3,8 +3,6 @@ package com.spochi.persistence;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 
-import java.util.ArrayList;
-
 
 public class UserDummyBuilder {
     public static final String UID = "uid";
@@ -28,7 +26,6 @@ public class UserDummyBuilder {
         user.setNickname("user");
         user.setUid(uid);
         user.setTypeId(UserType.ORGANIZATION);
-        user.setInitiatives(new ArrayList<>());
 
         return user;
     }

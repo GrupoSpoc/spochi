@@ -1,16 +1,10 @@
 package com.spochi.entity;
 
-import com.spochi.dto.UserResponseDTO;
 import com.spochi.repository.fiware.ngsi.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Getter
 @Setter
@@ -32,16 +26,6 @@ public class User implements NGSISerializable {
     @Field(name = "type_id")
     private int typeId;
 
-    @DBRef(lazy = true)
-    private List<Initiative> initiatives;
-
-    public void addInitiative(Initiative i) {
-        if (initiatives == null) {
-            initiatives = new ArrayList<>();
-        }
-        initiatives.add(i);
-    }
-
     public UserType getType() {
         return UserType.fromIdOrElseThrow(this.typeId);
     }
@@ -52,17 +36,6 @@ public class User implements NGSISerializable {
 
     public void setTypeId(int typeId) {
         this.typeId = typeId;
-    }
-
-    public UserResponseDTO toDTO() {
-        final UserResponseDTO dto = new UserResponseDTO();
-
-        dto.setNickname(this.nickname);
-        dto.setAdmin(this.getType() == UserType.ADMIN);
-        dto.setType_id(this.getTypeId());
-        dto.setAmount_of_initiatives(this.initiatives != null ? this.initiatives.size() : 0);
-
-        return dto;
     }
 
     @Override
@@ -84,7 +57,7 @@ public class User implements NGSISerializable {
         final String nickname = json.getString(Fields.NICKNAME.label());
         final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.label()));
 
-        return new User(id, uid, nickname, type.getId(), Collections.emptyList());
+        return new User(id, uid, nickname, type.getId());
     }
 
     public enum Fields implements NGSIField {

@@ -58,9 +58,7 @@ public class InitiativeService {
                 InitiativeStatus.PENDING.getId()
         );
 
-        user.addInitiative(initiative);
         initiativeRepository.save(initiative);
-        userRepository.create(user);
         responseDTO = initiative.toDTO();
 
         return responseDTO;

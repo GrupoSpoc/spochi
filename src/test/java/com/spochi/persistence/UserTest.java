@@ -1,9 +1,8 @@
 package com.spochi.persistence;
 
-import com.spochi.entity.Initiative;
+import com.spochi.MongoUserRepository;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
-import com.spochi.MongoUserRepository;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
@@ -30,16 +29,12 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("create with initiatives | ok")
+    @DisplayName("create  | ok")
     void createOk() {
         final User beforeSave = new User();
         beforeSave.setUid("1234");
         beforeSave.setNickname("nickname");
         beforeSave.setTypeId(UserType.ORGANIZATION);
-
-        final Initiative i1 = InitiativeDummyBuilder.build();
-        final Initiative i2 = InitiativeDummyBuilder.build();
-        beforeSave.setInitiatives(Arrays.asList(i1, i2));
 
         final User afterSave = repository.create(beforeSave);
 
@@ -47,42 +42,8 @@ public class UserTest {
         assertEquals(beforeSave.getUid(), afterSave.getUid());
         assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
-
-        // los ids de las iniciativas del afterSave deberían ser
-        // las del beforeSave
-        assertEquals(2, afterSave.getInitiatives().size());
-        assertEquals(beforeSave.getInitiatives().size(), afterSave.getInitiatives().size());
-        assertTrue(afterSave.getInitiatives()
-                .stream()
-                .allMatch(i -> beforeSave.getInitiatives()
-                        .stream()
-                        .map(Initiative::get_id)
-                        .collect(Collectors.toList())
-                        .contains(i.get_id())));
     }
 
-    @Test
-    @DisplayName("add initiative | ok")
-    void addInitiativeOk() {
-        final User user = new User();
-        user.setUid("1234");
-        user.setNickname("nickname");
-        user.setTypeId(UserType.ORGANIZATION);
-
-        final Initiative i1 = InitiativeDummyBuilder.build();
-        user.addInitiative(i1);
-
-        repository.create(user);
-
-        final Initiative i2 = InitiativeDummyBuilder.build();
-        user.addInitiative(i2);
-        final User afterUpdate = repository.create(user);
-
-        assertEquals(2, afterUpdate.getInitiatives().size());
-        final List<String> expectedInitiativeIds = Arrays.asList(i1.get_id(), i2.get_id());
-        assertTrue(afterUpdate.getInitiatives().stream().map(Initiative::get_id)
-                .allMatch(expectedInitiativeIds::contains));
-    }
 
     @Test
     @DisplayName("find by id | ok")

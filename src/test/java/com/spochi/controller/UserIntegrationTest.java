@@ -65,6 +65,12 @@ public class UserIntegrationTest {
 
         final User user = UserDummyBuilder.build(uid);
 
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(user.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(user.getNickname());
+        expectedResult.setAdmin(false);
+
         repository.create(user);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);
@@ -78,7 +84,7 @@ public class UserIntegrationTest {
         final UserResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
         assertNotNull(actualResult);
-        assertEquals(user.toDTO(), actualResult);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -118,13 +124,18 @@ public class UserIntegrationTest {
         final UserResponseDTO response = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
         final User createdUser = repository.findByUid(uid).orElse(null);
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(createdUser.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(createdUser.getNickname());
+        expectedResult.setAdmin(false);
 
         assertAll("Expected result",
                 () -> assertNotNull(createdUser),
                 () -> assertEquals(request.getNickname(), createdUser.getNickname()),
                 () -> assertEquals(request.getType_id(), createdUser.getTypeId()),
                 () -> assertEquals(uid, createdUser.getUid()),
-                () -> assertEquals(createdUser.toDTO(), response)
+                () -> assertEquals(expectedResult, response)
         );
     }
 

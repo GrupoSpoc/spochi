@@ -1,6 +1,7 @@
 package com.spochi.repository;
 
 import com.spochi.MongoUserRepository;
+import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import org.junit.jupiter.api.*;
@@ -26,11 +27,22 @@ class MongoEntityRepositoryTest {
     @DisplayName("find by uid | when user is found | should return option with user")
     void findByUid() {
         final User user = repository.create(UserDummyBuilder.build());
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(user.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(user.getNickname());
+        expectedResult.setAdmin(false);
+
 
         final User userFoundByUid = repository.findByUid(user.getUid()).orElse(null);
+        final UserResponseDTO actualResult = new UserResponseDTO();
+        actualResult.setType_id(userFoundByUid.getTypeId());
+        actualResult.setAmount_of_initiatives(0);
+        actualResult.setNickname(userFoundByUid.getNickname());
+        actualResult.setAdmin(false);
 
         assertNotNull(userFoundByUid);
-        assertEquals(user.toDTO(), userFoundByUid.toDTO());
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -45,11 +57,21 @@ class MongoEntityRepositoryTest {
     @DisplayName("find by nickname | when user is found | should return option with user")
     void findByNicknameFound() {
         final User user = repository.create(UserDummyBuilder.build());
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(user.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(user.getNickname());
+        expectedResult.setAdmin(false);
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname()).orElse(null);
+        final UserResponseDTO actualResult = new UserResponseDTO();
+        actualResult.setType_id(userFoundByNickname.getTypeId());
+        actualResult.setAmount_of_initiatives(0);
+        actualResult.setNickname(userFoundByNickname.getNickname());
+        actualResult.setAdmin(false);
 
         assertNotNull(userFoundByNickname);
-        assertEquals(userFoundByNickname.toDTO(), userFoundByNickname.toDTO());
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
