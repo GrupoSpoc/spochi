@@ -32,8 +32,19 @@ public class RestPerformer {
         }
     }
 
-    public void postJson(String url, String payload) {
+    public void post(String url, String payload) {
         final Request request = commonRequestBuilder(url).post(RequestBody.create(payload, MediaType.parse("application/json; charset=utf-8"))).build();
+        try {
+            client.execute(request);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new RestException(e.getMessage());
+        }
+    }
+
+
+    public void patch(String url, String payload) {
+        final Request request = commonRequestBuilder(url).patch(RequestBody.create(payload, MediaType.parse("application/json; charset=utf-8"))).build();
         try {
             client.execute(request);
         } catch (Exception e) {

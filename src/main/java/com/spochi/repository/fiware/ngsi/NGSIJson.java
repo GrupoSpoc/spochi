@@ -22,8 +22,8 @@ public class NGSIJson extends JSONObject {
         return this.getString(NGSICommonFields.ID.getName());
     }
 
-    public NGSIJson setType(@NotNull String type) {
-        this.put(NGSICommonFields.TYPE.getName(), type);
+    public NGSIJson setType(@NotNull NGSIEntityType type) {
+        this.put(NGSICommonFields.TYPE.getName(), type.label());
         return this;
     }
 

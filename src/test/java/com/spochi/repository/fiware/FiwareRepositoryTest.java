@@ -1,9 +1,6 @@
 package com.spochi.repository.fiware;
 
-import com.spochi.repository.fiware.ngsi.NGSIEntityType;
-import com.spochi.repository.fiware.ngsi.NGSIJson;
-import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
-import com.spochi.repository.fiware.ngsi.NGSISerializableEntityForTest;
+import com.spochi.repository.fiware.ngsi.*;
 import com.spochi.repository.fiware.rest.RestException;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import com.spochi.util.AssertUtils;
@@ -15,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Fiware Repository Test | Unit")
@@ -37,7 +33,7 @@ class FiwareRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
 
-        doNothing().when(performer).postJson(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
         when(performer.get(anyString()))
                 .thenReturn(testEntityArrayString) // next id
                 .thenReturn(testEntity3.toNGSIJson("id:3").toString()); // findById
@@ -55,7 +51,7 @@ class FiwareRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
 
-        doNothing().when(performer).postJson(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
         when(performer.get(anyString()))
                 .thenReturn(emptyArray) // next id
                 .thenReturn(testEntity1.toNGSIJson("id:1").toString()); // findById
@@ -74,7 +70,7 @@ class FiwareRepositoryTest {
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
 
         when(performer.get(anyString())).thenReturn(testEntityArrayString);
-        doThrow(new RuntimeException("create-error")).when(performer).postJson(anyString(), anyString());
+        doThrow(new RuntimeException("create-error")).when(performer).post(anyString(), anyString());
 
         AssertUtils.assertException(RuntimeException.class, () -> repository.create(testEntity1), "create-error");
     }
@@ -85,7 +81,7 @@ class FiwareRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
 
-        doNothing().when(performer).postJson(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
         when(performer.get(anyString()))
                 .thenReturn(testEntityArrayString) // next id
                 .thenReturn(null); // findById
@@ -223,7 +219,7 @@ class FiwareRepositoryTest {
     }
 
     @Test
-    @DisplayName("count | ok")
+    @DisplayName("count | Exception")
     void countException() {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
@@ -231,6 +227,59 @@ class FiwareRepositoryTest {
         when(performer.count(anyString())).thenThrow(new RuntimeException("count-error"));
 
         AssertUtils.assertException(RuntimeException.class, () -> repository.count(new NGSIQueryBuilder()), "count-error");
+    }
+
+    @Test
+    @DisplayName("find | ok")
+    void updateOk() {
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
+
+        final NGSIJson ngsiJson = new NGSIJson();
+        ngsiJson.addAttribute(NGSITestFields.A_ATTRIBUTE, "aValue");
+
+        doNothing().when(performer).patch(anyString(), anyString());
+
+        assertDoesNotThrow(() -> repository.update("id", ngsiJson));
+    }
+
+    @Test
+    @DisplayName("find | when payload has id | RestException")
+    void updateWithIdException() {
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
+
+        final NGSIJson ngsiJson = new NGSIJson();
+        ngsiJson.setId("id");
+
+        doNothing().when(performer).patch(anyString(), anyString());
+
+        AssertUtils.assertException(RestException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
+    }
+
+    @Test
+    @DisplayName("find | when payload has type | RestException")
+    void updateWithTypeException() {
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
+
+        final NGSIJson ngsiJson = new NGSIJson();
+        ngsiJson.setType(NGSISerializableEntityForTest.NGSIType);
+
+        doNothing().when(performer).patch(anyString(), anyString());
+
+        AssertUtils.assertException(RestException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
+    }
+
+    @Test
+    @DisplayName("find | when payload is empty | RestException")
+    void updateWithEmptyPayloadException() {
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
+
+        doNothing().when(performer).patch(anyString(), anyString());
+
+        AssertUtils.assertException(RestException.class, () -> repository.update("id", new NGSIJson()), "Update body cannot be empty");
     }
 
     @Test

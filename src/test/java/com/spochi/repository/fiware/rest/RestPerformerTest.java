@@ -63,23 +63,43 @@ class RestPerformerTest {
 
 
     @Test
-    @DisplayName("post json | ok")
-    void postJson() throws IOException {
+    @DisplayName("post | ok")
+    void postOk() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenReturn(new FiwareResponse("ok", Collections.emptyMap()));
 
-        assertDoesNotThrow(() -> performer.postJson(URL, "payload"));
+        assertDoesNotThrow(() -> performer.post(URL, "payload"));
     }
 
     @Test
-    @DisplayName("get | given exception | should throw RestException")
-    void postJsonException() throws IOException {
+    @DisplayName("post | given exception | should throw RestException")
+    void postException() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenThrow(new RestException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.postJson(URL, "payload"), "test-error");
+        AssertUtils.assertException(RestException.class, () -> performer.post(URL, "payload"), "test-error");
+    }
+
+    @Test
+    @DisplayName("patch | ok")
+    void patchOk() throws IOException {
+        final RestClient restClient = mock(RestClient.class);
+        final RestPerformer performer = new RestPerformer(restClient);
+        when(restClient.execute(any())).thenReturn(new FiwareResponse("ok", Collections.emptyMap()));
+
+        assertDoesNotThrow(() -> performer.patch(URL, "payload"));
+    }
+
+    @Test
+    @DisplayName("patch | exception")
+    void patchException() throws IOException {
+        final RestClient restClient = mock(RestClient.class);
+        final RestPerformer performer = new RestPerformer(restClient);
+        when(restClient.execute(any())).thenThrow(new RestException("patch-error"));
+
+        AssertUtils.assertException(RestException.class, () -> performer.patch(URL, "payload"), "patch-error");
     }
 
     @Test

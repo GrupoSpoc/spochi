@@ -1,6 +1,6 @@
 package com.spochi.repository.fiware.ngsi;
 
-enum NGSITestFields implements NGSIField {
+public enum NGSITestFields implements NGSIField {
     A_ATTRIBUTE("aAttribute", NGSIFieldType.TEXT),
     B_ATTRIBUTE("bAttribute", NGSIFieldType.INTEGER);
 

@@ -26,7 +26,7 @@ public class NGSISerializableEntityForTest implements NGSISerializable {
     public NGSIJson toNGSIJson(String id) {
         return (NGSIJson) new NGSIJson()
                 .setId(id)
-                .setType(NGSIType.label())
+                .setType(NGSIType)
                 .put("field1", field1)
                 .put("field2", field2);
     }

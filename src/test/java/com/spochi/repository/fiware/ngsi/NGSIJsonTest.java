@@ -40,12 +40,10 @@ class NGSIJsonTest {
     @Test
     @DisplayName("set type | ok")
     void setType() {
-        final String type = "test-type";
-
         final NGSIJson json = new NGSIJson();
-        json.setType(type);
+        json.setType(NGSISerializableEntityForTest.NGSIType);
 
-        assertEquals(type, json.getString(NGSICommonFields.TYPE.getName()));
+        assertEquals(NGSISerializableEntityForTest.NGSIType.label(), json.getString(NGSICommonFields.TYPE.getName()));
     }
 
     @Test

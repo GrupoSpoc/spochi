@@ -39,6 +39,11 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return Optional.ofNullable(response).map(r -> fromNGSIJson(new NGSIJson(r)));
     }
 
+    public void update(String id, NGSIJson payload) {
+        validateForUpdate(payload);
+        performer.patch(ENTITIES_URL + "/" + id + "/attrs", payload.toString());
+    }
+
     protected abstract NGSIEntityType getEntityType();
     protected abstract T fromNGSIJson(NGSIJson json);
 
@@ -62,7 +67,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     private void create(NGSIJson json) {
-        performer.postJson(ENTITIES_URL, json.toString());
+        performer.post(ENTITIES_URL, json.toString());
     }
 
     private Optional<T> findFirst(String url) {
@@ -92,6 +97,16 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return lastId.map(this::nextId).orElseGet(this::firstId);
     }
 
+    protected String buildId(int identifier) {
+        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
+    }
+
+    private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
+        final JSONArray jsonArray = new JSONArray(arrayString);
+        if (jsonArray.length() == 0) return Optional.empty();
+        return Optional.of(new NGSIJson(jsonArray.get(0).toString()));
+    }
+
     private String nextId(String lastId) {
         final int index = lastId.lastIndexOf(":") + 1;
         final int lastIdentifier = Integer.parseInt(lastId.substring(index));
@@ -102,13 +117,13 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return buildId(1);
     }
 
-    protected String buildId(int identifier) {
-        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
-    }
+    private void validateForUpdate(NGSIJson payload) {
+        if (payload.keySet().isEmpty()) {
+            throw new RestException("Update body cannot be empty");
+        }
 
-    protected static Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
-        final JSONArray jsonArray = new JSONArray(arrayString);
-        if (jsonArray.length() == 0) return Optional.empty();
-        return Optional.of(new NGSIJson(jsonArray.get(0).toString()));
+        if (payload.has(NGSICommonFields.ID.getName()) || payload.has(NGSICommonFields.TYPE.getName())) {
+            throw new RestException("Update body cannot specify id or type");
+        }
     }
 }

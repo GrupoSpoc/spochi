@@ -70,7 +70,7 @@ public class User implements NGSISerializable {
         final NGSIJson json = new NGSIJson();
 
         json.setId(id);
-        json.setType(NGSIType.label());
+        json.setType(NGSIType);
         json.addAttribute(Fields.UID, this.uid);
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.TYPE_ID, this.typeId);
