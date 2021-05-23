@@ -14,12 +14,12 @@ public enum NGSITestFields implements NGSIField {
     }
 
     @Override
-    public String getName() {
+    public String label() {
         return this.name;
     }
 
     @Override
-    public NGSIFieldType getType() {
+    public NGSIFieldType type() {
         return type;
     }
 }

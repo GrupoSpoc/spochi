@@ -1,5 +1,7 @@
 package com.spochi.repository.fiware.ngsi;
 
+import com.spochi.controller.exception.BadRequestException;
+
 import java.time.LocalDateTime;
 
 public enum NGSIFieldType {
@@ -23,16 +25,16 @@ public enum NGSIFieldType {
         }
     };
 
-    private final String name;
+    private final String label;
     private final Class<?> clazz;
 
-    NGSIFieldType(String name, Class<?> clazz) {
-        this.name = name;
+    NGSIFieldType(String label, Class<?> clazz) {
+        this.label = label;
         this.clazz = clazz;
     }
 
-    public String getName() {
-        return name;
+    public String label() {
+        return label;
     }
 
     public void validateValue(Object value) {
@@ -41,11 +43,11 @@ public enum NGSIFieldType {
         try {
             clazz.cast(value);
         } catch (Exception e) {
-            throw new InvalidValueException(String.format("Type %s expected an instance of %s but [%s] is a %s", this.name, this.clazz.getSimpleName(), value.toString(), value.getClass().getSimpleName()));
+            throw new InvalidValueException(String.format("Type %s expected an instance of %s but [%s] is a %s", this.label, this.clazz.getSimpleName(), value.toString(), value.getClass().getSimpleName()));
         }
     }
 
-    public static class InvalidValueException extends RuntimeException {
+    public static class InvalidValueException extends BadRequestException {
 
         public InvalidValueException(String message) {
             super(message);

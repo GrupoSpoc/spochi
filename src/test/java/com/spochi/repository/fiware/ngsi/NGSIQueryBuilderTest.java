@@ -96,7 +96,7 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with order by desc | ok")
     void buildWithOrderByDescOk() {
         final NGSIField field = mock(NGSIField.class);
-        when(field.getName()).thenReturn("aOrder");
+        when(field.label()).thenReturn("aOrder");
 
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
         queryBuilder.orderByDesc(field);
@@ -108,7 +108,7 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with multiple params | ok")
     void buildWithMultipleParamsOk() {
         final NGSIField field = mock(NGSIField.class);
-        when(field.getName()).thenReturn("bOrder");
+        when(field.label()).thenReturn("bOrder");
 
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
 

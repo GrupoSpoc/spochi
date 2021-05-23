@@ -1,5 +1,6 @@
 package com.spochi.repository.fiware.rest;
 
+import com.spochi.repository.fiware.FiwareException;
 import com.spochi.util.AssertUtils;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +37,7 @@ class RestPerformerTest {
     void getNotFound() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new RestException("not-found", HttpStatus.SC_NOT_FOUND));
+        when(restClient.execute(any())).thenThrow(new FiwareException("not-found", HttpStatus.SC_NOT_FOUND));
 
         assertNull(performer.get(URL));
     }
@@ -46,9 +47,9 @@ class RestPerformerTest {
     void getRestException() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new RestException("test-error"));
+        when(restClient.execute(any())).thenThrow(new FiwareException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.get(URL), "test-error");
+        AssertUtils.assertException(FiwareException.class, () -> performer.get(URL), "test-error");
     }
 
     @Test
@@ -58,7 +59,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenThrow(new RuntimeException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.get(URL), "test-error");
+        AssertUtils.assertException(FiwareException.class, () -> performer.get(URL), "test-error");
     }
 
 
@@ -77,9 +78,9 @@ class RestPerformerTest {
     void postException() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new RestException("test-error"));
+        when(restClient.execute(any())).thenThrow(new FiwareException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.post(URL, "payload"), "test-error");
+        AssertUtils.assertException(FiwareException.class, () -> performer.post(URL, "payload"), "test-error");
     }
 
     @Test
@@ -97,9 +98,9 @@ class RestPerformerTest {
     void patchException() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new RestException("patch-error"));
+        when(restClient.execute(any())).thenThrow(new FiwareException("patch-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.patch(URL, "payload"), "patch-error");
+        AssertUtils.assertException(FiwareException.class, () -> performer.patch(URL, "payload"), "patch-error");
     }
 
     @Test
@@ -121,9 +122,9 @@ class RestPerformerTest {
     void countException() throws IOException {
         final RestClient restClient = mock(RestClient.class);
         final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new RestException("test-error"));
+        when(restClient.execute(any())).thenThrow(new FiwareException("test-error"));
 
-        AssertUtils.assertException(RestException.class, () -> performer.count(URL), "test-error");
+        AssertUtils.assertException(FiwareException.class, () -> performer.count(URL), "test-error");
     }
 
     @Test
@@ -133,7 +134,7 @@ class RestPerformerTest {
         final RestPerformer performer = new RestPerformer(restClient);
         when(restClient.execute(any())).thenReturn(new FiwareResponse("1", Collections.emptyMap()));
 
-        assertThrows(RestException.class, () -> performer.count(URL));
+        assertThrows(FiwareException.class, () -> performer.count(URL));
     }
 
     @Test
@@ -147,7 +148,7 @@ class RestPerformerTest {
 
         when(restClient.execute(any())).thenReturn(new FiwareResponse("1", headers));
 
-        assertThrows(RestException.class, () -> performer.count(URL));
+        assertThrows(FiwareException.class, () -> performer.count(URL));
     }
 
 }

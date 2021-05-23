@@ -26,7 +26,7 @@ class NGSIJsonTest {
         final NGSIJson json = new NGSIJson();
         json.setId(id);
 
-        assertEquals(id, json.getString(NGSICommonFields.ID.getName()));
+        assertEquals(id, json.getString(NGSICommonFields.ID.label()));
     }
 
     @Test
@@ -43,7 +43,7 @@ class NGSIJsonTest {
         final NGSIJson json = new NGSIJson();
         json.setType(NGSISerializableEntityForTest.NGSIType);
 
-        assertEquals(NGSISerializableEntityForTest.NGSIType.label(), json.getString(NGSICommonFields.TYPE.getName()));
+        assertEquals(NGSISerializableEntityForTest.NGSIType.label(), json.getString(NGSICommonFields.TYPE.label()));
     }
 
     @Test
@@ -53,7 +53,7 @@ class NGSIJsonTest {
         final NGSIFieldType type = mock(NGSIFieldType.class);
         final NGSIField field = mock(NGSIField.class);
 
-        when(field.getType()).thenReturn(type);
+        when(field.type()).thenReturn(type);
         doThrow(new NGSIFieldType.InvalidValueException("error-message")).when(type).validateValue(value);
 
         final NGSIJson json = new NGSIJson();
@@ -69,11 +69,11 @@ class NGSIJsonTest {
 
         json.addAttribute(NGSITestFields.A_ATTRIBUTE, value);
 
-        final JSONObject attribute = json.getJSONObject(NGSITestFields.A_ATTRIBUTE.getName());
+        final JSONObject attribute = json.getJSONObject(NGSITestFields.A_ATTRIBUTE.label());
 
         assertAll("Expected attribute",
-                () -> assertEquals(NGSITestFields.A_ATTRIBUTE.getType().getName(), attribute.getString(NGSICommonFields.TYPE.getName())),
-                () -> assertEquals(value, attribute.getString(NGSICommonFields.VALUE.getName())));
+                () -> assertEquals(NGSITestFields.A_ATTRIBUTE.type().label(), attribute.getString(NGSICommonFields.TYPE.label())),
+                () -> assertEquals(value, attribute.getString(NGSICommonFields.VALUE.label())));
     }
 
     @Test
@@ -83,7 +83,7 @@ class NGSIJsonTest {
 
         json.addAttribute(NGSITestFields.A_ATTRIBUTE, null);
 
-        assertFalse(json.has(NGSITestFields.A_ATTRIBUTE.getName()));
+        assertFalse(json.has(NGSITestFields.A_ATTRIBUTE.label()));
     }
 
     @Test
@@ -92,7 +92,7 @@ class NGSIJsonTest {
         final Integer value = 10;
         final NGSIJson json = new NGSIJson();
 
-        json.put(NGSITestFields.B_ATTRIBUTE.getName(), value);
+        json.put(NGSITestFields.B_ATTRIBUTE.label(), value);
 
         assertEquals(value, json.getInt(NGSITestFields.B_ATTRIBUTE));
     }
@@ -111,7 +111,7 @@ class NGSIJsonTest {
         final String value = "a-string";
         final NGSIJson json = new NGSIJson();
 
-        json.put(NGSITestFields.A_ATTRIBUTE.getName(), value);
+        json.put(NGSITestFields.A_ATTRIBUTE.label(), value);
 
         assertEquals(value, json.getString(NGSITestFields.A_ATTRIBUTE));
     }

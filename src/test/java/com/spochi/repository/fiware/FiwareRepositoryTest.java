@@ -1,7 +1,6 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.repository.fiware.ngsi.*;
-import com.spochi.repository.fiware.rest.RestException;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -86,7 +85,7 @@ class FiwareRepositoryTest {
                 .thenReturn(testEntityArrayString) // next id
                 .thenReturn(null); // findById
 
-        AssertUtils.assertException(RestException.class, () -> repository.create(testEntity3),
+        AssertUtils.assertException(FiwareException.class, () -> repository.create(testEntity3),
                 String.format("Fatal: [%s] with id [%s] not found after creation", NGSISerializableEntityForTest.NGSIType.label(), repository.buildId(3)));
     }
 
@@ -254,7 +253,7 @@ class FiwareRepositoryTest {
 
         doNothing().when(performer).patch(anyString(), anyString());
 
-        AssertUtils.assertException(RestException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
+        AssertUtils.assertException(FiwareException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
     }
 
     @Test
@@ -268,7 +267,7 @@ class FiwareRepositoryTest {
 
         doNothing().when(performer).patch(anyString(), anyString());
 
-        AssertUtils.assertException(RestException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
+        AssertUtils.assertException(FiwareException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
     }
 
     @Test
@@ -279,7 +278,7 @@ class FiwareRepositoryTest {
 
         doNothing().when(performer).patch(anyString(), anyString());
 
-        AssertUtils.assertException(RestException.class, () -> repository.update("id", new NGSIJson()), "Update body cannot be empty");
+        AssertUtils.assertException(FiwareException.class, () -> repository.update("id", new NGSIJson()), "Update body cannot be empty");
     }
 
     @Test

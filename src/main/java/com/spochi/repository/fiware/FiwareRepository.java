@@ -1,7 +1,6 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.repository.fiware.ngsi.*;
-import com.spochi.repository.fiware.rest.RestException;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 public abstract class FiwareRepository<T extends NGSISerializable> {
     // private static final String BASE_URL = "http://46.17.108.37:1026/v2";
     private static final String BASE_URL = "http://localhost:1026/v2";
@@ -27,11 +25,11 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         final String id = nextId();
         create(instance.toNGSIJson(id));
         return findById(id).orElseThrow(() ->
-                new RestException(String.format("Fatal: [%s] with id [%s] not found after creation", getEntityType().label(), id), HttpStatus.SC_NOT_FOUND));
+                new FiwareException(String.format("Fatal: [%s] with id [%s] not found after creation", getEntityType().label(), id), HttpStatus.SC_NOT_FOUND));
     }
 
     public Optional<T> findById(String id) {
-        final String query = new NGSIQueryBuilder().type(getEntityType())
+        final String query = new NGSIQueryBuilder()
                 .keyValues()
                 .build();
 
@@ -49,6 +47,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
     protected Optional<T> findFirst(NGSIQueryBuilder queryBuilder) {
         final String query = queryBuilder
+                .type(getEntityType())
                 .keyValues()
                 .one()
                 .build();
@@ -64,6 +63,10 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
     protected int count(NGSIQueryBuilder queryBuilder) {
         return performer.count(ENTITIES_URL + queryBuilder.build());
+    }
+
+    protected String buildId(int identifier) {
+        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
     }
 
     private void create(NGSIJson json) {
@@ -97,10 +100,6 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return lastId.map(this::nextId).orElseGet(this::firstId);
     }
 
-    protected String buildId(int identifier) {
-        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
-    }
-
     private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
         final JSONArray jsonArray = new JSONArray(arrayString);
         if (jsonArray.length() == 0) return Optional.empty();
@@ -119,11 +118,11 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
     private void validateForUpdate(NGSIJson payload) {
         if (payload.keySet().isEmpty()) {
-            throw new RestException("Update body cannot be empty");
+            throw new FiwareException("Update body cannot be empty");
         }
 
-        if (payload.has(NGSICommonFields.ID.getName()) || payload.has(NGSICommonFields.TYPE.getName())) {
-            throw new RestException("Update body cannot specify id or type");
+        if (payload.has(NGSICommonFields.ID.label()) || payload.has(NGSICommonFields.TYPE.label())) {
+            throw new FiwareException("Update body cannot specify id or type");
         }
     }
 }

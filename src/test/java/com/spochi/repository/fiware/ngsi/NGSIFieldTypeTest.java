@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class NGSIFieldTypeTest {
 
     @Test
-    @DisplayName("get name | ok")
+    @DisplayName("label | ok")
     void getName() {
-        assertEquals("Text", TEXT.getName());
-        assertEquals("Number", INTEGER.getName());
-        assertEquals("LocalDateTime", DATE.getName());
+        assertEquals("Text", TEXT.label());
+        assertEquals("Number", INTEGER.label());
+        assertEquals("LocalDateTime", DATE.label());
     }
 
     @Test

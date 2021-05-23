@@ -14,30 +14,30 @@ public class NGSIJson extends JSONObject {
     }
 
     public NGSIJson setId(@NotNull String id) {
-        this.put(NGSICommonFields.ID.getName(), id);
+        this.put(NGSICommonFields.ID.label(), id);
         return this;
     }
 
     public String getId() {
-        return this.getString(NGSICommonFields.ID.getName());
+        return this.getString(NGSICommonFields.ID.label());
     }
 
     public NGSIJson setType(@NotNull NGSIEntityType type) {
-        this.put(NGSICommonFields.TYPE.getName(), type.label());
+        this.put(NGSICommonFields.TYPE.label(), type.label());
         return this;
     }
 
     public NGSIJson addAttribute(@NotNull NGSIField field, Object value) {
         if (value == null) return this;
 
-        validateValue(field.getType(), value);
+        validateValue(field.type(), value);
 
         final JSONObject attribute = new JSONObject();
 
-        attribute.put(NGSICommonFields.TYPE.getName(), field.getType().getName());
-        attribute.put(NGSICommonFields.VALUE.getName(), value);
+        attribute.put(NGSICommonFields.TYPE.label(), field.type().label());
+        attribute.put(NGSICommonFields.VALUE.label(), value);
 
-        this.put(field.getName(), attribute);
+        this.put(field.label(), attribute);
 
         return this;
     }
@@ -51,11 +51,11 @@ public class NGSIJson extends JSONObject {
     }
 
     public String getString(NGSIField field) {
-        return getString(field.getName());
+        return getString(field.label());
     }
 
     public int getInt(NGSIField field) {
-        return getInt(field.getName());
+        return getInt(field.label());
     }
 
     public static final class NGSIJsonException extends JSONException {

@@ -5,6 +5,7 @@ import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.MongoUserRepository;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
+import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,9 +136,9 @@ public class UserTest {
 
         final NGSIJson json = new NGSIJson();
         json.setId(id);
-        json.put(User.Fields.UID.getName(), uid);
-        json.put(User.Fields.NICKNAME.getName(), nickname);
-        json.put(User.Fields.TYPE_ID.getName(), typeId);
+        json.put(User.Fields.UID.label(), uid);
+        json.put(User.Fields.NICKNAME.label(), nickname);
+        json.put(User.Fields.TYPE_ID.label(), typeId);
 
         final User user = User.fromNGSIJson(json);
 
@@ -157,17 +158,25 @@ public class UserTest {
 
         assertAll("Expected result",
                 () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
-                () -> assertEquals(user.getUid(), json.getJSONObject(User.Fields.UID.getName()).getString(NGSICommonFields.VALUE.getName())),
-                () -> assertEquals(user.getNickname(), json.getJSONObject(User.Fields.NICKNAME.getName()).getString(NGSICommonFields.VALUE.getName())),
-                () -> assertEquals(user.getTypeId(), json.getJSONObject(User.Fields.TYPE_ID.getName()).getInt(NGSICommonFields.VALUE.getName()))
+                () -> assertEquals(user.getUid(), json.getJSONObject(User.Fields.UID.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(user.getNickname(), json.getJSONObject(User.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(user.getTypeId(), json.getJSONObject(User.Fields.TYPE_ID.label()).getInt(NGSICommonFields.VALUE.label()))
         );
     }
 
     @Test
-    @DisplayName("Fields | getValue | ok")
-    void fieldsGetValueOk() {
-        assertEquals("uid", User.Fields.UID.getName());
-        assertEquals("nickname", User.Fields.NICKNAME.getName());
-        assertEquals("type_id", User.Fields.TYPE_ID.getName());
+    @DisplayName("Fields | label | ok")
+    void fieldsValueOk() {
+        assertEquals("uid", User.Fields.UID.label());
+        assertEquals("nickname", User.Fields.NICKNAME.label());
+        assertEquals("type_id", User.Fields.TYPE_ID.label());
+    }
+
+    @Test
+    @DisplayName("Fields | type | ok")
+    void fieldsTypeOk() {
+        assertEquals(NGSIFieldType.TEXT, User.Fields.UID.type());
+        assertEquals(NGSIFieldType.TEXT, User.Fields.NICKNAME.type());
+        assertEquals(NGSIFieldType.INTEGER, User.Fields.TYPE_ID.type());
     }
 }

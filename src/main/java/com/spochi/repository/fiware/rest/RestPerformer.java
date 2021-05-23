@@ -1,5 +1,6 @@
 package com.spochi.repository.fiware.rest;
 
+import com.spochi.repository.fiware.FiwareException;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -22,13 +23,13 @@ public class RestPerformer {
         try {
             final FiwareResponse response = client.execute(request);
             return response.getBody();
-        } catch (RestException e) {
+        } catch (FiwareException e) {
             if (e.getCode() != null && e.getCode() == HttpStatus.SC_NOT_FOUND) {
                 return null;
             } else throw e;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new RestException(e.getMessage());
+            throw new FiwareException(e.getMessage());
         }
     }
 
@@ -38,7 +39,7 @@ public class RestPerformer {
             client.execute(request);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new RestException(e.getMessage());
+            throw new FiwareException(e.getMessage());
         }
     }
 
@@ -49,7 +50,7 @@ public class RestPerformer {
             client.execute(request);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new RestException(e.getMessage());
+            throw new FiwareException(e.getMessage());
         }
     }
 
@@ -60,7 +61,7 @@ public class RestPerformer {
             return Integer.parseInt(response.getHeaders().get("Fiware-Total-Count").get(0));
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new RestException(e.getMessage());
+            throw new FiwareException(e.getMessage());
         }
     }
 

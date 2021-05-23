@@ -5,21 +5,21 @@ public enum NGSICommonFields implements NGSIField {
     TYPE("type", NGSIFieldType.TEXT),
     VALUE("value", NGSIFieldType.TEXT);
 
-    private final String name;
+    private final String label;
     private final NGSIFieldType type;
 
-    NGSICommonFields(String name, NGSIFieldType type) {
-        this.name = name;
+    NGSICommonFields(String label, NGSIFieldType type) {
+        this.label = label;
         this.type = type;
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public String label() {
+        return this.label;
     }
 
     @Override
-    public NGSIFieldType getType() {
+    public NGSIFieldType type() {
         return this.type;
     }
 }

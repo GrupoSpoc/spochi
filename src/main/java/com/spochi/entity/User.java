@@ -80,9 +80,9 @@ public class User implements NGSISerializable {
 
     public static User fromNGSIJson(NGSIJson json) {
         final String id = json.getId(); // todo renombrar
-        final String uid = json.getString(Fields.UID.getName());
-        final String nickname = json.getString(Fields.NICKNAME.getName());
-        final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.getName()));
+        final String uid = json.getString(Fields.UID.label());
+        final String nickname = json.getString(Fields.NICKNAME.label());
+        final UserType type = UserType.fromIdOrElseThrow(json.getInt(Fields.TYPE_ID.label()));
 
         return new User(id, uid, nickname, type.getId(), Collections.emptyList());
     }
@@ -101,12 +101,12 @@ public class User implements NGSISerializable {
         }
 
         @Override
-        public String getName() {
+        public String label() {
             return this.name;
         }
 
         @Override
-        public NGSIFieldType getType() {
+        public NGSIFieldType type() {
             return this.type;
         }
     }

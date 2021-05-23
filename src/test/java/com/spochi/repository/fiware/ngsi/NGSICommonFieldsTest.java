@@ -7,16 +7,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class NGSICommonFieldsTest {
 
     @Test
-    void getValue() {
-        assertEquals("id", NGSICommonFields.ID.getName());
-        assertEquals("type", NGSICommonFields.TYPE.getName());
-        assertEquals("value", NGSICommonFields.VALUE.getName());
+    void getLabel() {
+        assertEquals("id", NGSICommonFields.ID.label());
+        assertEquals("type", NGSICommonFields.TYPE.label());
+        assertEquals("value", NGSICommonFields.VALUE.label());
     }
 
     @Test
     void getType() {
-        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.ID.getType());
-        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.TYPE.getType());
-        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.VALUE.getType());
+        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.ID.type());
+        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.TYPE.type());
+        assertEquals(NGSIFieldType.TEXT, NGSICommonFields.VALUE.type());
     }
 }
