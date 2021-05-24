@@ -11,7 +11,6 @@ import com.spochi.repository.fiware.rest.RestPerformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -61,12 +60,5 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
                 .count();
 
         return super.count(queryBuilder);
-    }
-
-    public List<User> findByType(UserType type) {
-        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attribute(User.Fields.TYPE_ID, String.valueOf(type.getId()));
-
-        return find(queryBuilder);
     }
 }
