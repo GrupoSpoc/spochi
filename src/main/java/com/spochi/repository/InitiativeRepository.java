@@ -1,9 +1,10 @@
 package com.spochi.repository;
 
 import com.spochi.entity.Initiative;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface InitiativeRepository extends MongoRepository<Initiative, String> {
+import java.util.List;
+
+public interface InitiativeRepository extends  EntityRepository<Initiative> {
+    List<Initiative> getAll();
+    Initiative create(Initiative initiative);
 }

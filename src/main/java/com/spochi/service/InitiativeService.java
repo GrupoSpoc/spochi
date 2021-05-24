@@ -28,7 +28,7 @@ public class InitiativeService {
     UserRepository userRepository;
 
     public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
-        final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
+        final Stream<Initiative> initiatives = initiativeRepository.getAll().stream();
 
         return initiatives
                 .sorted(sorter)
@@ -58,7 +58,7 @@ public class InitiativeService {
                 InitiativeStatus.PENDING.getId()
         );
 
-        initiativeRepository.save(initiative);
+        initiativeRepository.create(initiative);
         responseDTO = initiative.toDTO();
 
         return responseDTO;

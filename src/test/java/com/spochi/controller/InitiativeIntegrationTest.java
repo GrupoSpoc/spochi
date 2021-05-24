@@ -3,7 +3,7 @@ package com.spochi.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeResponseDTO;
-import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.MongoInitiativeRepository;
 import com.spochi.service.query.InitiativeSorter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class InitiativeIntegrationTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    InitiativeRepository repository;
+    MongoInitiativeRepository repository;
 
     private static final String GET_ALL_PATH = "/initiative/all";
 

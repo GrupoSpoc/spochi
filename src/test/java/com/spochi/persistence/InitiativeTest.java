@@ -1,7 +1,7 @@
 package com.spochi.persistence;
 
 import com.spochi.entity.Initiative;
-import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.MongoInitiativeRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("disable-firebase")
 class InitiativeTest {
     @Autowired
-    InitiativeRepository repository;
+    MongoInitiativeRepository repository;
 
     @AfterEach
     void clearDB() {

@@ -1,5 +1,6 @@
 package com.spochi.repository.fiware;
 
+import com.spochi.entity.Initiative;
 import com.spochi.repository.fiware.ngsi.*;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import org.apache.http.HttpStatus;
@@ -59,6 +60,11 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         final String query = queryBuilder.type(getEntityType()).keyValues().build();
 
         return find(ENTITIES_URL + query);
+    }
+
+    protected List<T> getAll(NGSIQueryBuilder queryBuilder){
+        final String query = queryBuilder.type(Initiative.NGSIType).toString();
+        return  find(ENTITIES_URL + query);
     }
 
     protected int count(NGSIQueryBuilder queryBuilder) {
