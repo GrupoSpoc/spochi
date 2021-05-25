@@ -85,15 +85,15 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        //todo: agregar la validacion para el caso en que la fecha sea una fecha del futuro
+        if(LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+            throw new InitiativeServiceException("Initiative Date invalid");
+        }
     }
-
 
     public static class InitiativeServiceException extends BadRequestException {
         private InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
         }
     }
-
 }
 
