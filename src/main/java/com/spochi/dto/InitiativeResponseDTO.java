@@ -1,5 +1,7 @@
 package com.spochi.dto;
 
+import lombok.Setter;
+
 import static com.spochi.dto.DTOComparisonUtil.nullOrEquals;
 
 public class InitiativeResponseDTO {
@@ -10,6 +12,7 @@ public class InitiativeResponseDTO {
     private String date;
     private String nickname;
     private int status_id;
+    private boolean is_from_current_user;
 
     public InitiativeResponseDTO(){
 
@@ -75,5 +78,14 @@ public class InitiativeResponseDTO {
                 nullOrEquals(this.image, other.image) &&
                 nullOrEquals(this.status_id, other.status_id) &&
                 nullOrEquals(this._id, other._id);
+    }
+
+    public InitiativeResponseDTO set_from_current_user(boolean is_from_current_user) {
+        this.is_from_current_user = is_from_current_user;
+        return this;
+    }
+
+    public boolean isIs_from_current_user() {
+        return is_from_current_user;
     }
 }

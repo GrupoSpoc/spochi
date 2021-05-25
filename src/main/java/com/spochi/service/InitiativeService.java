@@ -28,12 +28,14 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
+    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter, String uid) {
         final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
+
+        final User user = userRepository.findByGoogleId(uid).orElseThrow(() -> new BadRequestException("No se encontró al USER"));
 
         return initiatives
                 .sorted(sorter)
-                .map(Initiative::toDTO)
+                .map(i -> i.toDTO(user.get_id()))
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +64,7 @@ public class InitiativeService {
         user.addInitiative(initiative);
         initiativeRepository.save(initiative);
         userRepository.save(user);
-        responseDTO = initiative.toDTO();
+        responseDTO = initiative.toDTO().set_from_current_user(true);
 
         return responseDTO;
     }

@@ -49,4 +49,18 @@ public class Initiative {
 
         return dto;
     }
+
+    public InitiativeResponseDTO toDTO(String userId) {
+        final InitiativeResponseDTO dto = new InitiativeResponseDTO();
+
+        dto.set_id(this._id);
+        dto.setDate(this.date.toString());
+        dto.setDescription(this.description);
+        dto.setNickname(this.nickname);
+        dto.setStatus_id(this.statusId);
+        dto.setImage(this.image);
+        dto.set_from_current_user(this.userId.equalsIgnoreCase(userId));
+
+        return dto;
+    }
 }
