@@ -1,8 +1,8 @@
 package com.spochi.persistence;
 
-import com.spochi.repository.MongoUserRepository;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
@@ -10,7 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataMongoTest
+@SpringBootTest
+@ActiveProfiles(profiles = {"disable-firebase", "disable-jwt-filter"})
 public class UserTest {
     @Autowired
     MongoUserRepository repository;

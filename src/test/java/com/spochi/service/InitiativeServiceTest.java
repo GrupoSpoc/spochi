@@ -4,7 +4,7 @@ import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
-import com.spochi.repository.MongoInitiativeRepository;
+import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoUserRepository;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class InitiativeServiceTest {
     InitiativeService service;
 
     @Autowired
-    MongoInitiativeRepository initiativeRepository;
+    InitiativeRepository initiativeRepository;
 
     @MockBean
     MongoUserRepository mongoUserRepository;

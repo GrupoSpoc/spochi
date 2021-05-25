@@ -19,13 +19,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
-import static com.spochi.controller.HttpStatus.*;
+import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles(profiles = {"disable-firebase", "disable-jwt-filter"})
-@TestPropertySource(properties="fiware-repositories=false")
 public class UserIntegrationTest {
     @Autowired
     MockMvc mvc;
