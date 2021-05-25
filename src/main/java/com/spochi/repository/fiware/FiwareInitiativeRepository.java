@@ -37,8 +37,8 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
     }
 
     @Override
-    public List<Initiative> getAll() {
-        NGSIQueryBuilder builder = new NGSIQueryBuilder();
+    public List<Initiative> getAllInitiatives() {
+        final NGSIQueryBuilder builder = new NGSIQueryBuilder();
         builder.type(Initiative.NGSIType);
         return getAll(builder);
     }

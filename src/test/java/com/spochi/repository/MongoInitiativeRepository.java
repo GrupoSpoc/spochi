@@ -14,7 +14,7 @@ import java.util.List;
 public interface MongoInitiativeRepository extends MongoRepository<Initiative,String>, InitiativeRepository {
 
    @Override
-   default List<Initiative> getAll(){
+   default List<Initiative> getAllInitiatives(){
         return findAll();
    }
 
