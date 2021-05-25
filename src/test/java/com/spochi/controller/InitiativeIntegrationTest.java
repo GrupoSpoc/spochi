@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import com.spochi.repository.InitiativeRepository;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -74,8 +76,6 @@ class InitiativeIntegrationTest {
     void clearDB() {
         repository.deleteAll();
     }
-
-    @AfterEach
     void clearUserDB() {
         userRepository.deleteAll();
     }
@@ -152,7 +152,7 @@ class InitiativeIntegrationTest {
         //create requestDTO
         final String DESCRIPTION = "description";
         final String IMAGE = "image";
-        final String DATE = LocalDateTime.now().toString();
+        final String DATE = LocalDateTime.now().withNano(0).toString();
 
         InitiativeRequestDTO requestDTO = new InitiativeRequestDTO();
         requestDTO.setDescription(DESCRIPTION);
@@ -175,11 +175,21 @@ class InitiativeIntegrationTest {
         assertEquals(DESCRIPTION, resultDTO.getDescription());
         assertEquals(DATE, resultDTO.getDate());
         assertEquals(user.getNickname(),resultDTO.getNickname());
+        assertEquals(1,resultDTO.getStatus_id());
+
+       Initiative save_initiative = repository.findById(resultDTO.get_id()).get();
+        assertEquals(IMAGE, save_initiative.getImage());
+        assertEquals(DESCRIPTION, save_initiative.getDescription());
+        assertEquals(requestDTO.getDate(), save_initiative.getDate().toString());
+        assertEquals(user.getNickname(),save_initiative.getNickname());
+        assertEquals(1,save_initiative.getStatusId());
+
     }
+
 
     @Test
     void createFail() throws Exception {
-        repository.deleteAll();
+       repository.deleteAll();
 
         //create user
         final String uid = "uid";
