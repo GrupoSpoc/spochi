@@ -12,7 +12,6 @@ import com.spochi.repository.UserRepository;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -85,9 +84,19 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        if(LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+
+        if(isFormatDateValid(request.getDate())&&LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
             throw new InitiativeServiceException("Initiative Date invalid");
         }
+    }
+
+    private boolean isFormatDateValid(String date)throws InitiativeServiceException{
+        try{
+            LocalDateTime.parse(date);
+        }catch (Exception e){
+            throw new InitiativeServiceException("Initiative Date invalid");
+        }
+        return true;
     }
 
     public static class InitiativeServiceException extends BadRequestException {
