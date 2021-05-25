@@ -85,16 +85,16 @@ public class InitiativeService {
 
         }
 
-        if(isFormatDateValid(request.getDate())&&LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+        if(isDateFormatValid(request.getDate())&&LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }
 
-    private boolean isFormatDateValid(String date)throws InitiativeServiceException{
+    private boolean isDateFormatValid(String date)throws InitiativeServiceException{
         try{
             LocalDateTime.parse(date);
         }catch (Exception e){
-            throw new InitiativeServiceException("Initiative Date invalid");
+            return false;
         }
         return true;
     }
