@@ -6,7 +6,7 @@ import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.repository.MongoUserRepository;
+import com.spochi.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,7 @@ import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("disable-firebase")
@@ -32,7 +31,7 @@ class UserServiceTest {
     UserService service;
 
     @MockBean
-    MongoUserRepository repository;
+    UserRepository repository;
 
     @Test
     @DisplayName("find by uid | when user is found | should return UserResponseDTO | ok")
@@ -48,6 +47,7 @@ class UserServiceTest {
 
         final UserResponseDTO actualDTO = service.findByUid("uid");
 
+        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId()); // todo reemplazar por uid en SPOCAN-114
         assertEquals(expectedDTO, actualDTO);
     }
 
