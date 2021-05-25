@@ -67,12 +67,9 @@ public class InitiativeService {
     }
 
     private void validateFields(InitiativeRequestDTO request) throws InitiativeServiceException {
-
-
         if (request.getDescription().isEmpty()) {
             throw new InitiativeServiceException("Initiative Description is empty");
         }
-
         if (request.getImage().isEmpty()) {
             throw new InitiativeServiceException("Initiative Image is empty");
         }
@@ -84,13 +81,12 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-
-        if(isDateFormatValid(request.getDate())&&LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }
 
-    private boolean isDateFormatValid(String date)throws InitiativeServiceException{
+    private boolean isDateFormatValid(String date){
         try{
             LocalDateTime.parse(date);
         }catch (Exception e){
