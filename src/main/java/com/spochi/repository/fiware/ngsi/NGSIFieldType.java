@@ -21,6 +21,18 @@ public enum NGSIFieldType {
                 throw new InvalidValueException("Value for LocalDateTime must have 0 nano seconds");
             }
         }
+    },
+    REFERENCE("Reference", String.class) {
+        @Override
+        public void validateValue(Object value) {
+            super.validateValue(value);
+
+            final String valueString = value.toString();
+
+            if (!valueString.startsWith(NGSICommonFields.ID.prefix())) {
+                throw new InvalidValueException(String.format("Value [%s] for Reference is not a valid id", valueString));
+            }
+        }
     };
 
     private final String label;
