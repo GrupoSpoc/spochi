@@ -106,7 +106,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return Optional.of(new NGSIJson(jsonArray.get(0).toString()));
     }
 
-    private String nextId(String lastId) {
+    protected String nextId(String lastId) {
         final int index = lastId.lastIndexOf(":") + 1;
         final int lastIdentifier = Integer.parseInt(lastId.substring(index));
         return buildId(lastIdentifier + 1);
