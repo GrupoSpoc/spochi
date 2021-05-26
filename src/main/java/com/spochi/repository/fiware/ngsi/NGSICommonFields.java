@@ -1,12 +1,7 @@
 package com.spochi.repository.fiware.ngsi;
 
 public enum NGSICommonFields implements NGSIField {
-    ID("id", NGSIFieldType.TEXT) {
-        @Override
-        public String prefix() {
-            return "urn:ngsi-ld:";
-        }
-    },
+    ID("id", NGSIFieldType.TEXT),
     TYPE("type", NGSIFieldType.TEXT),
     VALUE("value", NGSIFieldType.TEXT);
 
@@ -26,9 +21,5 @@ public enum NGSICommonFields implements NGSIField {
     @Override
     public NGSIFieldType type() {
         return this.type;
-    }
-
-    public String prefix() {
-        return "";
     }
 }

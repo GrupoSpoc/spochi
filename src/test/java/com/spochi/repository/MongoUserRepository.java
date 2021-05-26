@@ -37,7 +37,7 @@ public class MongoUserRepository implements UserRepository {
     public int getAmountOfInitiatives(String id) {
         return (int) initiativeRepository.findAll()
                 .stream()
-                .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id))
+                .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id)) // todo reemplazar por uid en SPOCAN-114
                 .count();
     }
 

@@ -19,11 +19,4 @@ class NGSICommonFieldsTest {
         assertEquals(NGSIFieldType.TEXT, NGSICommonFields.TYPE.type());
         assertEquals(NGSIFieldType.TEXT, NGSICommonFields.VALUE.type());
     }
-
-    @Test
-    void prefix() {
-        assertEquals("urn:ngsi-ld:", NGSICommonFields.ID.prefix());
-        assertEquals("", NGSICommonFields.TYPE.prefix());
-        assertEquals("", NGSICommonFields.VALUE.prefix());
-    }
 }

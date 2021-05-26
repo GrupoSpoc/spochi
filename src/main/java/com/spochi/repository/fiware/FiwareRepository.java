@@ -66,7 +66,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     protected String buildId(int identifier) {
-        return NGSICommonFields.ID.prefix() + getEntityType().label() + ":" + identifier;
+        return "urn:ngsi-ld:" + getEntityType().label() + ":" + identifier;
     }
 
     private void create(NGSIJson json) {
