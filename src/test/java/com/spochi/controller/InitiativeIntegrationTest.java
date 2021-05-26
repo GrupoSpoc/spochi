@@ -75,8 +75,6 @@ class InitiativeIntegrationTest {
     @AfterEach
     void clearDB() {
         repository.deleteAll();
-    }
-    void clearUserDB() {
         userRepository.deleteAll();
     }
 
