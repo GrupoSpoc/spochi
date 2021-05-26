@@ -19,6 +19,8 @@ import java.util.Optional;
 import static com.spochi.util.AssertUtils.assertBadRequestException;
 import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
