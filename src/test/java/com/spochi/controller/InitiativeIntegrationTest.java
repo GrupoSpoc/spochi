@@ -8,6 +8,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.repository.UserRepository;
 import com.spochi.service.auth.JwtUtil;
 import com.spochi.service.query.InitiativeSorter;
@@ -58,7 +59,7 @@ class InitiativeIntegrationTest {
     InitiativeRepository repository;
 
     @Autowired
-    UserRepository userRepository;
+    MongoUserRepository userRepository;
 
     @MockBean
     JwtUtil jwtUtil;
@@ -148,7 +149,7 @@ class InitiativeIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
         final User user = UserDummyBuilder.build(uid);
-        userRepository.save(user);
+        userRepository.create(user);
         //create requestDTO
         final String DESCRIPTION = "description";
         final String IMAGE = "image";
@@ -195,7 +196,7 @@ class InitiativeIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
         final User user = UserDummyBuilder.build(uid);
-        userRepository.save(user);
+        userRepository.create(user);
         //create requestDTO
         final String DESCRIPTION = "description";
         final String IMAGE = "image";
