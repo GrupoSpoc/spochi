@@ -56,7 +56,7 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     public int getAmountOfInitiatives(String id) {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
         queryBuilder.type(Initiative.NGSIType)
-                .ref(getEntityType(), id) // todo reemplazar por uid en SPOCAN-114
+                .ref(getEntityType(), id)
                 .count();
 
         return super.count(queryBuilder);

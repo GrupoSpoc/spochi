@@ -47,7 +47,7 @@ class UserServiceTest {
 
         final UserResponseDTO actualDTO = service.findByUid("uid");
 
-        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId()); // todo reemplazar por uid en SPOCAN-114
+        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId());
         assertEquals(expectedDTO, actualDTO);
     }
 
