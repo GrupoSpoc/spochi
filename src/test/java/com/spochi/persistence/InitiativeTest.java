@@ -1,6 +1,7 @@
 package com.spochi.persistence;
 
 import com.spochi.entity.Initiative;
+import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoInitiativeRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

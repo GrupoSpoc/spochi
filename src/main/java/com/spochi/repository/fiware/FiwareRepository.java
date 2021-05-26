@@ -62,11 +62,6 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return find(ENTITIES_URL + query);
     }
 
-    protected List<T> getAll(NGSIQueryBuilder queryBuilder){
-        final String query = queryBuilder.type(Initiative.NGSIType).toString();
-        return  find(ENTITIES_URL + query);
-    }
-
     protected int count(NGSIQueryBuilder queryBuilder) {
         return performer.count(ENTITIES_URL + queryBuilder.build());
     }

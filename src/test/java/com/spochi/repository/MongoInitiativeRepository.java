@@ -1,6 +1,8 @@
 package com.spochi.repository;
 
+import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
+import com.spochi.service.query.InitiativeSorter;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Primary;
 
@@ -14,7 +16,7 @@ import java.util.List;
 public interface MongoInitiativeRepository extends MongoRepository<Initiative,String>, InitiativeRepository {
 
    @Override
-   default List<Initiative> getAllInitiatives(){
+   default List<Initiative> getAllInitiatives(InitiativeSorter sorter){
         return findAll();
    }
 

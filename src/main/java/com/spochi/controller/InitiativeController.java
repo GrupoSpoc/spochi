@@ -20,20 +20,21 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
-    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order) {
-        final Comparator<Initiative> sorter;
+    public List<InitiativeResponseDTO> getAll(@RequestParam(required = false) Integer order) {
+        final InitiativeSorter sorter;
 
         if (order != null) {
-            sorter = InitiativeSorter.fromIdOrElseThrow(order).getComparator();
+            sorter = InitiativeSorter.fromIdOrElseThrow(order);
         } else {
-            sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+            sorter = InitiativeSorter.DEFAULT_COMPARATOR;
         }
 
         return service.getAll(sorter);
+
     }
 
     @PostMapping
-    public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid){
-        return service.create(request,uid);
+    public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid) {
+        return service.create(request, uid);
     }
 }

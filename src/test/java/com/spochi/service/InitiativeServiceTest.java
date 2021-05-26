@@ -88,7 +88,7 @@ class InitiativeServiceTest {
         assertNotNull(result.get_id());
         assertEquals(STATUS_DEFAULT, result.getStatus_id());
 
-        Optional<Initiative> initiativeOpt = initiativeRepository.findById(result.get_id());
+        Optional<Initiative> initiativeOpt = initiativeRepository.findInitiativeById((result.get_id()));
         assertTrue(initiativeOpt.isPresent());
     }
 
