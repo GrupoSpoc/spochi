@@ -17,6 +17,7 @@ class NGSIFieldTypeTest {
         assertEquals("Text", TEXT.label());
         assertEquals("Number", INTEGER.label());
         assertEquals("LocalDateTime", DATE.label());
+        assertEquals("Reference", REFERENCE.label());
     }
 
     @Test
@@ -40,7 +41,7 @@ class NGSIFieldTypeTest {
 
     @Test
     @DisplayName("validate value | when type is DATE")
-    void validateValueDateTIme() {
+    void validateValueDateTime() {
         assertDoesNotThrow(() -> DATE.validateValue("2021-05-22T16:53:32"));
         assertDoesNotThrow(() -> DATE.validateValue("2019-02-14T20:16:01"));
         
@@ -48,5 +49,16 @@ class NGSIFieldTypeTest {
         assertException(InvalidValueException.class, () -> DATE.validateValue(10), "Type LocalDateTime expected an instance of String but [10] is a Integer");
         assertException(InvalidValueException.class, () -> DATE.validateValue(null), "Null values are not allowed");
         assertException(InvalidValueException.class, () -> DATE.validateValue("2021-05-22T16:53:32.0343"), "Value for LocalDateTime must have 0 nano seconds");
+    }
+
+    @Test
+    @DisplayName("validate value | when type is REFERENCE")
+    void validateValueReference() {
+        assertDoesNotThrow(() -> REFERENCE.validateValue(NGSICommonFields.ID.prefix() + "User:user-uid"));
+        assertDoesNotThrow(() -> REFERENCE.validateValue(NGSICommonFields.ID.prefix() + "Initiative:1"));
+
+        assertException(InvalidValueException.class, () -> REFERENCE.validateValue("not-an-id"), "Value [not-an-id] for Reference is not a valid id");
+        assertException(InvalidValueException.class, () -> REFERENCE.validateValue(10), "Type Reference expected an instance of String but [10] is a Integer");
+        assertException(InvalidValueException.class, () -> REFERENCE.validateValue(null), "Null values are not allowed");
     }
 }
