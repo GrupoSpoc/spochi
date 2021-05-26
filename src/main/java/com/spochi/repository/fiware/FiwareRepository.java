@@ -65,6 +65,20 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return performer.count(ENTITIES_URL + queryBuilder.build());
     }
 
+    protected String nextId(T instance) {
+        final String query = new NGSIQueryBuilder()
+                .type(getEntityType())
+                .keyValues()
+                .one()
+                .orderByDesc(NGSICommonFields.ID)
+                .build();
+
+        final String response = performer.get(ENTITIES_URL + query);
+        final Optional<String> lastId = getFirstElementAsNGSIJson(response).map(NGSIJson::getId);
+
+        return lastId.map(this::nextId).orElseGet(this::firstId);
+    }
+
     protected String buildId(int identifier) {
         return buildId(String.valueOf(identifier));
     }
@@ -90,27 +104,13 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return result;
     }
 
-    protected String nextId(T instance) {
-        final String query = new NGSIQueryBuilder()
-                .type(getEntityType())
-                .keyValues()
-                .one()
-                .orderByDesc(NGSICommonFields.ID)
-                .build();
-
-        final String response = performer.get(ENTITIES_URL + query);
-        final Optional<String> lastId = getFirstElementAsNGSIJson(response).map(NGSIJson::getId);
-
-        return lastId.map(this::nextId).orElseGet(this::firstId);
-    }
-
     private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {
         final JSONArray jsonArray = new JSONArray(arrayString);
         if (jsonArray.length() == 0) return Optional.empty();
         return Optional.of(new NGSIJson(jsonArray.get(0).toString()));
     }
 
-    protected String nextId(String lastId) {
+    private String nextId(String lastId) {
         final int index = lastId.lastIndexOf(":") + 1;
         final int lastIdentifier = Integer.parseInt(lastId.substring(index));
         return buildId(lastIdentifier + 1);
