@@ -52,7 +52,8 @@ public class JwtUtil {
 
     /**
      * Le sumamos un minuto a la fecha actual,
-     * ya que luego de validar el JWT otros servicios lo consumen
+     * ya que luego de validar el JWT otros servicios lo consumen.
+     * Entonces nos aseguramos que sea válido ahora y de acá a un minuto en el futuro.
      */
     private boolean isTokenExpired(String token) {
         final Date now = new Date(currentMillis());

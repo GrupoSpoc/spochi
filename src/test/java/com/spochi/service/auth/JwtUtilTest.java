@@ -42,10 +42,10 @@ class JwtUtilTest {
     void tokenExpiresInAMinute() {
         final JwtUtilForTest jwtUtilNow = new JwtUtilForTest();
         final String jwt = jwtUtilNow.generateToken("uid");
-        final long millisAfterThreeHoursAndOneMinute = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3L) - TimeUnit.MINUTES.toMillis(1L);
-        final JwtUtilForTest jwtUtilAfterThreeHoursAndOneMinute = new JwtUtilForTest(() -> millisAfterThreeHoursAndOneMinute);
+        final long millisAfter2HoursAnd59Minutes = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3L) - TimeUnit.MINUTES.toMillis(1L);
+        final JwtUtilForTest jwtUtilAfter2HoursAnd59Minutes = new JwtUtilForTest(() -> millisAfter2HoursAnd59Minutes);
 
-        assertFalse(jwtUtilAfterThreeHoursAndOneMinute.isTokenValid(jwt));
+        assertFalse(jwtUtilAfter2HoursAnd59Minutes.isTokenValid(jwt));
     }
 
     @Test
