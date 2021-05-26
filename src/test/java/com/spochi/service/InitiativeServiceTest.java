@@ -100,4 +100,23 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date is empty");
     }
+    @Test
+    void initiativeDateIsInvalid(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime futureDate = now.plusDays(10);
+        wrong_initiative.setDescription(DESCRIPTION);
+        wrong_initiative.setImage(IMAGE_BASE64);
+        wrong_initiative.setDate(futureDate.toString());
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class,() -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date invalid");
+    }
+
+    @Test
+    void DateFormatIsWrong(){
+        wrong_initiative.setDescription(DESCRIPTION);
+        wrong_initiative.setImage(IMAGE_BASE64);
+        wrong_initiative.setDate("0");
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class,() -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date invalid");
+    }
 }
