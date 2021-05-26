@@ -22,7 +22,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     public T create(T instance) {
-        final String id = nextId();
+        final String id = nextId(instance);
         create(instance.toNGSIJson(id));
         return findById(id).orElseThrow(() ->
                 new FiwareException(String.format("Fatal: [%s] with id [%s] not found after creation", getEntityType().label(), id), HttpStatus.SC_NOT_FOUND));
@@ -66,6 +66,10 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     protected String buildId(int identifier) {
+        return buildId(String.valueOf(identifier));
+    }
+
+    protected String buildId(String identifier) {
         return NGSICommonFields.ID.prefix() + getEntityType().label() + ":" + identifier;
     }
 
@@ -86,7 +90,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return result;
     }
 
-    private String nextId() {
+    protected String nextId(T instance) {
         final String query = new NGSIQueryBuilder()
                 .type(getEntityType())
                 .keyValues()
