@@ -34,8 +34,8 @@ public class InitiativeTestUtil {
         initiatives.add(builder.statusId(3).date(epochDate).build());
     }
 
-    public static List<InitiativeResponseDTO> getAllAsDTOs(String uid) {
-        return initiatives.stream().map(initiative -> initiative.toDTO(uid)).collect(Collectors.toList());
+    public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
+        return initiatives.stream().map(initiative -> initiative.toDTO(user)).collect(Collectors.toList());
     }
 
     public static List<Initiative> getInitiatives() {

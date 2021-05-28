@@ -47,12 +47,7 @@ public class Initiative {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
-
-        if (user_id.equals(this.userId)) {
-            dto.setIs_from_current_user(true);
-        } else {
-            dto.setIs_from_current_user(false);
-        }
+        dto.setIs_from_current_user(user_id.equals(this.userId));
 
         return dto;
     }

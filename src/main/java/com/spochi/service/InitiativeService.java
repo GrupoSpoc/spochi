@@ -27,8 +27,8 @@ public class InitiativeService {
     UserRepository userRepository;
 
     public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter, String uid) {
-        final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
         final User user = userRepository.findByGoogleId(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+        final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
 
         return initiatives
                 .sorted(sorter)

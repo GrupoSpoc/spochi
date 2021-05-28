@@ -136,7 +136,7 @@ class InitiativeTest {
 
 
         final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
-        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId(anyString()).build().toDTO(userId);
+        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
 
         assertTrue(dtoFromCurrentUser.is_from_current_user());
         assertFalse(dtoNotFromCurrentUSer.is_from_current_user());
