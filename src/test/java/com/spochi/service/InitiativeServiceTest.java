@@ -4,8 +4,10 @@ import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
+import com.spochi.persistence.InitiativeDummyBuilder;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
+import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,13 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +57,7 @@ class InitiativeServiceTest {
     @Test
     void initiativeDescriptionIsEmpty() {
         wrong_initiative.setDescription(EMPTY);
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Description is empty");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Description is empty");
     }
 
     @Test
@@ -60,14 +65,14 @@ class InitiativeServiceTest {
         wrong_initiative.setDescription(DESCRIPTION);
         wrong_initiative.setImage(EMPTY);
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Image is empty");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Image is empty");
     }
 
     @Test
     void initiativeImageIsNotBase64() {
         wrong_initiative.setDescription(DESCRIPTION);
         wrong_initiative.setImage("$$$////:");
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Image is not Base64");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Image is not Base64");
     }
 
     @Test
@@ -99,25 +104,86 @@ class InitiativeServiceTest {
         wrong_initiative.setDate(EMPTY);
         wrong_initiative.setImage(IMAGE_BASE64);
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date is empty");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Date is empty");
     }
+
     @Test
-    void initiativeDateIsInvalid(){
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime futureDate = now.plusDays(10);
+    void initiativeDateIsInvalid() {
+        LocalDateTime futureDate = LocalDateTime.now().plusDays(10);
         wrong_initiative.setDescription(DESCRIPTION);
         wrong_initiative.setImage(IMAGE_BASE64);
         wrong_initiative.setDate(futureDate.toString());
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class,() -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date invalid");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Date invalid");
     }
 
     @Test
-    void DateFormatIsWrong(){
+    void DateFormatIsWrong() {
         wrong_initiative.setDescription(DESCRIPTION);
         wrong_initiative.setImage(IMAGE_BASE64);
         wrong_initiative.setDate("0");
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class,() -> service.create(wrong_initiative, UID),"The Services fail because : Initiative Date invalid");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Date invalid");
+    }
+
+    @Test
+    void getAllInitiativeOK() {
+        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname(NICKNAME);
+        builder.date(LocalDateTime.now());
+        builder.description(DESCRIPTION);
+        builder.statusId(2);
+        builder.image(IMAGE_BASE64);
+        builder.userId(USER_ID);
+        builder._id("1");
+
+        final Initiative initiativeFromCurrentUser_1= builder.build();
+        final Initiative initiativeFromCurrentUser_2= builder._id("2").build();
+        builder.userId("another_user");
+        builder._id("3");
+        final Initiative initiativeNotFromCurrentUser = builder.build();;
+
+        initiativeRepository.save(initiativeFromCurrentUser_1);
+        initiativeRepository.save(initiativeFromCurrentUser_2);
+        initiativeRepository.save(initiativeNotFromCurrentUser);
+
+
+        final User.UserBuilder userBuilder = User.builder();
+        userBuilder.googleId(UID);
+        userBuilder._id(USER_ID);
+        final User user = userBuilder.build();
+        userRepository.save(user);
+
+
+        when(userRepository.findByGoogleId(UID)).thenReturn(Optional.of(user));
+
+
+       List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
+
+       assertEquals(3,list_dto.size());
+       assertTrue(list_dto.get(0).is_from_current_user());
+       assertTrue(list_dto.get(1).is_from_current_user());
+       assertFalse(list_dto.get(2).is_from_current_user());
+
+    }
+
+    @Test
+    void getAllInitiativeThrowException(){
+        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname(NICKNAME);
+        builder.date(LocalDateTime.now());
+        builder.description(DESCRIPTION);
+        builder.statusId(2);
+        builder.image(IMAGE_BASE64);
+        builder.userId(USER_ID);
+        builder._id("1");
+        final Initiative initiative = builder.build();
+
+        initiativeRepository.save(initiative);
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(sorter, UID), "The Services fail because : user not found when initiative getAll");
     }
 }

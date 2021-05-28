@@ -1,7 +1,6 @@
 package com.spochi.service;
 
 import com.spochi.controller.exception.BadRequestException;
-import com.spochi.controller.handler.Uid;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -27,12 +26,13 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
+    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter, String uid) {
         final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
+        final User user = userRepository.findByGoogleId(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
 
         return initiatives
                 .sorted(sorter)
-                .map(Initiative::toDTO)
+                .map(initiative -> initiative.toDTO(user.get_id()))
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +61,7 @@ public class InitiativeService {
         user.addInitiative(initiative);
         initiativeRepository.save(initiative);
         userRepository.save(user);
-        responseDTO = initiative.toDTO();
+        responseDTO = initiative.toDTO(user.get_id());
 
         return responseDTO;
     }

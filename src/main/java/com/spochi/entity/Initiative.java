@@ -22,6 +22,7 @@ public class Initiative {
     private String nickname;
     private LocalDateTime date;
 
+
     @Field(name = "user_id")
     private String userId;
 
@@ -37,7 +38,7 @@ public class Initiative {
         this.statusId = statusId;
     }
 
-    public InitiativeResponseDTO toDTO() {
+    public InitiativeResponseDTO toDTO(String user_id) {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 
         dto.set_id(this._id);
@@ -46,6 +47,12 @@ public class Initiative {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
+
+        if (user_id.equals(this.userId)) {
+            dto.setIs_from_current_user(true);
+        } else {
+            dto.setIs_from_current_user(false);
+        }
 
         return dto;
     }
