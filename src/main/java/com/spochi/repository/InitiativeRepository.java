@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface InitiativeRepository extends  EntityRepository<Initiative> {
     List<Initiative> getAllInitiatives(InitiativeSorter sorter);
     Initiative create(Initiative initiative);
+    Optional<Initiative> findInitiativeById(String id);
 }
