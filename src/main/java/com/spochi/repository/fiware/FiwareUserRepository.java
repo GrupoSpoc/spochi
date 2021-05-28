@@ -38,10 +38,9 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
 
     @Override
     public Optional<User> findByUid(String uid) {
-        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attribute(User.Fields.UID, uid);
+        final String userId = buildId(uid);
 
-        return findFirst(queryBuilder);
+        return findById(userId);
     }
 
     @Override
@@ -60,5 +59,10 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
                 .count();
 
         return super.count(queryBuilder);
+    }
+
+    @Override
+    protected String nextId(User user) {
+        return buildId(user.getUid());
     }
 }

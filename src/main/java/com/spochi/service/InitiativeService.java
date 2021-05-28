@@ -14,7 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,12 +69,9 @@ public class InitiativeService {
     }
 
     private void validateFields(InitiativeRequestDTO request) throws InitiativeServiceException {
-
-
         if (request.getDescription().isEmpty()) {
             throw new InitiativeServiceException("Initiative Description is empty");
         }
-
         if (request.getImage().isEmpty()) {
             throw new InitiativeServiceException("Initiative Image is empty");
         }
@@ -87,15 +83,24 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        //todo: agregar la validacion para el caso en que la fecha sea una fecha del futuro
+        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+            throw new InitiativeServiceException("Initiative Date invalid");
+        }
     }
 
+    private boolean isDateFormatValid(String date){
+        try{
+            LocalDateTime.parse(date);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
 
     public static class InitiativeServiceException extends BadRequestException {
         private InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
         }
     }
-
 }
 

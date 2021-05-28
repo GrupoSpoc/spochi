@@ -2,6 +2,7 @@ package com.spochi.repository.fiware;
 
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +77,7 @@ class FiwareUserRepositoryTest {
     void findByUidOk() {
         final RestPerformer performer = mock(RestPerformer.class);
 
-        when(performer.get(anyString())).thenReturn(twoUsersArray);
+        when(performer.get(anyString())).thenReturn(testUser1Json.toString());
 
         final FiwareUserRepository repository = new FiwareUserRepository(performer);
 
@@ -95,7 +96,7 @@ class FiwareUserRepositoryTest {
     void findByUidNoResultOk() {
         final RestPerformer performer = mock(RestPerformer.class);
 
-        when(performer.get(anyString())).thenReturn(emptyArray);
+        when(performer.get(anyString())).thenReturn(null);
 
         final FiwareUserRepository repository = new FiwareUserRepository(performer);
 
@@ -183,6 +184,15 @@ class FiwareUserRepositoryTest {
         final FiwareUserRepository repository = new FiwareUserRepository(performer);
 
         assertException(RuntimeException.class, () -> repository.getAmountOfInitiatives("id"), "count-error");
+    }
+
+    @Test
+    @DisplayName("build next id | ok")
+    void buildNextIdOk() {
+        final FiwareUserRepository repository = new FiwareUserRepository(mock(RestPerformer.class));
+
+        assertEquals(NGSICommonFields.ID.prefix() + User.NGSIType.label() + ":" + testUser1.getUid(), repository.nextId(testUser1));
+        assertEquals(NGSICommonFields.ID.prefix() + User.NGSIType.label() + ":" + testUser2.getUid(), repository.nextId(testUser2));
     }
 
     private static NGSIJson buildTestUserJsonResponse(User user, String id1) {

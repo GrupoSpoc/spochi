@@ -23,7 +23,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
     }
 
     public T create(T instance) {
-        final String id = nextId();
+        final String id = nextId(instance);
         create(instance.toNGSIJson(id));
         return findById(id).orElseThrow(() ->
                 new FiwareException(String.format("Fatal: [%s] with id [%s] not found after creation", getEntityType().label(), id), HttpStatus.SC_NOT_FOUND));
@@ -66,7 +66,25 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
         return performer.count(ENTITIES_URL + queryBuilder.build());
     }
 
+    protected String nextId(T instance) {
+        final String query = new NGSIQueryBuilder()
+                .type(getEntityType())
+                .keyValues()
+                .one()
+                .orderByDesc(NGSICommonFields.ID)
+                .build();
+
+        final String response = performer.get(ENTITIES_URL + query);
+        final Optional<String> lastId = getFirstElementAsNGSIJson(response).map(NGSIJson::getId);
+
+        return lastId.map(this::nextId).orElseGet(this::firstId);
+    }
+
     protected String buildId(int identifier) {
+        return buildId(String.valueOf(identifier));
+    }
+
+    protected String buildId(String identifier) {
         return NGSICommonFields.ID.prefix() + getEntityType().label() + ":" + identifier;
     }
 
@@ -85,20 +103,6 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
         new JSONArray(response).forEach(j -> result.add(this.fromNGSIJson(new NGSIJson(j.toString()))));
         return result;
-    }
-
-    private String nextId() {
-        final String query = new NGSIQueryBuilder()
-                .type(getEntityType())
-                .keyValues()
-                .one()
-                .orderByDesc(NGSICommonFields.ID)
-                .build();
-
-        final String response = performer.get(ENTITIES_URL + query);
-        final Optional<String> lastId = getFirstElementAsNGSIJson(response).map(NGSIJson::getId);
-
-        return lastId.map(this::nextId).orElseGet(this::firstId);
     }
 
     private Optional<NGSIJson> getFirstElementAsNGSIJson(String arrayString) {

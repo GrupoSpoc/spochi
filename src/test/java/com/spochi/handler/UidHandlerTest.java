@@ -41,7 +41,7 @@ public class UidHandlerTest {
 
     @Test
     @DisplayName("resolve argument | when authorization header is present | should return uid")
-    void testResolveArgumentOk() throws Exception {
+    void testResolveArgumentOk() {
         final JwtUtil jwtUtilMock = mock(JwtUtil.class);
 
         when(jwtUtilMock.extractUid(anyString())).thenReturn("uid");
