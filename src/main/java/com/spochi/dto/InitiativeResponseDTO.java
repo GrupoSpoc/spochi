@@ -10,6 +10,9 @@ public class InitiativeResponseDTO {
     private String date;
     private String nickname;
     private int status_id;
+    private boolean from_current_user;
+
+
 
     public InitiativeResponseDTO(){
 
@@ -18,7 +21,6 @@ public class InitiativeResponseDTO {
     public String get_id() {
         return _id;
     }
-
 
     public void set_id(String _id) {
         this._id = _id;
@@ -64,6 +66,9 @@ public class InitiativeResponseDTO {
         this.status_id = status_id;
     }
 
+    public boolean isFrom_current_user() {return from_current_user;}
+
+    public void setFrom_current_user(boolean from_current_user) {this.from_current_user = from_current_user;}
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof InitiativeResponseDTO)) return false;
@@ -74,6 +79,7 @@ public class InitiativeResponseDTO {
                 nullOrEquals(this.description, other.description) &&
                 nullOrEquals(this.image, other.image) &&
                 nullOrEquals(this.status_id, other.status_id) &&
-                nullOrEquals(this._id, other._id);
+                nullOrEquals(this._id, other._id)&&
+                nullOrEquals(this.from_current_user,other.from_current_user);
     }
 }

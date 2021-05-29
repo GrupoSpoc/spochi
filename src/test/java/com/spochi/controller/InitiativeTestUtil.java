@@ -2,6 +2,7 @@ package com.spochi.controller;
 
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
+import org.h2.value.ValueStringIgnoreCase;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,8 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.mockito.ArgumentMatchers.anyString;
+
 public class InitiativeTestUtil {
     private static final List<Initiative> initiatives = new ArrayList<>();
+    public static final String UNIQUE_ID = "unique_id";
+
 
     static {
         final Initiative.InitiativeBuilder builder = Initiative.builder();
@@ -27,11 +32,11 @@ public class InitiativeTestUtil {
         initiatives.add(builder.date(epochDate.plusYears(10)).build());
         initiatives.add(builder.statusId(1).date(epochDate.plusYears(20)).build());
         initiatives.add(builder.statusId(2).date(epochDate.plusYears(30)).build());
-        initiatives.add(builder.statusId(3).date(epochDate).build());
+        initiatives.add(builder.statusId(3).date(epochDate).userId(UNIQUE_ID).build());
     }
 
-    public static List<InitiativeResponseDTO> getAllAsDTOs() {
-        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
+    public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
+        return initiatives.stream().map(initiative -> initiative.toDTO(user)).collect(Collectors.toList());
     }
 
     public static List<Initiative> getInitiatives() {

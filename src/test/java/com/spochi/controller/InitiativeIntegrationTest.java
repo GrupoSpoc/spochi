@@ -29,14 +29,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+
 
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,11 +66,20 @@ class InitiativeIntegrationTest {
 
     private static final String GET_ALL_PATH = "/initiative/all";
     private static final String CREATE_PATH = "/initiative";
+    private final static User.UserBuilder Builder = User.builder();
+    private static User user;
+    private static final String UNIQUE_UID = "unique_uid";
+    private static final String jwt = "jwt";
 
     @BeforeEach
     public void beforeEach() {
         InitiativeTestUtil.getInitiatives().forEach(initiative -> repository.save(initiative));
+        Builder.googleId(UNIQUE_UID);
+        Builder._id(InitiativeTestUtil.UNIQUE_ID);
+        user = Builder.build();
+        userRepository.save(user);
     }
+
 
     @AfterEach
     void clearDB() {
@@ -82,10 +91,13 @@ class InitiativeIntegrationTest {
     @DisplayName("getAll | without order param | ok")
     void getAllWithoutOrderParamOk() throws Exception {
         // setup
-        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs();
+        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs(InitiativeTestUtil.UNIQUE_ID);
+
+        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
 
         // perform
-        final MvcResult result = mvc.perform(get(GET_ALL_PATH))
+        final MvcResult result = mvc.perform(get(GET_ALL_PATH)
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
                 .andDo(print())
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
@@ -101,7 +113,9 @@ class InitiativeIntegrationTest {
     @DisplayName("getAll | with order param | date desc | ok")
     void getAllWithValidOrderParamOk() throws Exception {
         // perform
+        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt)
                 .param("order", String.valueOf(InitiativeSorter.DATE_DESC.getId())))
                 .andDo(print())
                 .andExpect(status().is(HttpStatus.OK.value()))
@@ -128,7 +142,9 @@ class InitiativeIntegrationTest {
         final String invalidSorterId = "-1";
 
         // perform
+        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt)
                 .param("order", invalidSorterId))
                 .andDo(print())
                 .andExpect(status().is(BAD_REQUEST.getCode()))
@@ -142,9 +158,9 @@ class InitiativeIntegrationTest {
     @Test
     @DisplayName("create | ok")
     void createOK() throws Exception {
+       final String uid = "uid";
+       final String jwt = "jwt";
         //create user
-        final String uid = "uid";
-        final String jwt = "jwt";
         final User user = UserDummyBuilder.build(uid);
         userRepository.save(user);
         //create requestDTO
@@ -158,7 +174,6 @@ class InitiativeIntegrationTest {
         requestDTO.setDate(DATE);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);
-
         final MvcResult result = mvc.perform(post(CREATE_PATH)
                 .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(requestDTO))
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
@@ -172,22 +187,22 @@ class InitiativeIntegrationTest {
         assertEquals(IMAGE, resultDTO.getImage());
         assertEquals(DESCRIPTION, resultDTO.getDescription());
         assertEquals(DATE, resultDTO.getDate());
-        assertEquals(user.getNickname(),resultDTO.getNickname());
-        assertEquals(1,resultDTO.getStatus_id());
+        assertEquals(user.getNickname(), resultDTO.getNickname());
+        assertEquals(1, resultDTO.getStatus_id());
 
-       Initiative save_initiative = repository.findById(resultDTO.get_id()).get();
+        Initiative save_initiative = repository.findById(resultDTO.get_id()).get();
         assertEquals(IMAGE, save_initiative.getImage());
         assertEquals(DESCRIPTION, save_initiative.getDescription());
         assertEquals(requestDTO.getDate(), save_initiative.getDate().toString());
-        assertEquals(user.getNickname(),save_initiative.getNickname());
-        assertEquals(1,save_initiative.getStatusId());
+        assertEquals(user.getNickname(), save_initiative.getNickname());
+        assertEquals(1, save_initiative.getStatusId());
 
     }
 
 
     @Test
     void createFail() throws Exception {
-       repository.deleteAll();
+        repository.deleteAll();
 
         //create user
         final String uid = "uid";
@@ -214,7 +229,7 @@ class InitiativeIntegrationTest {
                 .andReturn();
 
         final BadRequestException exception = (BadRequestException) result.getResolvedException();
-        assertEquals(0,repository.findAll().size());
+        assertEquals(0, repository.findAll().size());
         assertEquals("The Services fail because : Initiative Date invalid", exception.getMessage());
     }
 }
