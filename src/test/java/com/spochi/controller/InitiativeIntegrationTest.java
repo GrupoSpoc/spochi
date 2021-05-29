@@ -29,15 +29,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+
 
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,13 +70,12 @@ class InitiativeIntegrationTest {
     private static User user;
     private static final String UNIQUE_UID = "unique_uid";
     private static final String jwt = "jwt";
-    private static final String UNIQUE_ID = "unique_id";
 
     @BeforeEach
     public void beforeEach() {
         InitiativeTestUtil.getInitiatives().forEach(initiative -> repository.save(initiative));
         Builder.googleId(UNIQUE_UID);
-        Builder._id(UNIQUE_ID);
+        Builder._id(InitiativeTestUtil.UNIQUE_ID);
         user = Builder.build();
         userRepository.save(user);
     }
@@ -93,7 +91,7 @@ class InitiativeIntegrationTest {
     @DisplayName("getAll | without order param | ok")
     void getAllWithoutOrderParamOk() throws Exception {
         // setup
-        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs(UNIQUE_ID);
+        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs(InitiativeTestUtil.UNIQUE_ID);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
 

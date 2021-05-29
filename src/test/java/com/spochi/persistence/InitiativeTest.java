@@ -138,8 +138,8 @@ class InitiativeTest {
         final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
         final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
 
-        assertTrue(dtoFromCurrentUser.is_from_current_user());
-        assertFalse(dtoNotFromCurrentUSer.is_from_current_user());
+        assertTrue(dtoFromCurrentUser.isFrom_current_user());
+        assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
 
         assertEquals("author",dtoFromCurrentUser.getNickname());
         assertEquals(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString(),dtoFromCurrentUser.getDate());

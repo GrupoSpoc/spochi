@@ -162,9 +162,9 @@ class InitiativeServiceTest {
        List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
 
        assertEquals(3,list_dto.size());
-       assertTrue(list_dto.get(0).is_from_current_user());
-       assertTrue(list_dto.get(1).is_from_current_user());
-       assertFalse(list_dto.get(2).is_from_current_user());
+       assertTrue(list_dto.get(0).isFrom_current_user());
+       assertTrue(list_dto.get(1).isFrom_current_user());
+       assertFalse(list_dto.get(2).isFrom_current_user());
 
     }
 

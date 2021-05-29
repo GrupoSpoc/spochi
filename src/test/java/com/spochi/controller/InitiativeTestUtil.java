@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 public class InitiativeTestUtil {
     private static final List<Initiative> initiatives = new ArrayList<>();
+    public static final String UNIQUE_ID = "unique_id";
 
 
     static {
@@ -31,7 +32,7 @@ public class InitiativeTestUtil {
         initiatives.add(builder.date(epochDate.plusYears(10)).build());
         initiatives.add(builder.statusId(1).date(epochDate.plusYears(20)).build());
         initiatives.add(builder.statusId(2).date(epochDate.plusYears(30)).build());
-        initiatives.add(builder.statusId(3).date(epochDate).build());
+        initiatives.add(builder.statusId(3).date(epochDate).userId(UNIQUE_ID).build());
     }
 
     public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {

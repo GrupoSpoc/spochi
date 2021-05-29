@@ -10,7 +10,9 @@ public class InitiativeResponseDTO {
     private String date;
     private String nickname;
     private int status_id;
-    private boolean is_from_current_user;
+    private boolean from_current_user;
+
+
 
     public InitiativeResponseDTO(){
 
@@ -64,10 +66,9 @@ public class InitiativeResponseDTO {
         this.status_id = status_id;
     }
 
-    public boolean is_from_current_user() {return is_from_current_user;}
+    public boolean isFrom_current_user() {return from_current_user;}
 
-    public void setIs_from_current_user(boolean fromCurrentUser) {is_from_current_user = fromCurrentUser;}
-
+    public void setFrom_current_user(boolean from_current_user) {this.from_current_user = from_current_user;}
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof InitiativeResponseDTO)) return false;
@@ -79,6 +80,6 @@ public class InitiativeResponseDTO {
                 nullOrEquals(this.image, other.image) &&
                 nullOrEquals(this.status_id, other.status_id) &&
                 nullOrEquals(this._id, other._id)&&
-                nullOrEquals(this.is_from_current_user,other.is_from_current_user);
+                nullOrEquals(this.from_current_user,other.from_current_user);
     }
 }
