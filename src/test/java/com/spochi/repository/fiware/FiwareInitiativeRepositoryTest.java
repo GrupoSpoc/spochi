@@ -8,6 +8,7 @@ import com.spochi.repository.fiware.rest.RestPerformer;
 import com.spochi.service.query.InitiativeSorter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIf;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -190,6 +191,15 @@ public class FiwareInitiativeRepositoryTest {
         verify(performer, times(1)).get("http://localhost:1026/v2/entities?options=keyValues&type=Initiative");
 
         assertTrue(initiatives.isEmpty());
+    }
+
+    @Test
+    @DisplayName("getInitiativeById | having initiatives | return initiative")
+    void getInitiativeById(){
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
+
+        final Optional<Initiative> testInitiative = repository.findById(id1);
     }
 
     private static NGSIJson buildTestInitiativeJsonResponse(Initiative initiative, String id1) {
