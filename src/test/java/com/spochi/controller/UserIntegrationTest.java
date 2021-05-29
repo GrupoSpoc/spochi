@@ -145,7 +145,7 @@ public class UserIntegrationTest {
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof UserServiceException);
-        assertEquals("nickname cannot be null or empty", result.getResponse().getContentAsString());
+        assertEquals("The Services fail because : nickname cannot be null or empty", result.getResponse().getContentAsString());
     }
 
     @Test
@@ -169,6 +169,6 @@ public class UserIntegrationTest {
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof UserServiceException);
-        assertEquals("this google account already has a user", result.getResponse().getContentAsString());
+        assertEquals("The Services fail because : this google account already has a user", result.getResponse().getContentAsString());
     }
 }
