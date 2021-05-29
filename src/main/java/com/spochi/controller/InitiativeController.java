@@ -20,7 +20,7 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
-    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order) {
+    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order, @Uid String uid) {
         final Comparator<Initiative> sorter;
 
         if (order != null) {
@@ -29,7 +29,7 @@ public class InitiativeController {
             sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
         }
 
-        return service.getAll(sorter);
+        return service.getAll(sorter, uid);
     }
 
     @PostMapping
