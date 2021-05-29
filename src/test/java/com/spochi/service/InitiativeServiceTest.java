@@ -186,4 +186,16 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(sorter, UID), "The Services fail because : user not found when initiative getAll");
     }
+    @Test
+    void createThrowException(){
+        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+        final String wrong_uid = "no user";
+
+        right_initiative.setDescription(DESCRIPTION);
+        right_initiative.setDate(DATE);
+        right_initiative.setImage(IMAGE_BASE64);
+
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(right_initiative, wrong_uid), "The Services fail because : User not found");
+    }
 }

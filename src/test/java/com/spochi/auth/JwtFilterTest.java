@@ -56,7 +56,7 @@ class JwtFilterTest {
     void doFilterInternalTokenValid() throws Exception {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
 
-        mvc.perform(get("/initiative/getUser")
+        mvc.perform(get("/initiative/user")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + " token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(0)))
                 .andDo(print())
