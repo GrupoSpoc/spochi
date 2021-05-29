@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ControllerExceptionHandlerTest {
-    final String message = "for coverage propose";
+    final String message = "for coverage purpose";
     final ControllerExceptionHandler handler = new ControllerExceptionHandler();
     ResponseEntity<String> responseEntity;
 

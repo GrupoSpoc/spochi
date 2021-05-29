@@ -16,7 +16,6 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 
 @DataMongoTest
 @ActiveProfiles("disable-firebase")
@@ -125,10 +124,11 @@ class InitiativeTest {
     @Test
     void testToDtoOK(){
         final String userId = "user-id";
+        final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
 
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname("author");
-        builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
+        builder.date(date);
         builder.description("description");
         builder.statusId(2);
         builder.image("image");
@@ -142,7 +142,7 @@ class InitiativeTest {
         assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
 
         assertEquals("author",dtoFromCurrentUser.getNickname());
-        assertEquals(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString(),dtoFromCurrentUser.getDate());
+        assertEquals(date.toString(),dtoFromCurrentUser.getDate());
         assertEquals("description",dtoFromCurrentUser.getDescription());
         assertEquals(2,dtoFromCurrentUser.getStatus_id());
         assertEquals("image",dtoFromCurrentUser.getImage());
