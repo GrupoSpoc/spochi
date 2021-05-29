@@ -1,6 +1,5 @@
 package com.spochi.repository.fiware;
 
-import com.spochi.entity.Initiative;
 import com.spochi.repository.fiware.ngsi.*;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import org.apache.http.HttpStatus;

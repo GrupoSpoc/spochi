@@ -7,8 +7,7 @@ import com.spochi.service.query.InitiativeSorter;
 import java.util.List;
 import java.util.Optional;
 
-public interface InitiativeRepository extends  EntityRepository<Initiative> {
+public interface InitiativeRepository extends EntityRepository<Initiative> {
     List<Initiative> getAllInitiatives(InitiativeSorter sorter);
-    Initiative create(Initiative initiative);
     Optional<Initiative> findInitiativeById(String id);
 }

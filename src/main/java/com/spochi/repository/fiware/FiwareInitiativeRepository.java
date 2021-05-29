@@ -34,7 +34,7 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         final String description = json.getString(Initiative.Fields.DESCRIPTION);
         final String image = json.getString(Initiative.Fields.IMAGE);
         final String nickname = json.getString(Initiative.Fields.NICKNAME);
-        final LocalDateTime date = LocalDateTime.parse(json.getString(Initiative.Fields.DATE));
+        final LocalDateTime date =  LocalDateTime.parse( json.getString(Initiative.Fields.DATE));
         final String userId = json.getString(Initiative.Fields.USER_ID);
         final int statusId = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID)).getId();
 

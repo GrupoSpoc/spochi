@@ -78,7 +78,7 @@ public class Initiative implements NGSISerializable {
         IMAGE("image", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
         DATE("date", NGSIFieldType.DATE),
-        USER_ID("refUser", NGSIFieldType.TEXT),
+        USER_ID("refUser", NGSIFieldType.REFERENCE),
         STATUS_ID("statusId", NGSIFieldType.INTEGER);
 
         private final String name;
