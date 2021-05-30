@@ -148,7 +148,7 @@ public class FiwareInitiativeRepositoryTest {
         when(performer.get(anyString())).thenReturn(bothInitiatives);
         final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
 
-        verify(performer, times(1)).get("http://localhost:1026/v2/entities?options=keyValues&type=Initiative");
+        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
@@ -166,7 +166,7 @@ public class FiwareInitiativeRepositoryTest {
         when(performer.get(anyString())).thenReturn(bothInitiatives);
         final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DATE_DESC);
 
-        verify(performer, times(1)).get("http://localhost:1026/v2/entities?options=keyValues&orderBy=!date&type=Initiative");
+        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&orderBy=!date&type=Initiative"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
@@ -183,7 +183,7 @@ public class FiwareInitiativeRepositoryTest {
         when(performer.get(anyString())).thenReturn(noInitiatives);
         final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
 
-        verify(performer, times(1)).get("http://localhost:1026/v2/entities?options=keyValues&type=Initiative");
+        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
 
         assertTrue(initiatives.isEmpty());
     }
