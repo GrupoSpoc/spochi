@@ -38,7 +38,29 @@ class JwtUtilTest {
     }
 
     @Test
-    @DisplayName("is token valid | when token is not expired | should return true")
+    @DisplayName("is token valid | when token expires in a minute from now | should return false")
+    void tokenExpiresInAMinute() {
+        final JwtUtilForTest jwtUtilNow = new JwtUtilForTest();
+        final String jwt = jwtUtilNow.generateToken("uid");
+        final long millisAfter2HoursAnd59Minutes = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3L) - TimeUnit.MINUTES.toMillis(1L);
+        final JwtUtilForTest jwtUtilAfter2HoursAnd59Minutes = new JwtUtilForTest(() -> millisAfter2HoursAnd59Minutes);
+
+        assertFalse(jwtUtilAfter2HoursAnd59Minutes.isTokenValid(jwt));
+    }
+
+    @Test
+    @DisplayName("is token valid | when token expires in two minutes from now | should return true")
+    void tokenExpiresInTwoMinutes() {
+        final JwtUtilForTest jwtUtilNow = new JwtUtilForTest();
+        final String jwt = jwtUtilNow.generateToken("uid");
+        final long millisAfter2HoursAnd58Minutes = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(3L) - TimeUnit.MINUTES.toMillis(2L);
+        final JwtUtilForTest jwtUtil2Hours58MinutesLater = new JwtUtilForTest(() -> millisAfter2HoursAnd58Minutes);
+
+        assertTrue(jwtUtil2Hours58MinutesLater.isTokenValid(jwt));
+    }
+
+    @Test
+    @DisplayName("is token valid | when token is far from being expired | should return true")
     void tokenNotExpiredAfterTwoHours() {
         final JwtUtilForTest jwtUtilNow = new JwtUtilForTest();
         final String jwt = jwtUtilNow.generateToken("uid");

@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
@@ -9,16 +10,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
-
     @Autowired
     UserRepository repository;
 
     public UserResponseDTO findByUid(String uid) {
-        return repository.findByGoogleId(uid)
-                .map(User::toDTO)
-                .orElse(null);
+        final Optional<User> userOpt = repository.findByUid(uid);
+        if (userOpt.isPresent()) {
+            final User user = userOpt.get();
+            final int amountOfInitiatives = repository.getAmountOfInitiatives(user.getId());
+
+            final UserResponseDTO dto = new UserResponseDTO();
+            dto.setNickname(user.getNickname());
+            dto.setAdmin(user.getType() == UserType.ADMIN);
+            dto.setAmount_of_initiatives(amountOfInitiatives);
+            dto.setType_id(user.getTypeId());
+
+            return dto;
+        } else {
+            return null;
+        }
+
     }
 
     public UserResponseDTO create(UserRequestDTO request, String uid) {
@@ -27,14 +42,22 @@ public class UserService {
         final User user = new User();
         user.setNickname(request.getNickname());
         user.setTypeId(request.getType_id());
-        user.setGoogleId(uid);
+        user.setUid(uid);
 
-        return repository.save(user).toDTO();
+        final User persistedUser = repository.create(user);
+
+        final UserResponseDTO dto = new UserResponseDTO();
+        dto.setNickname(persistedUser.getNickname());
+        dto.setAdmin(persistedUser.getType() == UserType.ADMIN);
+        dto.setAmount_of_initiatives(0);
+        dto.setType_id(persistedUser.getTypeId());
+
+        return dto;
     }
 
 
     private void validate(UserRequestDTO request, String uid) {
-        if (repository.findByGoogleId(uid).isPresent()) {
+        if (repository.findByUid(uid).isPresent()) {
             throw new UserServiceException("this google account already has a user");
         }
 
@@ -42,7 +65,7 @@ public class UserService {
             throw new UserServiceException("nickname cannot be null or empty");
         } else {
             if (repository.findByNickname(request.getNickname()).isPresent()) {
-                throw new UserServiceException("nickname already taken");
+                throw new UserServiceException("nickname already taken", HttpStatus.NICKNAME_ALREADY_TAKEN);
             }
         }
 

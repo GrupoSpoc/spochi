@@ -1,26 +1,29 @@
 package com.spochi.persistence;
 
-import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
-import com.spochi.repository.UserRepository;
+import com.spochi.repository.MongoUserRepository;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
+import com.spochi.repository.fiware.ngsi.NGSIFieldType;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataMongoTest
+@SpringBootTest
+@ActiveProfiles(profiles = {"disable-firebase", "disable-jwt-filter"})
 public class UserTest {
     @Autowired
-    UserRepository repository;
+    MongoUserRepository repository;
 
     @AfterEach
     void clearDB() {
@@ -28,93 +31,97 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("create with initiatives | ok")
+    @DisplayName("create  | ok")
     void createOk() {
         final User beforeSave = new User();
-        beforeSave.setGoogleId("1234");
+        beforeSave.setUid("1234");
         beforeSave.setNickname("nickname");
         beforeSave.setTypeId(UserType.ORGANIZATION);
+        beforeSave.setPassword("password");
 
-        final Initiative i1 = InitiativeDummyBuilder.build();
-        final Initiative i2 = InitiativeDummyBuilder.build();
-        beforeSave.setInitiatives(Arrays.asList(i1, i2));
+        final User afterSave = repository.create(beforeSave);
 
-        final User afterSave = repository.save(beforeSave);
-
-        assertEquals(beforeSave.get_id(), afterSave.get_id());
-        assertEquals(beforeSave.getGoogleId(), afterSave.getGoogleId());
+        assertEquals(beforeSave.getId(), afterSave.getId());
+        assertEquals(beforeSave.getUid(), afterSave.getUid());
         assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
-
-        // los ids de las iniciativas del afterSave deberían ser
-        // las del beforeSave
-        assertEquals(2, afterSave.getInitiatives().size());
-        assertEquals(beforeSave.getInitiatives().size(), afterSave.getInitiatives().size());
-        assertTrue(afterSave.getInitiatives()
-                .stream()
-                .allMatch(i -> beforeSave.getInitiatives()
-                        .stream()
-                        .map(Initiative::get_id)
-                        .collect(Collectors.toList())
-                        .contains(i.get_id())));
+        assertEquals(beforeSave.getPassword(), afterSave.getPassword());
     }
 
-    @Test
-    @DisplayName("add initiative | ok")
-    void addInitiativeOk() {
-        final User user = new User();
-        user.setGoogleId("1234");
-        user.setNickname("nickname");
-        user.setTypeId(UserType.ORGANIZATION);
-
-        final Initiative i1 = InitiativeDummyBuilder.build();
-        user.addInitiative(i1);
-
-        repository.save(user);
-
-        final Initiative i2 = InitiativeDummyBuilder.build();
-        user.addInitiative(i2);
-        final User afterUpdate = repository.save(user);
-
-        assertEquals(2, afterUpdate.getInitiatives().size());
-        final List<String> expectedInitiativeIds = Arrays.asList(i1.get_id(), i2.get_id());
-        assertTrue(afterUpdate.getInitiatives().stream().map(Initiative::get_id)
-                .allMatch(expectedInitiativeIds::contains));
-    }
 
     @Test
     @DisplayName("find by id | ok")
     void findByIdOk() {
         final User user = new User();
-        user.setGoogleId("1234");
+        user.setUid("1234");
         user.setNickname("nickname");
         user.setTypeId(UserType.ORGANIZATION);
 
-        repository.save(user);
+        repository.create(user);
 
-        final User result = repository.findById(user.get_id()).orElse(null);
+        final User result = repository.findById(user.getId()).orElse(null);
 
         assertNotNull(result);
-        assertEquals(user.get_id(), result.get_id());
+        assertEquals(user.getId(), result.getId());
     }
 
     @Test
     @DisplayName("find all | ok")
     void findAllOk() {
         final User.UserBuilder builder = User.builder();
-        builder.googleId("1234");
+        builder.uid("1234");
         builder.nickname("nickname");
         builder.typeId(UserType.ORGANIZATION.getId());
 
         final User u1 = builder.build();
         final User u2 = builder.build();
-        repository.save(u1);
-        repository.save(u2);
+        repository.create(u1);
+        repository.create(u2);
 
         final List<User> result = repository.findAll();
 
         assertEquals(2, result.size());
-        final List<String> expectedIds = Arrays.asList(u1.get_id(), u2.get_id());
-        assertTrue(result.stream().map(User::get_id).collect(Collectors.toList()).containsAll(expectedIds));
+        final List<String> expectedIds = Arrays.asList(u1.getId(), u2.getId());
+        assertTrue(result.stream().map(User::getId).collect(Collectors.toList()).containsAll(expectedIds));
+    }
+
+    @Test
+    @DisplayName("NGSIType | ok")
+    void NGSIType() {
+        assertEquals("User", User.NGSIType.label());
+    }
+
+    @Test
+    @DisplayName("to NGSIJson | ok")
+    void toNGSIJsonOk() {
+        final User user = UserDummyBuilder.build();
+
+        final NGSIJson json = user.toNGSIJson(UserDummyBuilder.FIWARE_ID);
+
+        assertAll("Expected result",
+                () -> assertEquals(UserDummyBuilder.FIWARE_ID, json.getId()),
+                () -> assertEquals(user.getUid(), json.getJSONObject(User.Fields.UID.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(user.getNickname(), json.getJSONObject(User.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(user.getTypeId(), json.getJSONObject(User.Fields.TYPE_ID.label()).getInt(NGSICommonFields.VALUE.label()))
+        );
+    }
+
+    @Test
+    @DisplayName("Fields | label | ok")
+    void fieldsValueOk() {
+        assertEquals("uid", User.Fields.UID.label());
+        assertEquals("nickname", User.Fields.NICKNAME.label());
+        assertEquals("type_id", User.Fields.TYPE_ID.label());
+        assertEquals("password", User.Fields.PASSWORD.label());
+
+    }
+
+    @Test
+    @DisplayName("Fields | type | ok")
+    void fieldsTypeOk() {
+        assertEquals(NGSIFieldType.TEXT, User.Fields.UID.type());
+        assertEquals(NGSIFieldType.TEXT, User.Fields.NICKNAME.type());
+        assertEquals(NGSIFieldType.INTEGER, User.Fields.TYPE_ID.type());
+        assertEquals(NGSIFieldType.TEXT, User.Fields.PASSWORD.type());
     }
 }

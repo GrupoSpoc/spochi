@@ -1,7 +1,10 @@
 package com.spochi.persistence;
 
+import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
-import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.MongoInitiativeRepositoryInterface;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,11 +23,37 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("disable-firebase")
 class InitiativeTest {
     @Autowired
-    InitiativeRepository repository;
+    MongoInitiativeRepositoryInterface repository;
 
     @AfterEach
     void clearDB() {
         repository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("initiativeToJson | ok")
+    void initiativeToJson() {
+
+        final Initiative testInitiative = new Initiative();
+        testInitiative.set_id("test1");
+        testInitiative.setUserId(NGSICommonFields.ID.prefix() + "userTest1");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setNickname("nickname1");
+        testInitiative.setDescription("Some description");
+        testInitiative.setImage("myImage");
+        testInitiative.setStatusId(1);
+
+        final NGSIJson json= testInitiative.toNGSIJson("test1");
+
+        assertAll("expectedJsonData",
+                () -> assertEquals(testInitiative.get_id(), json.getId()),
+                () -> assertEquals(testInitiative.getUserId(), json.getJSONObject(Initiative.Fields.USER_ID.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getDate().toString(), json.getJSONObject(Initiative.Fields.DATE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getNickname(), json.getJSONObject(Initiative.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getDescription(), json.getJSONObject(Initiative.Fields.DESCRIPTION.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getImage(), json.getJSONObject(Initiative.Fields.IMAGE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getStatusId(), json.getJSONObject(Initiative.Fields.STATUS_ID.label()).getInt(NGSICommonFields.VALUE.label()))
+        );
     }
 
     @Test
@@ -118,5 +147,38 @@ class InitiativeTest {
         final Initiative result = repository.findById(initiative.get_id()).orElse(null);
 
         assertNotNull(result);
+    }
+
+    @Test
+    @DisplayName("get entity type | ok")
+    void getEntityTypeOk() {
+        assertEquals("Initiative", Initiative.NGSIType.label());
+    }
+
+    @Test
+    void testToDtoOK(){
+        final String userId = "user-id";
+        final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname("author");
+        builder.date(date);
+        builder.description("description");
+        builder.statusId(2);
+        builder.image("image");
+        builder.userId(userId);
+
+
+        final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
+        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
+
+        assertTrue(dtoFromCurrentUser.isFrom_current_user());
+        assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
+
+        assertEquals("author",dtoFromCurrentUser.getNickname());
+        assertEquals(date.toString(),dtoFromCurrentUser.getDate());
+        assertEquals("description",dtoFromCurrentUser.getDescription());
+        assertEquals(2,dtoFromCurrentUser.getStatus_id());
+        assertEquals("image",dtoFromCurrentUser.getImage());
     }
 }

@@ -1,6 +1,7 @@
 package com.spochi.entity;
 
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.repository.fiware.ngsi.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,13 +15,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "initiatives")
-public class Initiative {
+public class Initiative implements NGSISerializable {
+
+    public static NGSIEntityType NGSIType = () -> "Initiative";
+
     @Id
     private String _id;
     private String description;
     private String image;
     private String nickname;
     private LocalDateTime date;
+
 
     @Field(name = "user_id")
     private String userId;
@@ -37,7 +42,7 @@ public class Initiative {
         this.statusId = statusId;
     }
 
-    public InitiativeResponseDTO toDTO() {
+    public InitiativeResponseDTO toDTO(String user_id) {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 
         dto.set_id(this._id);
@@ -46,7 +51,57 @@ public class Initiative {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
+        dto.setFrom_current_user(user_id.equals(this.userId));
 
         return dto;
     }
+
+    @Override
+    public NGSIJson toNGSIJson(String id) {
+        NGSIJson json = new NGSIJson();
+
+        json.setId(id);
+        json.setType(NGSIType);
+
+        json.addAttribute(Fields.DESCRIPTION, this.description);
+        json.addAttribute(Fields.IMAGE, this.image);
+        json.addAttribute(Fields.NICKNAME, this.nickname);
+        json.addAttribute(Fields.DATE, this.date.withNano(0).toString());
+        json.addAttribute(Fields.USER_ID, this.userId);
+        json.addAttribute(Fields.STATUS_ID, this.statusId);
+
+        return json;
+    }
+
+
+    public enum Fields implements NGSIField {
+        ID("id", NGSIFieldType.INTEGER),
+        DESCRIPTION("description", NGSIFieldType.TEXT),
+        IMAGE("image", NGSIFieldType.TEXT),
+        NICKNAME("nickname", NGSIFieldType.TEXT),
+        DATE("date", NGSIFieldType.DATE),
+        USER_ID("refUser", NGSIFieldType.REFERENCE),
+        STATUS_ID("status_id", NGSIFieldType.INTEGER);
+
+        private final String name;
+        private final NGSIFieldType type;
+
+        Fields(String name, NGSIFieldType type) {
+            this.name = name;
+            this.type = type;
+
+        }
+
+        @Override
+        public String label() {
+            return this.name;
+        }
+
+        @Override
+        public NGSIFieldType type() {
+            return this.type;
+        }
+    }
+
+
 }
