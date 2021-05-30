@@ -1,14 +1,10 @@
 package com.spochi.entity;
 
-import com.spochi.dto.UserResponseDTO;
+import com.spochi.repository.fiware.ngsi.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,27 +12,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "users")
-public class User {
-    @Id
-    private String _id;
+public class User implements NGSISerializable {
+    public static NGSIEntityType NGSIType = () -> "User";
 
-    @Field(name = "google_id")
-    private String googleId;
+    @Id
+    private String id;
+
+    @Field(name = "uid")
+    private String uid;
 
     private String nickname;
 
     @Field(name = "type_id")
     private int typeId;
-
-    @DBRef(lazy = true)
-    private List<Initiative> initiatives;
-
-    public void addInitiative(Initiative i) {
-        if (initiatives == null) {
-            initiatives = new ArrayList<>();
-        }
-        initiatives.add(i);
-    }
 
     public UserType getType() {
         return UserType.fromIdOrElseThrow(this.typeId);
@@ -50,16 +38,43 @@ public class User {
         this.typeId = typeId;
     }
 
-    public UserResponseDTO toDTO() {
-        final UserResponseDTO dto = new UserResponseDTO();
+    @Override
+    public NGSIJson toNGSIJson(String id) {
+        final NGSIJson json = new NGSIJson();
 
-        dto.setNickname(this.nickname);
-        dto.setAdmin(this.getType() == UserType.ADMIN);
-        dto.setType_id(this.getTypeId());
-        dto.setAmount_of_initiatives(this.initiatives != null ? this.initiatives.size() : 0);
+        json.setId(id);
+        json.setType(NGSIType);
+        json.addAttribute(Fields.UID, this.uid);
+        json.addAttribute(Fields.NICKNAME, this.nickname);
+        json.addAttribute(Fields.TYPE_ID, this.typeId);
 
-        return dto;
+        return json;
     }
+
+    public enum Fields implements NGSIField {
+        UID("uid", NGSIFieldType.TEXT),
+        NICKNAME("nickname", NGSIFieldType.TEXT),
+        TYPE_ID("type_id", NGSIFieldType.INTEGER);
+
+        private final String name;
+        private final NGSIFieldType type;
+
+        Fields(String name, NGSIFieldType type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        @Override
+        public String label() {
+            return this.name;
+        }
+
+        @Override
+        public NGSIFieldType type() {
+            return this.type;
+        }
+    }
+
 }
 
 

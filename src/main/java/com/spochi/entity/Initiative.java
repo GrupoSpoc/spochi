@@ -1,6 +1,7 @@
 package com.spochi.entity;
 
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.repository.fiware.ngsi.*;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,7 +15,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "initiatives")
-public class Initiative {
+public class Initiative implements NGSISerializable {
+
+    public static NGSIEntityType NGSIType = () -> "Initiative";
+
     @Id
     private String _id;
     private String description;
@@ -51,4 +55,53 @@ public class Initiative {
 
         return dto;
     }
+
+    @Override
+    public NGSIJson toNGSIJson(String id) {
+        NGSIJson json = new NGSIJson();
+
+        json.setId(id);
+        json.setType(NGSIType);
+
+        json.addAttribute(Fields.DESCRIPTION, this.description);
+        json.addAttribute(Fields.IMAGE, this.image);
+        json.addAttribute(Fields.NICKNAME, this.nickname);
+        json.addAttribute(Fields.DATE, this.date.withNano(0).toString());
+        json.addAttribute(Fields.USER_ID, this.userId);
+        json.addAttribute(Fields.STATUS_ID, this.statusId);
+
+        return json;
+    }
+
+
+    public enum Fields implements NGSIField {
+        ID("id", NGSIFieldType.INTEGER),
+        DESCRIPTION("description", NGSIFieldType.TEXT),
+        IMAGE("image", NGSIFieldType.TEXT),
+        NICKNAME("nickname", NGSIFieldType.TEXT),
+        DATE("date", NGSIFieldType.DATE),
+        USER_ID("refUser", NGSIFieldType.REFERENCE),
+        STATUS_ID("status_id", NGSIFieldType.INTEGER);
+
+        private final String name;
+        private final NGSIFieldType type;
+
+        Fields(String name, NGSIFieldType type) {
+            this.name = name;
+            this.type = type;
+
+        }
+
+        @Override
+        public String label() {
+            return this.name;
+        }
+
+        @Override
+        public NGSIFieldType type() {
+            return this.type;
+        }
+    }
+
+
 }

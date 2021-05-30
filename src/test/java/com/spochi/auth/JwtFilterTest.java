@@ -3,7 +3,6 @@ package com.spochi.auth;
 import com.spochi.entity.User;
 import com.spochi.repository.UserRepository;
 import com.spochi.service.auth.JwtUtil;
-import io.jsonwebtoken.Jwt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

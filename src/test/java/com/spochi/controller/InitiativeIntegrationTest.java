@@ -7,8 +7,8 @@ import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.repository.InitiativeRepository;
-import com.spochi.repository.UserRepository;
+import com.spochi.repository.MongoInitiativeRepositoryInterface;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.auth.JwtUtil;
 import com.spochi.service.query.InitiativeSorter;
 import net.minidev.json.JSONValue;
@@ -26,20 +26,17 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
-import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
-import static org.junit.jupiter.api.Assertions.*;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-
+import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
+import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,10 +52,10 @@ class InitiativeIntegrationTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    InitiativeRepository repository;
+    MongoInitiativeRepositoryInterface repository;
 
     @Autowired
-    UserRepository userRepository;
+    MongoUserRepository userRepository;
 
     @MockBean
     JwtUtil jwtUtil;
@@ -66,18 +63,17 @@ class InitiativeIntegrationTest {
 
     private static final String GET_ALL_PATH = "/initiative/all";
     private static final String CREATE_PATH = "/initiative";
-    private final static User.UserBuilder Builder = User.builder();
-    private static User user;
-    private static final String UNIQUE_UID = "unique_uid";
+    private static final String UID = "unique_uid";
     private static final String jwt = "jwt";
 
     @BeforeEach
     public void beforeEach() {
         InitiativeTestUtil.getInitiatives().forEach(initiative -> repository.save(initiative));
-        Builder.googleId(UNIQUE_UID);
-        Builder._id(InitiativeTestUtil.UNIQUE_ID);
-        user = Builder.build();
-        userRepository.save(user);
+        User.UserBuilder builder = User.builder();
+        builder.uid(UID);
+        builder.id(InitiativeTestUtil.UNIQUE_ID);
+        User user = builder.build();
+        userRepository.create(user);
     }
 
 
@@ -93,7 +89,7 @@ class InitiativeIntegrationTest {
         // setup
         List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs(InitiativeTestUtil.UNIQUE_ID);
 
-        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
+        when(jwtUtil.extractUid(jwt)).thenReturn(UID);
 
         // perform
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
@@ -113,7 +109,7 @@ class InitiativeIntegrationTest {
     @DisplayName("getAll | with order param | date desc | ok")
     void getAllWithValidOrderParamOk() throws Exception {
         // perform
-        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
+        when(jwtUtil.extractUid(jwt)).thenReturn(UID);
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt)
                 .param("order", String.valueOf(InitiativeSorter.DATE_DESC.getId())))
@@ -142,7 +138,7 @@ class InitiativeIntegrationTest {
         final String invalidSorterId = "-1";
 
         // perform
-        when(jwtUtil.extractUid(jwt)).thenReturn(UNIQUE_UID);
+        when(jwtUtil.extractUid(jwt)).thenReturn(UID);
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt)
                 .param("order", invalidSorterId))
@@ -162,7 +158,7 @@ class InitiativeIntegrationTest {
        final String jwt = "jwt";
         //create user
         final User user = UserDummyBuilder.build(uid);
-        userRepository.save(user);
+        userRepository.create(user);
         //create requestDTO
         final String DESCRIPTION = "description";
         final String IMAGE = "image";
@@ -196,9 +192,7 @@ class InitiativeIntegrationTest {
         assertEquals(requestDTO.getDate(), save_initiative.getDate().toString());
         assertEquals(user.getNickname(), save_initiative.getNickname());
         assertEquals(1, save_initiative.getStatusId());
-
     }
-
 
     @Test
     void createFail() throws Exception {
@@ -208,7 +202,7 @@ class InitiativeIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
         final User user = UserDummyBuilder.build(uid);
-        userRepository.save(user);
+        userRepository.create(user);
         //create requestDTO
         final String DESCRIPTION = "description";
         final String IMAGE = "image";

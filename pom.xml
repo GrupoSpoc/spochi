@@ -57,7 +57,11 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>4.9.1</version>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -113,6 +117,7 @@
 						<exclude>**/com/spochi/config/*</exclude>
 						<exclude>**/com/spochi/controller/handler/*</exclude>
 						<exclude>**/com/spochi/service/authenticate/firebase/*</exclude>
+						<exclude>**/com/spochi/repository/fiware/rest/RestClient.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -129,6 +134,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
