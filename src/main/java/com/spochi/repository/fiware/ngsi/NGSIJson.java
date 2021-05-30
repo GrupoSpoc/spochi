@@ -58,6 +58,10 @@ public class NGSIJson extends JSONObject {
         return getInt(field.label());
     }
 
+    public String getStringOrNull(@NotNull NGSIField field) {
+        return has(field.label()) ? getString(field) : null;
+    }
+
     public static final class NGSIJsonException extends JSONException {
         public NGSIJsonException(String message) {
             super(message);

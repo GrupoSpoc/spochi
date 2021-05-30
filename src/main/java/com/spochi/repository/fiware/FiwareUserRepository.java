@@ -32,8 +32,9 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
         final String uid = json.getString(User.Fields.UID.label());
         final String nickname = json.getString(User.Fields.NICKNAME.label());
         final UserType type = UserType.fromIdOrElseThrow(json.getInt(User.Fields.TYPE_ID.label()));
+        final String password = json.getStringOrNull(User.Fields.PASSWORD);
 
-        return new User(id, uid, nickname, type.getId());
+        return new User(id, uid, nickname, type.getId(), password);
     }
 
     @Override

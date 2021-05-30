@@ -106,6 +106,17 @@ class NGSIJsonTest {
     }
 
     @Test
+    @DisplayName("get int | value is not an int | JsonException ")
+    void getIntValueNotIntException() {
+        final String value = "not-an-int";
+        final NGSIJson json = new NGSIJson();
+
+        json.put(NGSITestFields.A_ATTRIBUTE.label(), value);
+
+        assertThrows(JSONException.class, () -> json.getInt(NGSITestFields.A_ATTRIBUTE));
+    }
+
+    @Test
     @DisplayName("get String | ok ")
     void getStringOk() {
         final String value = "a-string";
@@ -122,5 +133,24 @@ class NGSIJsonTest {
         final NGSIJson json = new NGSIJson();
 
         assertThrows(JSONException.class, () -> json.getString(NGSITestFields.A_ATTRIBUTE));
+    }
+
+    @Test
+    @DisplayName("get String or null | when key is present | ok ")
+    void getStringOrKeyPresentOk() {
+        final String value = "a-string";
+        final NGSIJson json = new NGSIJson();
+
+        json.put(NGSITestFields.A_ATTRIBUTE.label(), value);
+
+        assertEquals(value, json.getStringOrNull(NGSITestFields.A_ATTRIBUTE));
+    }
+
+    @Test
+    @DisplayName("get String or null | when key is not present | null ")
+    void getStringOrNullKeyNoPresent() {
+        final NGSIJson json = new NGSIJson();
+
+        assertNull(json.getStringOrNull(NGSITestFields.A_ATTRIBUTE));
     }
 }

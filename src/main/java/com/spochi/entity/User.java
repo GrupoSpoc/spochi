@@ -50,6 +50,7 @@ public class User implements NGSISerializable {
         json.addAttribute(Fields.UID, this.uid);
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.TYPE_ID, this.typeId);
+        // no agregamos password acá porque el admin lo guardamos por fuera, directo contra la BD
 
         return json;
     }
@@ -57,7 +58,8 @@ public class User implements NGSISerializable {
     public enum Fields implements NGSIField {
         UID("uid", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
-        TYPE_ID("type_id", NGSIFieldType.INTEGER);
+        TYPE_ID("type_id", NGSIFieldType.INTEGER),
+        PASSWORD("password", NGSIFieldType.TEXT);
 
         private final String name;
         private final NGSIFieldType type;

@@ -48,12 +48,12 @@ class FiwareUserRepositoryTest {
     }
 
     @Test
-    @DisplayName("from NGSIJson | ok")
-    void fromNGSIJsonOk() {
-        final String id = "urn:ngsi-ld:User:001";
+    @DisplayName("from NGSIJson | with password | ok")
+    void fromNGSIJsonWithoutPasswordOk() {
+        final String id = NGSICommonFields.ID.prefix() + ":User:001";
         final String uid = "test-uid";
         final String nickname = "test-nickname";
-        final int typeId = 1;
+        final int typeId = 3;
 
         final NGSIJson json = new NGSIJson();
         json.setId(id);
@@ -69,7 +69,36 @@ class FiwareUserRepositoryTest {
                 () -> assertEquals(id, user.getId()),
                 () -> assertEquals(uid, user.getUid()),
                 () -> assertEquals(nickname, user.getNickname()),
-                () -> assertEquals(typeId, user.getTypeId()));
+                () -> assertEquals(typeId, user.getTypeId()),
+                () -> assertNull(user.getPassword()));
+    }
+
+    @Test
+    @DisplayName("from NGSIJson | with password | ok")
+    void fromNGSIJsonWithPasswordOk() {
+        final String id = NGSICommonFields.ID.prefix() + ":User:001";
+        final String uid = "test-uid";
+        final String nickname = "test-nickname";
+        final String password = "test-password";
+        final int typeId = 3;
+
+        final NGSIJson json = new NGSIJson();
+        json.setId(id);
+        json.put(User.Fields.UID.label(), uid);
+        json.put(User.Fields.NICKNAME.label(), nickname);
+        json.put(User.Fields.TYPE_ID.label(), typeId);
+        json.put(User.Fields.PASSWORD.label(), password);
+
+        final FiwareUserRepository repository = new FiwareUserRepository(mock(RestPerformer.class));
+
+        final User user = repository.fromNGSIJson(json);
+
+        assertAll("Expected user",
+                () -> assertEquals(id, user.getId()),
+                () -> assertEquals(uid, user.getUid()),
+                () -> assertEquals(nickname, user.getNickname()),
+                () -> assertEquals(typeId, user.getTypeId()),
+                () -> assertEquals(password, user.getPassword()));
     }
 
     @Test

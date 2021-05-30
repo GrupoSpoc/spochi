@@ -112,6 +112,8 @@ public class UserTest {
         assertEquals("uid", User.Fields.UID.label());
         assertEquals("nickname", User.Fields.NICKNAME.label());
         assertEquals("type_id", User.Fields.TYPE_ID.label());
+        assertEquals("password", User.Fields.PASSWORD.label());
+
     }
 
     @Test
@@ -120,5 +122,6 @@ public class UserTest {
         assertEquals(NGSIFieldType.TEXT, User.Fields.UID.type());
         assertEquals(NGSIFieldType.TEXT, User.Fields.NICKNAME.type());
         assertEquals(NGSIFieldType.INTEGER, User.Fields.TYPE_ID.type());
+        assertEquals(NGSIFieldType.TEXT, User.Fields.PASSWORD.type());
     }
 }
