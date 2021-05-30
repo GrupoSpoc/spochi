@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
 
     @PostMapping("/login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<String> login(@RequestBody AdminLoginRequestDTO request) {
         return ResponseEntity.ok("Logeado exitosamente: " + request.getUid() + " - " + request.getPassword());
         // return ResponseEntity.badRequest().body("Logeado exitosamente: " + request.getUid() + " - " + request.getPassword());
