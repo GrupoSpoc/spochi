@@ -10,14 +10,10 @@ import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
 import com.spochi.service.query.InitiativeSorter;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class InitiativeService {

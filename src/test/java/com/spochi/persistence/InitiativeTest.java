@@ -1,7 +1,10 @@
 package com.spochi.persistence;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.User;
 import com.spochi.repository.MongoInitiativeRepositoryInterface;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,6 +29,32 @@ class InitiativeTest {
     @AfterEach
     void clearDB() {
         repository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("initiativeToJson | ok")
+    void initiativeToJson() {
+
+        final Initiative testInitiative = new Initiative();
+        testInitiative.set_id("test1");
+        testInitiative.setUserId(NGSICommonFields.ID.prefix() + "userTest1");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setNickname("nickname1");
+        testInitiative.setDescription("Some description");
+        testInitiative.setImage("myImage");
+        testInitiative.setStatusId(1);
+
+        final NGSIJson json= testInitiative.toNGSIJson("test1");
+
+        assertAll("expectedJsonData",
+                () -> assertEquals(testInitiative.get_id(), json.getId()),
+                () -> assertEquals(testInitiative.getUserId(), json.getJSONObject(Initiative.Fields.USER_ID.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getDate().toString(), json.getJSONObject(Initiative.Fields.DATE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getNickname(), json.getJSONObject(Initiative.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getDescription(), json.getJSONObject(Initiative.Fields.DESCRIPTION.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getImage(), json.getJSONObject(Initiative.Fields.IMAGE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(testInitiative.getStatusId(), json.getJSONObject(Initiative.Fields.STATUS_ID.label()).getInt(NGSICommonFields.VALUE.label()))
+        );
     }
 
     @Test
