@@ -1,20 +1,18 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.entity.Initiative;
-import com.spochi.entity.User;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import com.spochi.service.query.InitiativeSorter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -80,16 +78,13 @@ public class FiwareInitiativeRepositoryTest {
     @Test
     @DisplayName("InitiativeFieldsTest | Ok")
     void initiativeFieldsTest() {
-
-        final RestPerformer performer = mock(RestPerformer.class);
-
         String id = "id";
         String description = "description";
         String image = "image";
         String nickname = "nickname";
         String date = "date";
         String userId = "refUser";
-        String statusId = "statusId";
+        String statusId = "status_id";
         NGSIFieldType idType = NGSIFieldType.INTEGER;
         NGSIFieldType textType = NGSIFieldType.TEXT;
         NGSIFieldType dateType = NGSIFieldType.DATE;
