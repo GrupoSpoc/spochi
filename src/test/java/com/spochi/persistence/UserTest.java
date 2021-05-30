@@ -34,6 +34,7 @@ public class UserTest {
         beforeSave.setGoogleId("1234");
         beforeSave.setNickname("nickname");
         beforeSave.setTypeId(UserType.ORGANIZATION);
+        beforeSave.setPassword("password");
 
         final Initiative i1 = InitiativeDummyBuilder.build();
         final Initiative i2 = InitiativeDummyBuilder.build();
@@ -45,6 +46,7 @@ public class UserTest {
         assertEquals(beforeSave.getGoogleId(), afterSave.getGoogleId());
         assertEquals(beforeSave.getType(), afterSave.getType());
         assertEquals(beforeSave.getNickname(), afterSave.getNickname());
+        assertEquals(beforeSave.getPassword(), afterSave.getPassword());
 
         // los ids de las iniciativas del afterSave deberían ser
         // las del beforeSave

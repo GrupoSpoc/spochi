@@ -28,6 +28,9 @@ public class User {
     @Field(name = "type_id")
     private int typeId;
 
+    @Field(name = "password")
+    private String password;
+
     @DBRef(lazy = true)
     private List<Initiative> initiatives;
 
