@@ -3,6 +3,7 @@ package com.spochi.service.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,8 +50,14 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody();
     }
 
+    /**
+     * Le sumamos un minuto a la fecha actual,
+     * ya que luego de validar el JWT otros servicios lo consumen.
+     * Entonces nos aseguramos que sea válido ahora y de acá a un minuto en el futuro.
+     */
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date(currentMillis()));
+        final Date now = new Date(currentMillis());
+        return extractExpiration(token).before(DateUtils.addMinutes(now, 1));
     }
 
     protected String getSecretKey() {

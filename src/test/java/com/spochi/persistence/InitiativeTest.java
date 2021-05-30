@@ -1,7 +1,7 @@
 package com.spochi.persistence;
 
+import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
-import com.spochi.entity.User;
 import com.spochi.repository.MongoInitiativeRepositoryInterface;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -154,5 +153,32 @@ class InitiativeTest {
     @DisplayName("get entity type | ok")
     void getEntityTypeOk() {
         assertEquals("Initiative", Initiative.NGSIType.label());
+    }
+
+    @Test
+    void testToDtoOK(){
+        final String userId = "user-id";
+        final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname("author");
+        builder.date(date);
+        builder.description("description");
+        builder.statusId(2);
+        builder.image("image");
+        builder.userId(userId);
+
+
+        final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
+        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
+
+        assertTrue(dtoFromCurrentUser.isFrom_current_user());
+        assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
+
+        assertEquals("author",dtoFromCurrentUser.getNickname());
+        assertEquals(date.toString(),dtoFromCurrentUser.getDate());
+        assertEquals("description",dtoFromCurrentUser.getDescription());
+        assertEquals(2,dtoFromCurrentUser.getStatus_id());
+        assertEquals("image",dtoFromCurrentUser.getImage());
     }
 }

@@ -23,14 +23,13 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter) {
-
-        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<InitiativeResponseDTO>();
+    public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter, String uid) {
+        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
         final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
 
         for (Initiative i : orderedInitiatives) {
-            responseDTOS.add(
-                    i.toDTO());
+            responseDTOS.add(i.toDTO(user.getId()));
         }
 
         return responseDTOS;
@@ -42,6 +41,7 @@ public class InitiativeService {
         final InitiativeResponseDTO responseDTO;
 
         validateFields(request);
+
         final Optional<User> userOpt = userRepository.findByUid(uid);
 
         if (!userOpt.isPresent()) {
@@ -59,7 +59,7 @@ public class InitiativeService {
         );
 
         initiativeRepository.create(initiative);
-        responseDTO = initiative.toDTO();
+        responseDTO = initiative.toDTO(user.getId());
 
         return responseDTO;
     }

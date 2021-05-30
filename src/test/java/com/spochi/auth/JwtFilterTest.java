@@ -1,5 +1,7 @@
 package com.spochi.auth;
 
+import com.spochi.entity.User;
+import com.spochi.repository.UserRepository;
 import com.spochi.service.auth.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +18,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,6 +39,9 @@ class JwtFilterTest {
     @MockBean
     JwtUtil jwtUtil;
 
+    @MockBean
+    UserRepository userRepository;
+
     @BeforeEach
     void before() {
         this.mvc = MockMvcBuilders.webAppContextSetup(context)
@@ -46,11 +54,11 @@ class JwtFilterTest {
     void doFilterInternalTokenValid() throws Exception {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
 
-        mvc.perform(get("/initiative/all")
+        mvc.perform(get("/user")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + " token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(0)))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.OK.value()))
+                .andExpect(status().is(HttpStatus.NOT_FOUND.value()))
                 .andReturn();
     }
 

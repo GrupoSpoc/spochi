@@ -84,7 +84,7 @@ class UserServiceTest {
         final UserRequestDTO request = new UserRequestDTO();
         request.setType_id(1);
 
-        assertException(UserServiceException.class, () -> service.create(request, "uid"), "nickname cannot be null or empty");
+        assertException(UserServiceException.class, () -> service.create(request, "uid"), "The Services fail because : nickname cannot be null or empty");
     }
 
     @Test
@@ -98,7 +98,7 @@ class UserServiceTest {
 
         when(repository.findByUid(uid)).thenReturn(Optional.of(mock(User.class)));
 
-        assertException(UserServiceException.class, () -> service.create(request, uid), "this google account already has a user");
+        assertException(UserServiceException.class, () -> service.create(request, uid), "The Services fail because : this google account already has a user");
     }
 
     @Test
@@ -112,7 +112,7 @@ class UserServiceTest {
 
         when(repository.findByNickname(nickname)).thenReturn(Optional.of(mock(User.class)));
 
-        assertBadRequestException(UserServiceException.class, () -> service.create(request, "uid"), "nickname already taken", HttpStatus.NICKNAME_ALREADY_TAKEN);
+        assertBadRequestException(UserServiceException.class, () -> service.create(request, "uid"),  "The Services fail because : nickname already taken", HttpStatus.NICKNAME_ALREADY_TAKEN);
     }
 
     @Test
@@ -122,7 +122,7 @@ class UserServiceTest {
         request.setType_id(null);
         request.setNickname("nickname");
 
-        assertException(UserServiceException.class, () -> service.create(request, "uid"), "type_id cannot be null");
+        assertException(UserServiceException.class, () -> service.create(request, "uid"), "The Services fail because : type_id cannot be null");
     }
 
     @Test
