@@ -5,7 +5,7 @@ import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
-import com.spochi.repository.MongoUserRepositoryInterface;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class InitiativeServiceTest {
     InitiativeRepository initiativeRepository;
 
     @MockBean
-    MongoUserRepositoryInterface mongoUserRepository;
+    MongoUserRepository mongoUserRepository;
 
     private final String NICKNAME = "nickname";
     private final String DESCRIPTION = "description";
@@ -88,7 +88,7 @@ class InitiativeServiceTest {
         assertNotNull(result.get_id());
         assertEquals(STATUS_DEFAULT, result.getStatus_id());
 
-        Optional<Initiative> initiativeOpt = initiativeRepository.findById(result.get_id());
+        Optional<Initiative> initiativeOpt = initiativeRepository.findInitiativeById(result.get_id());
         assertTrue(initiativeOpt.isPresent());
     }
 

@@ -1,9 +1,13 @@
 package com.spochi.repository;
 
+import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import com.spochi.service.query.InitiativeSorter;
 
-@Repository
-public interface InitiativeRepository extends MongoRepository<Initiative, String> {
+import java.util.List;
+import java.util.Optional;
+
+public interface InitiativeRepository extends EntityRepository<Initiative> {
+    List<Initiative> getAllInitiatives(InitiativeSorter sorter);
+    Optional<Initiative> findInitiativeById(String id);
 }

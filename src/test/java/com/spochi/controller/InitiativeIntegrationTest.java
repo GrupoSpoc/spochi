@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.repository.MongoInitiativeRepositoryInterface;
+
 import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.auth.JwtUtil;
+
 import com.spochi.service.query.InitiativeSorter;
 import net.minidev.json.JSONValue;
 import org.junit.jupiter.api.AfterEach;
@@ -52,7 +55,7 @@ class InitiativeIntegrationTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    InitiativeRepository repository;
+    MongoInitiativeRepositoryInterface repository;
 
     @Autowired
     MongoUserRepository userRepository;

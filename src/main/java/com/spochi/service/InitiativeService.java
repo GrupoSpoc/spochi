@@ -8,15 +8,12 @@ import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
+import com.spochi.service.query.InitiativeSorter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 @Service
 public class InitiativeService {
@@ -26,13 +23,17 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter) {
-        final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
+    public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter) {
 
-        return initiatives
-                .sorted(sorter)
-                .map(Initiative::toDTO)
-                .collect(Collectors.toList());
+        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<InitiativeResponseDTO>();
+        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
+
+        for (Initiative i : orderedInitiatives) {
+            responseDTOS.add(
+                    i.toDTO());
+        }
+
+        return responseDTOS;
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
@@ -57,7 +58,7 @@ public class InitiativeService {
                 InitiativeStatus.PENDING.getId()
         );
 
-        initiativeRepository.save(initiative);
+        initiativeRepository.create(initiative);
         responseDTO = initiative.toDTO();
 
         return responseDTO;
