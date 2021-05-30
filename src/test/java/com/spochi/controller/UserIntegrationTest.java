@@ -5,7 +5,7 @@ import com.spochi.dto.UserRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.persistence.UserDummyBuilder;
-import com.spochi.repository.UserRepository;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.UserServiceException;
 import com.spochi.service.auth.JwtUtil;
 import net.minidev.json.JSONValue;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
-import static com.spochi.controller.HttpStatus.*;
+import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,7 +43,7 @@ public class UserIntegrationTest {
     ObjectMapper objectMapper;
 
     @Autowired
-    UserRepository repository;
+    MongoUserRepository repository;
 
     @MockBean
     JwtUtil jwtUtil;
@@ -63,7 +63,13 @@ public class UserIntegrationTest {
 
         final User user = UserDummyBuilder.build(uid);
 
-        repository.save(user);
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(user.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(user.getNickname());
+        expectedResult.setAdmin(false);
+
+        repository.create(user);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);
 
@@ -76,7 +82,7 @@ public class UserIntegrationTest {
         final UserResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
         assertNotNull(actualResult);
-        assertEquals(user.toDTO(), actualResult);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
@@ -115,14 +121,19 @@ public class UserIntegrationTest {
 
         final UserResponseDTO response = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
-        final User createdUser = repository.findByGoogleId(uid).orElse(null);
+        final User createdUser = repository.findByUid(uid).orElse(null);
+        final UserResponseDTO expectedResult = new UserResponseDTO();
+        expectedResult.setType_id(createdUser.getTypeId());
+        expectedResult.setAmount_of_initiatives(0);
+        expectedResult.setNickname(createdUser.getNickname());
+        expectedResult.setAdmin(false);
 
         assertAll("Expected result",
                 () -> assertNotNull(createdUser),
                 () -> assertEquals(request.getNickname(), createdUser.getNickname()),
                 () -> assertEquals(request.getType_id(), createdUser.getTypeId()),
-                () -> assertEquals(uid, createdUser.getGoogleId()),
-                () -> assertEquals(createdUser.toDTO(), response)
+                () -> assertEquals(uid, createdUser.getUid()),
+                () -> assertEquals(expectedResult, response)
         );
     }
 
@@ -154,7 +165,7 @@ public class UserIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
 
-        repository.save(User.builder().nickname("nickname").typeId(1).googleId(uid).build());
+        repository.create(User.builder().nickname("nickname").typeId(1).uid(uid).build());
 
         final UserRequestDTO request = new UserRequestDTO();
         request.setType_id(1);

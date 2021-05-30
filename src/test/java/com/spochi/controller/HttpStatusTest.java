@@ -10,5 +10,6 @@ class HttpStatusTest {
     void getCode() {
         assertEquals(800, HttpStatus.BAD_REQUEST.getCode());
         assertEquals(801, HttpStatus.NICKNAME_ALREADY_TAKEN.getCode());
+        assertEquals(900, HttpStatus.FIWARE_ERROR.getCode());
     }
 }

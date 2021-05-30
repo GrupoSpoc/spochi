@@ -36,8 +36,8 @@ public class UidHandlerTest {
     @DisplayName("supports parameter | when method is not annotated with @Uid | should return false")
     void testSupportsParameterFalse() throws NoSuchMethodException {
         final UidHandler uidHandler = new UidHandler(new JwtUtil());
-        final MethodParameter method = new MethodParameter(this.getClass().getDeclaredMethod("methodWithoutUidAnnotation", String.class), 0);
 
+        final MethodParameter method = new MethodParameter(this.getClass().getDeclaredMethod("methodWithoutUidAnnotation", String.class), 0);
         assertFalse(uidHandler.supportsParameter(method));
     }
 
@@ -46,7 +46,7 @@ public class UidHandlerTest {
 
     @Test
     @DisplayName("resolve argument | when authorization header is present | should return uid")
-    void testResolveArgumentOk() throws Exception {
+    void testResolveArgumentOk() {
         final JwtUtil jwtUtilMock = mock(JwtUtil.class);
 
         when(jwtUtilMock.extractUid(anyString())).thenReturn("uid");

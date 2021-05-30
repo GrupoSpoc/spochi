@@ -8,15 +8,13 @@ import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
+import com.spochi.service.query.InitiativeSorter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class InitiativeService {
@@ -26,14 +24,16 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(Comparator<Initiative> sorter, String uid) {
-        final User user = userRepository.findByGoogleId(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
-        final Stream<Initiative> initiatives = initiativeRepository.findAll().stream();
+    public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter, String uid) {
+        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
+        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
 
-        return initiatives
-                .sorted(sorter)
-                .map(initiative -> initiative.toDTO(user.get_id()))
-                .collect(Collectors.toList());
+        for (Initiative i : orderedInitiatives) {
+            responseDTOS.add(i.toDTO(user.getId()));
+        }
+
+        return responseDTOS;
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
@@ -42,7 +42,8 @@ public class InitiativeService {
         final InitiativeResponseDTO responseDTO;
 
         validateFields(request);
-        final Optional<User> userOpt = userRepository.findByGoogleId(uid);
+
+        final Optional<User> userOpt = userRepository.findByUid(uid);
 
         if (!userOpt.isPresent()) {
             throw new InitiativeServiceException("User not found");
@@ -54,14 +55,12 @@ public class InitiativeService {
                 request.getImage(),
                 user.getNickname(),
                 LocalDateTime.parse(request.getDate()),
-                user.get_id(),
+                user.getId(),
                 InitiativeStatus.PENDING.getId()
         );
 
-        user.addInitiative(initiative);
-        initiativeRepository.save(initiative);
-        userRepository.save(user);
-        responseDTO = initiative.toDTO(user.get_id());
+        initiativeRepository.create(initiative);
+        responseDTO = initiative.toDTO(user.getId());
 
         return responseDTO;
     }
@@ -81,7 +80,7 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now())){
+        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }

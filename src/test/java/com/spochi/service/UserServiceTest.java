@@ -19,10 +19,7 @@ import java.util.Optional;
 import static com.spochi.util.AssertUtils.assertBadRequestException;
 import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("disable-firebase")
@@ -35,23 +32,28 @@ class UserServiceTest {
     UserRepository repository;
 
     @Test
-    @DisplayName("find by google id | when user is found | should return UserResponseDTO | ok")
-    void findByGoogleIdFound() {
+    @DisplayName("find by uid | when user is found | should return UserResponseDTO | ok")
+    void findByUidFound() {
         final User mockedUser = UserDummyBuilder.buildWithId();
-        final UserResponseDTO expectedDto = mockedUser.toDTO();
+        final UserResponseDTO expectedDTO = new UserResponseDTO();
+        expectedDTO.setType_id(mockedUser.getTypeId());
+        expectedDTO.setAmount_of_initiatives(0);
+        expectedDTO.setNickname(mockedUser.getNickname());
+        expectedDTO.setAdmin(false);
 
-        when(repository.findByGoogleId(anyString())).thenReturn(Optional.of(mockedUser));
+        when(repository.findByUid(anyString())).thenReturn(Optional.of(mockedUser));
 
-        final UserResponseDTO actualDTO = service.findByUid("google-id");
+        final UserResponseDTO actualDTO = service.findByUid("uid");
 
-        assertEquals(expectedDto, actualDTO);
+        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId());
+        assertEquals(expectedDTO, actualDTO);
     }
 
     @Test
-    @DisplayName("find by google id | when user is not found | should return null | ok")
-    void findByGoogleIdNotFound() {
-        when(repository.findByGoogleId(anyString())).thenReturn(Optional.empty());
-        assertNull(service.findByUid("google-id"));
+    @DisplayName("find by uid | when user is not found | should return null | ok")
+    void findByUidNotFound() {
+        when(repository.findByUid(anyString())).thenReturn(Optional.empty());
+        assertNull(service.findByUid("uid"));
     }
 
     @Test
@@ -65,8 +67,8 @@ class UserServiceTest {
         request.setNickname(nickname);
         request.setType_id(typeId);
 
-        when(repository.save(any(User.class)))
-                .thenReturn(User.builder().nickname(nickname).googleId(uid).typeId(typeId).build());
+        when(repository.create(any(User.class)))
+                .thenReturn(User.builder().nickname(nickname).uid(uid).typeId(typeId).build());
 
         final UserResponseDTO result = service.create(request, uid);
 
@@ -94,7 +96,7 @@ class UserServiceTest {
         request.setNickname("nickname");
         request.setType_id(1);
 
-        when(repository.findByGoogleId(uid)).thenReturn(Optional.of(mock(User.class)));
+        when(repository.findByUid(uid)).thenReturn(Optional.of(mock(User.class)));
 
         assertException(UserServiceException.class, () -> service.create(request, uid), "The Services fail because : this google account already has a user");
     }

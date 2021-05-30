@@ -3,10 +3,10 @@ package com.spochi.service;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
-import com.spochi.persistence.InitiativeDummyBuilder;
 import com.spochi.repository.InitiativeRepository;
-import com.spochi.repository.UserRepository;
+import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.Test;
@@ -18,13 +18,10 @@ import org.springframework.test.context.ActiveProfiles;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +36,7 @@ class InitiativeServiceTest {
     InitiativeRepository initiativeRepository;
 
     @MockBean
-    UserRepository userRepository;
+    MongoUserRepository userRepository;
 
     private final String NICKNAME = "nickname";
     private final String DESCRIPTION = "description";
@@ -48,10 +45,10 @@ class InitiativeServiceTest {
     private final String DATE = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")).toString();
     private final String UID = "uid";
     private final String EMPTY = "";
-    private final int STATUS_DEFAULT = 1;
+    private final InitiativeStatus STATUS_DEFAULT = InitiativeStatus.PENDING;
 
-    private InitiativeRequestDTO wrong_initiative = new InitiativeRequestDTO();
-    private InitiativeRequestDTO right_initiative = new InitiativeRequestDTO();
+    private final InitiativeRequestDTO wrong_initiative = new InitiativeRequestDTO();
+    private final InitiativeRequestDTO right_initiative = new InitiativeRequestDTO();
 
 
     @Test
@@ -83,8 +80,8 @@ class InitiativeServiceTest {
 
         User user = mock(User.class);
         when(user.getNickname()).thenReturn(NICKNAME);
-        when(user.get_id()).thenReturn(USER_ID);
-        when(userRepository.findByGoogleId(UID)).thenReturn(Optional.of(user));
+        when(user.getId()).thenReturn(USER_ID);
+        when(userRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
         InitiativeResponseDTO result = service.create(right_initiative, UID);
 
@@ -92,9 +89,9 @@ class InitiativeServiceTest {
         assertEquals(DATE, result.getDate());
         assertEquals(IMAGE_BASE64, result.getImage());
         assertNotNull(result.get_id());
-        assertEquals(STATUS_DEFAULT, result.getStatus_id());
+        assertEquals(STATUS_DEFAULT.getId(), result.getStatus_id());
 
-        Optional<Initiative> initiativeOpt = initiativeRepository.findById(result.get_id());
+        Optional<Initiative> initiativeOpt = initiativeRepository.findInitiativeById(result.get_id());
         assertTrue(initiativeOpt.isPresent());
     }
 
@@ -128,7 +125,7 @@ class InitiativeServiceTest {
 
     @Test
     void getAllInitiativeOK() {
-        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+        final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname(NICKNAME);
         builder.date(LocalDateTime.now());
@@ -142,21 +139,21 @@ class InitiativeServiceTest {
         final Initiative initiativeFromCurrentUser_2= builder._id("2").build();
         builder.userId("another_user");
         builder._id("3");
-        final Initiative initiativeNotFromCurrentUser = builder.build();;
+        final Initiative initiativeNotFromCurrentUser = builder.build();
 
-        initiativeRepository.save(initiativeFromCurrentUser_1);
-        initiativeRepository.save(initiativeFromCurrentUser_2);
-        initiativeRepository.save(initiativeNotFromCurrentUser);
+        initiativeRepository.create(initiativeFromCurrentUser_1);
+        initiativeRepository.create(initiativeFromCurrentUser_2);
+        initiativeRepository.create(initiativeNotFromCurrentUser);
 
 
         final User.UserBuilder userBuilder = User.builder();
-        userBuilder.googleId(UID);
-        userBuilder._id(USER_ID);
+        userBuilder.uid(UID);
+        userBuilder.id(USER_ID);
         final User user = userBuilder.build();
-        userRepository.save(user);
+        userRepository.create(user);
 
 
-        when(userRepository.findByGoogleId(UID)).thenReturn(Optional.of(user));
+        when(userRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
 
        List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
@@ -170,7 +167,7 @@ class InitiativeServiceTest {
 
     @Test
     void getAllInitiativeThrowException(){
-        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
+        final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
 
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname(NICKNAME);
@@ -182,13 +179,12 @@ class InitiativeServiceTest {
         builder._id("1");
         final Initiative initiative = builder.build();
 
-        initiativeRepository.save(initiative);
+        initiativeRepository.create(initiative);
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(sorter, UID), "The Services fail because : user not found when initiative getAll");
     }
     @Test
     void createThrowException(){
-        final Comparator<Initiative> sorter = InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
         final String wrong_uid = "no user";
 
         right_initiative.setDescription(DESCRIPTION);
