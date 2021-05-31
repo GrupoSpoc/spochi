@@ -21,14 +21,13 @@ import java.util.List;
 @Profile("!disable-jwt-filter")
 public class JwtFilter extends OncePerRequestFilter {
 
-    public static final String ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
     @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
+    public static final String ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
-    public static final String REACT_CONTROL_REQUEST = "bsp4k98h51";
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
@@ -64,8 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            final String accessControlHeader = request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS);
-            if (accessControlHeader == null || !comesFromReactClient(accessControlHeader)) {
+            if (request.getHeaders(ACCESS_CONTROL_REQUEST_HEADERS) == null) {
 
                 final String invokedEndpoint = request.getRequestURI();
 
@@ -90,7 +88,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, httpServletResponse);
 
-        }catch (AuthorizationException | JwtException e) {
+        } catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
 
@@ -98,10 +96,6 @@ public class JwtFilter extends OncePerRequestFilter {
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
         }
-    }
-
-    private boolean comesFromReactClient(String accessControlHeader) {
-        return accessControlHeader.contains(REACT_CONTROL_REQUEST);
     }
 
     private boolean validateClient(HttpServletRequest request){
