@@ -220,13 +220,13 @@ class InitiativeServiceTest {
 
         Initiative testInitiative = new Initiative();
         testInitiative.setStatusId(1);
-        testInitiative.set_id("someID");
+        testInitiative.set_id("an unknown id");
         testInitiative.setUserId("userId");
         testInitiative.setDate(LocalDateTime.now().withNano(0));
         testInitiative.setDescription("SomeDescription");
         testInitiative.setNickname("User Nickname");
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO("someUserId").get_id()), "The Services fail because : There are no initiatives with this id");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO("an unknown id 1").get_id()), "The Services fail because : There are no initiatives with this id");
     }
 
     @Test
