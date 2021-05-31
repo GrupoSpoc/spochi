@@ -136,8 +136,8 @@ class InitiativeServiceTest {
         builder.userId(USER_ID);
         builder._id("1");
 
-        final Initiative initiativeFromCurrentUser_1= builder.build();
-        final Initiative initiativeFromCurrentUser_2= builder._id("2").build();
+        final Initiative initiativeFromCurrentUser_1 = builder.build();
+        final Initiative initiativeFromCurrentUser_2 = builder._id("2").build();
         builder.userId("another_user");
         builder._id("3");
         final Initiative initiativeNotFromCurrentUser = builder.build();
@@ -157,17 +157,18 @@ class InitiativeServiceTest {
         when(userRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
 
-       List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
+        List<InitiativeResponseDTO> list_dto = service.getAll(sorter, UID);
 
-       assertEquals(4,list_dto.size());
-       assertTrue(list_dto.get(0).isFrom_current_user());
-       assertTrue(list_dto.get(1).isFrom_current_user());
-       assertFalse(list_dto.get(2).isFrom_current_user());
+        assertEquals(4, list_dto.size());
+        assertFalse(list_dto.get(0).isFrom_current_user());
+        assertTrue(list_dto.get(1).isFrom_current_user());
+        assertTrue(list_dto.get(2).isFrom_current_user());
+        assertFalse(list_dto.get(3).isFrom_current_user());
 
     }
 
     @Test
-    void getAllInitiativeThrowException(){
+    void getAllInitiativeThrowException() {
         final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
 
         final Initiative.InitiativeBuilder builder = Initiative.builder();
@@ -184,8 +185,9 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(sorter, UID), "The Services fail because : user not found when initiative getAll");
     }
+
     @Test
-    void createThrowException(){
+    void createThrowException() {
         final String wrong_uid = "no user";
 
         right_initiative.setDescription(DESCRIPTION);
@@ -198,7 +200,7 @@ class InitiativeServiceTest {
 
     @Test
     @DisplayName("approveInitiative | for a pending initiative | change status to approved")
-    void approveInitiative(){
+    void approveInitiative() {
         Initiative testInitiative = new Initiative();
         testInitiative.setStatusId(1);
         testInitiative.set_id("someID");
@@ -208,7 +210,7 @@ class InitiativeServiceTest {
         testInitiative.setNickname("User Nickname");
         initiativeRepository.create(testInitiative);
 
-        InitiativeResponseDTO initiativeResponseDTO =   service.approveInitiative(testInitiative.get_id());
+        InitiativeResponseDTO initiativeResponseDTO = service.approveInitiative(testInitiative.get_id());
 
         assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.APPROVED.getId());
 
@@ -216,7 +218,7 @@ class InitiativeServiceTest {
 
     @Test
     @DisplayName("approveInitiativeException | for a invalid id initiative | throw invalid id exception")
-    void approveInitiativeException(){
+    void approveInitiativeException() {
 
         Initiative testInitiative = new Initiative();
         testInitiative.setStatusId(1);
@@ -231,7 +233,7 @@ class InitiativeServiceTest {
 
     @Test
     @DisplayName("approveNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
-    void approveNotPendingInitiativeException(){
+    void approveNotPendingInitiativeException() {
 
         Initiative testApprovedInitiative = new Initiative();
         testApprovedInitiative.setStatusId(2);
@@ -256,9 +258,6 @@ class InitiativeServiceTest {
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be approved");
 
     }
-
-
-
 
 
 }
