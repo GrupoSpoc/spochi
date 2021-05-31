@@ -21,12 +21,14 @@ import java.util.List;
 @Profile("!disable-jwt-filter")
 public class JwtFilter extends OncePerRequestFilter {
 
+    public static final String ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
     @Autowired
     private JwtUtil jwtUtil;
 
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
+    public static final String REACT_CONTROL_REQUEST = "bsp4k98h51";
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
@@ -41,14 +43,15 @@ public class JwtFilter extends OncePerRequestFilter {
         skippedEndpoints = new ArrayList<>();
 
         skippedEndpoints.add("/authenticate");
+        skippedEndpoints.add("/authenticate/admin");
         skippedEndpoints.add("/ping");
         skippedEndpoints.add("/admin/login");
-        skippedEndpoints.add("/initiative/all"); // todo esto es para pedirlas desde el admin, BORRAR
 
     }
     static {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
+        client_list.add("REACTlKld8UY310AQ0OPBsp4K98H51");
     }
 
 
@@ -59,30 +62,33 @@ public class JwtFilter extends OncePerRequestFilter {
      * Si es válido llama al filterChain.doFilter() lo cual significa seguir el curso natural de la petición (ir al controller)
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
+            final String accessControlHeader = request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS);
+            if (accessControlHeader == null || !comesFromReactClient(accessControlHeader)) {
 
-            final String invokedEndpoint = httpServletRequest.getRequestURI();
+                final String invokedEndpoint = request.getRequestURI();
 
-            if(!invokedEndpoint.equals("/ping") && !validateClient(httpServletRequest)){
-                throw new ClientAuthorizationException();
-            }
-
-            if (!skippedEndpoints.contains(invokedEndpoint)) {
-                String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-
-                if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_SUFFIX)) {
-                    throw new AuthorizationException();
+                if (!invokedEndpoint.equals("/ping") && !validateClient(request)) {
+                    throw new ClientAuthorizationException();
                 }
 
-                String token = authorizationHeader.substring(BEARER_SUFFIX.length());
+                if (!skippedEndpoints.contains(invokedEndpoint)) {
+                    String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
-                if (!jwtUtil.isTokenValid(token)) {
-                    throw new AuthorizationException();
+                    if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_SUFFIX)) {
+                        throw new AuthorizationException();
+                    }
+
+                    String token = authorizationHeader.substring(BEARER_SUFFIX.length());
+
+                    if (!jwtUtil.isTokenValid(token)) {
+                        throw new AuthorizationException();
+                    }
                 }
             }
 
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            filterChain.doFilter(request, httpServletResponse);
 
         }catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
@@ -92,6 +98,10 @@ public class JwtFilter extends OncePerRequestFilter {
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
         }
+    }
+
+    private boolean comesFromReactClient(String accessControlHeader) {
+        return accessControlHeader.contains(REACT_CONTROL_REQUEST);
     }
 
     private boolean validateClient(HttpServletRequest request){

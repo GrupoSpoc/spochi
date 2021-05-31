@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InitiativeService {
@@ -92,6 +93,20 @@ public class InitiativeService {
             return false;
         }
         return true;
+    }
+
+    public List<InitiativeResponseDTO> getPending(InitiativeSorter sorter) {
+        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
+        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter)
+                .stream()
+                .filter(i -> i.getStatusId() == InitiativeStatus.PENDING.getId())
+                .collect(Collectors.toList());
+
+        for (Initiative i : orderedInitiatives) {
+            responseDTOS.add(i.toDTO("false"));
+        }
+
+        return responseDTOS;
     }
 
     public static class InitiativeServiceException extends BadRequestException {

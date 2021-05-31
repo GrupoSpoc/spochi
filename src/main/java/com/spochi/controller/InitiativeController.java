@@ -34,4 +34,18 @@ public class InitiativeController {
     public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid) {
         return service.create(request, uid);
     }
+
+    @GetMapping("/pending")
+    public List<InitiativeResponseDTO> getPending(@RequestParam (required = false) Integer order) {
+        final InitiativeSorter sorter;
+
+        if (order != null) {
+            sorter = InitiativeSorter.fromIdOrElseThrow(order);
+        } else {
+            sorter = InitiativeSorter.DEFAULT_COMPARATOR;
+        }
+
+        return service.getPending(sorter);
+    }
+
 }
