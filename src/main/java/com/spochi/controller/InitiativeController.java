@@ -30,6 +30,12 @@ public class InitiativeController {
         return service.getAll(sorter, uid);
     }
 
+    @PutMapping("/approve")
+    public InitiativeResponseDTO approveInitiative(@RequestParam String initiativeId){
+
+        return service.approveInitiative(initiativeId);
+    }
+
     @PostMapping
     public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid) {
         return service.create(request, uid);

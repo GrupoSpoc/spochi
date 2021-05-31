@@ -94,6 +94,24 @@ public class InitiativeService {
         return true;
     }
 
+    public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
+
+        final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
+
+        if (!toBeApproved.isPresent()) {
+            throw new InitiativeServiceException("There are no initiatives with this id");
+        }
+        final Initiative initiative = toBeApproved.get();
+
+        if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
+            throw new InitiativeServiceException("Only pending initiatives can be approved");
+        }
+
+        initiative.setStatusId(InitiativeStatus.APPROVED.getId());
+
+        return initiative.toDTO(initiative.getUserId());
+    }
+
     public static class InitiativeServiceException extends BadRequestException {
         private InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));

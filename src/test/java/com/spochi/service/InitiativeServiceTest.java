@@ -9,6 +9,7 @@ import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -194,4 +195,70 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(right_initiative, wrong_uid), "The Services fail because : User not found");
     }
+
+    @Test
+    @DisplayName("approveInitiative | for a pending initiative | change status to approved")
+    void approveInitiative(){
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        initiativeRepository.create(testInitiative);
+
+        InitiativeResponseDTO initiativeResponseDTO =   service.approveInitiative(testInitiative.get_id());
+
+        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.APPROVED.getId());
+
+    }
+
+    @Test
+    @DisplayName("approveInitiativeException | for a invalid id initiative | throw invalid id exception")
+    void approveInitiativeException(){
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO("someUserId").get_id()), "The Services fail because : There are no initiatives with this id");
+    }
+
+    @Test
+    @DisplayName("approveNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+    void approveNotPendingInitiativeException(){
+
+        Initiative testApprovedInitiative = new Initiative();
+        testApprovedInitiative.setStatusId(2);
+        testApprovedInitiative.set_id("someID");
+        testApprovedInitiative.setUserId("userId");
+        testApprovedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testApprovedInitiative.setDescription("SomeDescription");
+        testApprovedInitiative.setNickname("User Nickname");
+
+        Initiative testRejectedInitiative = new Initiative();
+        testRejectedInitiative.setStatusId(3);
+        testRejectedInitiative.set_id("someID1");
+        testRejectedInitiative.setUserId("userId1");
+        testRejectedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testRejectedInitiative.setDescription("SomeDescription1");
+        testRejectedInitiative.setNickname("User Nickname 1");
+
+        initiativeRepository.create(testApprovedInitiative);
+        initiativeRepository.create(testRejectedInitiative);
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO("someUserId").get_id()), "The Services fail because : Only pending initiatives can be approved");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be approved");
+
+    }
+
+
+
+
+
 }
