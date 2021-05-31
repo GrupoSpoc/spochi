@@ -30,8 +30,8 @@ public class InitiativeController {
         return service.getAll(sorter, uid);
     }
 
-    @PutMapping("/approve")
-    public InitiativeResponseDTO approveInitiative(@RequestParam String initiativeId){
+    @RequestMapping(value="/approve/{initiativeId}", method=RequestMethod.POST)
+    public InitiativeResponseDTO approveInitiative(@PathVariable String initiativeId){
 
         return service.approveInitiative(initiativeId);
     }
