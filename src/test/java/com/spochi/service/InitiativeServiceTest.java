@@ -159,11 +159,11 @@ class InitiativeServiceTest {
 
         List<InitiativeResponseDTO> list_dto = service.getAll(sorter, UID);
 
-        assertEquals(4, list_dto.size());
+        assertEquals(5, list_dto.size());
         assertFalse(list_dto.get(0).isFrom_current_user());
-        assertTrue(list_dto.get(1).isFrom_current_user());
+        assertFalse(list_dto.get(1).isFrom_current_user());
         assertTrue(list_dto.get(2).isFrom_current_user());
-        assertFalse(list_dto.get(3).isFrom_current_user());
+        assertTrue(list_dto.get(3).isFrom_current_user());
 
     }
 
@@ -256,6 +256,67 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO("someUserId").get_id()), "The Services fail because : Only pending initiatives can be approved");
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be approved");
+
+    }
+
+    @Test
+    @DisplayName("rejectInitiative | for a pending initiative | change status to rejected")
+    void rejectInitiative() {
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        initiativeRepository.create(testInitiative);
+
+        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
+
+        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
+
+    }
+
+    @Test
+    @DisplayName("rejectInitiativeException | for a invalid id initiative | throw invalid id exception")
+    void rejectInitiativeException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("an unknown id");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(testInitiative.toDTO("an unknown id 1").get_id()), "The Services fail because : There are no initiatives with this id");
+    }
+
+    @Test
+    @DisplayName("rejectNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+    void rejectNotPendingInitiativeException() {
+
+        Initiative testApprovedInitiative = new Initiative();
+        testApprovedInitiative.setStatusId(2);
+        testApprovedInitiative.set_id("someID");
+        testApprovedInitiative.setUserId("userId");
+        testApprovedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testApprovedInitiative.setDescription("SomeDescription");
+        testApprovedInitiative.setNickname("User Nickname");
+
+        Initiative testRejectedInitiative = new Initiative();
+        testRejectedInitiative.setStatusId(3);
+        testRejectedInitiative.set_id("someID1");
+        testRejectedInitiative.setUserId("userId1");
+        testRejectedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testRejectedInitiative.setDescription("SomeDescription1");
+        testRejectedInitiative.setNickname("User Nickname 1");
+
+        initiativeRepository.create(testApprovedInitiative);
+        initiativeRepository.create(testRejectedInitiative);
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(testApprovedInitiative.toDTO("someUserId").get_id()), "The Services fail because : Only pending initiatives can be rejected");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be rejected");
 
     }
 

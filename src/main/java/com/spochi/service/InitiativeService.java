@@ -12,6 +12,7 @@ import com.spochi.service.query.InitiativeSorter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -25,7 +26,7 @@ public class InitiativeService {
     UserRepository userRepository;
 
     public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter, String uid) {
-        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+        final User user = userRepository.findByUid(uid).orElseThrow(() -> new InitiativeServiceException("user not found when initiative getAll"));
         final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
         final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
 
@@ -80,15 +81,15 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
+        if (!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }
 
-    private boolean isDateFormatValid(String date){
-        try{
+    private boolean isDateFormatValid(String date) {
+        try {
             LocalDateTime.parse(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -108,6 +109,24 @@ public class InitiativeService {
         }
 
         initiative.setStatusId(InitiativeStatus.APPROVED.getId());
+
+        return initiative.toDTO(initiative.getUserId());
+    }
+
+    public InitiativeResponseDTO rejectInitiative(String initiativeId) {
+
+        final Optional<Initiative> toBeRejected = initiativeRepository.findInitiativeById(initiativeId);
+
+        if (!toBeRejected.isPresent()) {
+            throw new InitiativeServiceException("There are no initiatives with this id");
+        }
+        final Initiative initiative = toBeRejected.get();
+
+        if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
+            throw new InitiativeServiceException("Only pending initiatives can be rejected");
+        }
+
+        initiative.setStatusId(InitiativeStatus.REJECTED.getId());
 
         return initiative.toDTO(initiative.getUserId());
     }

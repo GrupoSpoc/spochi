@@ -36,6 +36,12 @@ public class InitiativeController {
         return service.approveInitiative(initiativeId);
     }
 
+    @RequestMapping(value="/reject/{initiativeId}" , method=RequestMethod.POST)
+    public InitiativeResponseDTO rejectInitiative(@PathVariable String initiativeId){
+
+        return service.rejectInitiative(initiativeId);
+    }
+
     @PostMapping
     public InitiativeResponseDTO create(@RequestBody InitiativeRequestDTO request, @Uid String uid) {
         return service.create(request, uid);
