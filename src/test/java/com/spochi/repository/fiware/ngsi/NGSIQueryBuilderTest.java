@@ -30,12 +30,22 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("build | with attribute | ok")
-    void buildWithAttributeOk() {
+    @DisplayName("build | with single attribute | ok")
+    void buildWithSingleAttributeOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attribute(NGSITestFields.A_ATTRIBUTE, "aValue");
+        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue");
 
         assertEquals("?q=aAttribute==aValue", queryBuilder.build());
+    }
+
+    @Test
+    @DisplayName("build | with multiple values for same attribute | ok")
+    void buildWithMultipleAttributesOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue");
+        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "bValue");
+
+        assertEquals("?q=aAttribute==aValue,bValue", queryBuilder.build());
     }
 
     @Test
@@ -105,6 +115,16 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
+    @DisplayName("build | with offset | ok")
+    void buildWithOffsetOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.offset(1);
+
+        assertEquals("?offset=1", queryBuilder.build());
+    }
+
+
+    @Test
     @DisplayName("build | with multiple params | ok")
     void buildWithMultipleParamsOk() {
         final NGSIField field = mock(NGSIField.class);
@@ -113,14 +133,14 @@ class NGSIQueryBuilderTest {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
 
         queryBuilder.type(testEntityType)
-                .attribute(NGSITestFields.B_ATTRIBUTE, "bValue")
+                .attributeEq(NGSITestFields.B_ATTRIBUTE, "bValue")
                 .getAttribute(NGSITestFields.B_ATTRIBUTE)
                 .keyValues()
+                .offset(2)
                 .orderByDesc(field)
                 .limit(5);
 
-
-        assertEquals("?q=bAttribute==bValue&options=keyValues&limit=5&orderBy=!bOrder&type=testEntity&attr=bAttribute", queryBuilder.build());
+        assertEquals("?q=bAttribute==bValue&offset=2&options=keyValues&limit=5&orderBy=!bOrder&type=testEntity&attr=bAttribute", queryBuilder.build());
     }
 
 }

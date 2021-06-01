@@ -6,13 +6,17 @@ import com.sun.istack.Nullable;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class InitiativeQuery {
     private InitiativeSorter sorter;
-    private InitiativeStatus status;
+    private List<InitiativeStatus> statuses;
     private String userId;
-    private LocalDateTime dateFrom;
+    private LocalDateTime dateTop;
+    private Integer limit;
 
     public void withSorter(@Nullable Integer sorterId) {
         if (sorterId != null) {
@@ -20,9 +24,9 @@ public class InitiativeQuery {
         }
     }
 
-    public void withStatus(@Nullable Integer statusId) {
+    public void withStatuses(@Nullable Integer[] statusId) {
         if (statusId != null) {
-            this.status = InitiativeStatus.fromIdOrElseThrow(statusId);
+            this.statuses = Arrays.stream(statusId).map(InitiativeStatus::fromIdOrElseThrow).collect(Collectors.toList());
         }
     }
 
@@ -30,9 +34,15 @@ public class InitiativeQuery {
         this.userId = userId;
     }
 
-    public void withDateFrom(@Nullable String dateFrom) {
+    public void withDateTop(@Nullable String dateFrom) {
         if (dateFrom != null) {
-            this.dateFrom = LocalDateTime.parse(dateFrom);
+            this.dateTop = LocalDateTime.parse(dateFrom);
+        }
+    }
+
+    public void withLimit(@Nullable Integer limit) {
+        if (limit != null) {
+            this.limit = limit;
         }
     }
 }

@@ -16,8 +16,20 @@ public class NGSIQueryBuilder {
         return this;
     }
 
-    public NGSIQueryBuilder attribute(NGSIField attribute, String value) {
-        params.put("q=" + attribute.label() + "=", value);
+    public NGSIQueryBuilder attributeEq(NGSIField attribute, String value) {
+        final String key = "q=" + attribute.label() + "=";
+
+        if (params.containsKey(key)) {
+            params.put(key, params.get(key) + "," + value);
+        } else {
+            params.put(key, value);
+        }
+
+        return this;
+    }
+
+    public NGSIQueryBuilder attributeLs(NGSIField attribute, String value) {
+        params.put("q=" + attribute.label() + "<", value);
         return this;
     }
 
@@ -55,6 +67,11 @@ public class NGSIQueryBuilder {
         return this;
     }
 
+    public NGSIQueryBuilder offset(int offset) {
+        params.put("offset", String.valueOf(offset));
+        return this;
+    }
+
 
     public String build() {
         if (params.isEmpty()) return "";
@@ -62,7 +79,7 @@ public class NGSIQueryBuilder {
         return "?" + this.params.entrySet().stream().map(entry -> {
             String key = entry.getKey();
             String value = entry.getValue();
-            return key + "=" + value;
+            return key.contains("<") ? key + value : key + "=" + value;
         }).collect(Collectors.joining("&"));
     }
 }
