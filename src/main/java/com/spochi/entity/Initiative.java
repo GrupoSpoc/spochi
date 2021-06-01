@@ -2,6 +2,7 @@ package com.spochi.entity;
 
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.repository.fiware.ngsi.*;
+import com.spochi.util.DateUtil;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -66,7 +67,7 @@ public class Initiative implements NGSISerializable {
         json.addAttribute(Fields.DESCRIPTION, this.description);
         json.addAttribute(Fields.IMAGE, this.image);
         json.addAttribute(Fields.NICKNAME, this.nickname);
-        json.addAttribute(Fields.DATE, this.date.withNano(0).toString());
+        json.addAttribute(Fields.DATE, DateUtil.dateToMilliUTC(this.date));
         json.addAttribute(Fields.USER_ID, this.userId);
         json.addAttribute(Fields.STATUS_ID, this.statusId);
 
@@ -79,7 +80,7 @@ public class Initiative implements NGSISerializable {
         DESCRIPTION("description", NGSIFieldType.TEXT),
         IMAGE("image", NGSIFieldType.TEXT),
         NICKNAME("nickname", NGSIFieldType.TEXT),
-        DATE("date", NGSIFieldType.DATE),
+        DATE("date", NGSIFieldType.LONG),
         USER_ID("refUser", NGSIFieldType.REFERENCE),
         STATUS_ID("status_id", NGSIFieldType.INTEGER);
 

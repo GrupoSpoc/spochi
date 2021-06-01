@@ -5,6 +5,7 @@ import com.spochi.entity.Initiative;
 import com.spochi.repository.MongoInitiativeRepositoryInterface;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
+import com.spochi.util.DateUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,12 @@ class InitiativeTest {
     @Test
     @DisplayName("initiativeToJson | ok")
     void initiativeToJson() {
+        final LocalDateTime date = LocalDateTime.now();
 
         final Initiative testInitiative = new Initiative();
         testInitiative.set_id("test1");
         testInitiative.setUserId(NGSICommonFields.ID.prefix() + "userTest1");
-        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDate(date);
         testInitiative.setNickname("nickname1");
         testInitiative.setDescription("Some description");
         testInitiative.setImage("myImage");
@@ -48,7 +50,7 @@ class InitiativeTest {
         assertAll("expectedJsonData",
                 () -> assertEquals(testInitiative.get_id(), json.getId()),
                 () -> assertEquals(testInitiative.getUserId(), json.getJSONObject(Initiative.Fields.USER_ID.label()).getString(NGSICommonFields.VALUE.label())),
-                () -> assertEquals(testInitiative.getDate().toString(), json.getJSONObject(Initiative.Fields.DATE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(DateUtil.dateToMilliUTC(date), json.getJSONObject(Initiative.Fields.DATE.label()).getLong(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getNickname(), json.getJSONObject(Initiative.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getDescription(), json.getJSONObject(Initiative.Fields.DESCRIPTION.label()).getString(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getImage(), json.getJSONObject(Initiative.Fields.IMAGE.label()).getString(NGSICommonFields.VALUE.label())),

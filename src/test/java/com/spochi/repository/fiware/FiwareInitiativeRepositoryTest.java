@@ -5,6 +5,7 @@ import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
 import com.spochi.service.query.InitiativeSorter;
+import com.spochi.util.DateUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -58,24 +59,6 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("ToNGSIJson | returns initiative")
-    void toNGSIJsonOk() {
-        final RestPerformer performer = mock(RestPerformer.class);
-        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
-        final Initiative testInitiative = repository.fromNGSIJson(initiative1Json);
-
-        assertAll("Expected initiative",
-                () -> assertEquals(testInitiative.get_id(), id1),
-                () -> assertEquals(testInitiative.getUserId(), initiative1Json.getString(Initiative.Fields.USER_ID)),
-                () -> assertEquals(testInitiative.getDate().toString(), initiative1Json.getString(Initiative.Fields.DATE)),
-                () -> assertEquals(testInitiative.getDescription(), initiative1Json.getString(Initiative.Fields.DESCRIPTION)),
-                () -> assertEquals(testInitiative.getNickname(), initiative1Json.getString(Initiative.Fields.NICKNAME)),
-                () -> assertEquals(testInitiative.getStatusId(), initiative1Json.getInt(Initiative.Fields.STATUS_ID)),
-                () -> assertEquals(testInitiative.getImage(), initiative1Json.getString(Initiative.Fields.IMAGE))
-        );
-    }
-
-    @Test
     @DisplayName("InitiativeFieldsTest | Ok")
     void initiativeFieldsTest() {
         String id = "id";
@@ -85,10 +68,6 @@ public class FiwareInitiativeRepositoryTest {
         String date = "date";
         String userId = "refUser";
         String statusId = "status_id";
-        NGSIFieldType idType = NGSIFieldType.INTEGER;
-        NGSIFieldType textType = NGSIFieldType.TEXT;
-        NGSIFieldType dateType = NGSIFieldType.DATE;
-        NGSIFieldType referenceType = NGSIFieldType.REFERENCE;
 
         assertAll("Labels",
                 () -> assertEquals(id, Initiative.Fields.ID.label()),
@@ -100,15 +79,18 @@ public class FiwareInitiativeRepositoryTest {
                 () -> assertEquals(statusId, Initiative.Fields.STATUS_ID.label()));
 
         assertAll("Types",
-                () -> assertEquals(idType, Initiative.Fields.ID.type()),
-                () -> assertEquals(textType, Initiative.Fields.DESCRIPTION.type()),
-                () -> assertEquals(dateType, Initiative.Fields.DATE.type()),
-                () -> assertEquals(referenceType, Initiative.Fields.USER_ID.type()));
+                () -> assertEquals(NGSIFieldType.INTEGER, Initiative.Fields.ID.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.DESCRIPTION.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.NICKNAME.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.IMAGE.type()),
+                () -> assertEquals(NGSIFieldType.INTEGER, Initiative.Fields.STATUS_ID.type()),
+                () -> assertEquals(NGSIFieldType.LONG, Initiative.Fields.DATE.type()),
+                () -> assertEquals(NGSIFieldType.REFERENCE, Initiative.Fields.USER_ID.type()));
     }
 
     @Test
-    @DisplayName("getSerializatedInitiative | ok")
-    void getSerializatedInitiative() {
+    @DisplayName("fromNGSIJson | ok")
+    void fromNGSIJsonOk() {
         String description = "testDescription";
         String id = "200";
         int status = 1;
@@ -123,7 +105,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.STATUS_ID.label(), status);
         json.put(Initiative.Fields.IMAGE.label(), image);
         json.put(Initiative.Fields.NICKNAME.label(), nickname);
-        json.put(Initiative.Fields.DATE.label(), date.toString());
+        json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(date));
         json.put(Initiative.Fields.USER_ID.label(), userId);
 
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(mock(RestPerformer.class));
@@ -135,7 +117,7 @@ public class FiwareInitiativeRepositoryTest {
                 () -> assertEquals(status, testInitiative.getStatusId()),
                 () -> assertEquals(image, testInitiative.getImage()),
                 () -> assertEquals(nickname, testInitiative.getNickname()),
-                () -> assertEquals(date, testInitiative.getDate()),
+                () -> assertEquals(date.withNano(0), testInitiative.getDate().withNano(0)),
                 () -> assertEquals(userId, testInitiative.getUserId()));
     }
 
@@ -206,7 +188,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.IMAGE.label(), initiative.getImage());
         json.put(Initiative.Fields.NICKNAME.label(), initiative.getNickname());
         json.put(Initiative.Fields.USER_ID.label(), initiative.getUserId());
-        json.put(Initiative.Fields.DATE.label(), initiative.getDate().withNano(0).toString());
+        json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(initiative.getDate().withNano(0)));
 
         return json;
     }

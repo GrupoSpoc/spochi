@@ -8,6 +8,7 @@ import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
+import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,23 @@ public class InitiativeService {
         final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
         final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
         final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
+
+        for (Initiative i : orderedInitiatives) {
+            responseDTOS.add(i.toDTO(user.getId()));
+        }
+
+        return responseDTOS;
+    }
+
+    public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
+        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
+
+        if (currentUser) {
+            query.withUserId(user.getId());
+        }
+
+        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(query);
 
         for (Initiative i : orderedInitiatives) {
             responseDTOS.add(i.toDTO(user.getId()));

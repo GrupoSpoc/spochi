@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public enum NGSIFieldType {
     TEXT("Text", String.class),
     INTEGER("Number", Integer.class),
+    LONG("Number", Long.class),
     DATE("LocalDateTime", String.class) {
         @Override
         public void validateValue(Object value) {
