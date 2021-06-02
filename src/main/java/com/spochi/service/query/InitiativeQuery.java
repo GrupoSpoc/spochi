@@ -35,20 +35,20 @@ public class InitiativeQuery {
         this.userId = userId;
     }
 
-    public void withDateTop(@Nullable String dateFrom) {
-        if (dateFrom != null) {
-            this.dateTop = LocalDateTime.parse(dateFrom);
+    public void withDateTop(@Nullable String dateTop) {
+        if (dateTop != null) {
+            this.dateTop = LocalDateTime.parse(dateTop);
         }
     }
 
     public void withLimit(@Nullable Integer limit) {
-        if (limit != null) {
+        if (limit != null && limit > 0) {
             this.limit = limit;
         }
     }
 
     public void withOffset(Integer offset) {
-        if (offset != null) {
+        if (offset != null && offset > 0) {
             this.offset = offset;
         }
     }
