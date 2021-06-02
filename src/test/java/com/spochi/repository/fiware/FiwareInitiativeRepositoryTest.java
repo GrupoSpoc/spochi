@@ -133,14 +133,14 @@ public class FiwareInitiativeRepositoryTest {
         initiativeQuery.withStatuses(new Integer[]{InitiativeStatus.APPROVED.getId()});
         initiativeQuery.withLimit(3);
         initiativeQuery.withOffset(1);
-        initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
+        initiativeQuery.withSorter(InitiativeSorter.DATE_DESC.getId());
         initiativeQuery.withUserId("user-id");
 
         when(performer.get(anyString())).thenReturn(bothInitiatives);
 
         final List<Initiative> initiatives = repository.getAllInitiatives(initiativeQuery);
 
-        verify(performer, times(1)).get(contains("/v2/entities?q=status_id==2&q=date<1586174400000&offset=1&limit=3&options=keyValues&type=Initiative&q=refUser==user-id"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=status_id==2&q=date<1586174400000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative&q=refUser==user-id"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
@@ -168,7 +168,7 @@ public class FiwareInitiativeRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
 
-        final Optional<Initiative> testInitiative = repository.findById(id1);
+        final Optional<Initiative> testInitiative = repository.findInitiativeById(id1);
     }
 
     private static NGSIJson buildTestInitiativeJsonResponse(Initiative initiative, String id1) {
