@@ -79,7 +79,15 @@ public class NGSIQueryBuilder {
         return "?" + this.params.entrySet().stream().map(entry -> {
             String key = entry.getKey();
             String value = entry.getValue();
-            return key.contains("<") ? key + value : key + "=" + value;
+            return key + comparator(key) + value;
         }).collect(Collectors.joining("&"));
+    }
+
+    private String comparator(String key) {
+        if (key.contains("<") || key.contains(">")) {
+            return "";
+        } else {
+            return "=";
+        }
     }
 }

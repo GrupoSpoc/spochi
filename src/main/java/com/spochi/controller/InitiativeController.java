@@ -23,6 +23,7 @@ public class InitiativeController {
                                               @RequestParam (required = false) boolean currentUser,
                                               @RequestParam (required = false) String dateTop,
                                               @RequestParam (required = false) Integer limit,
+                                              @RequestParam (required = false) Integer offset,
                                               @Uid String uid) {
 
         final InitiativeQuery query = new InitiativeQuery();
@@ -31,6 +32,7 @@ public class InitiativeController {
         query.withStatuses(statusId);
         query.withDateTop(dateTop);
         query.withLimit(limit);
+        query.withOffset(offset);
 
         return service.getAll(query, uid, currentUser);
     }

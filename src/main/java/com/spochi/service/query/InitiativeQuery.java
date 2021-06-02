@@ -17,6 +17,7 @@ public class InitiativeQuery {
     private String userId;
     private LocalDateTime dateTop;
     private Integer limit;
+    private Integer offset;
 
     public void withSorter(@Nullable Integer sorterId) {
         if (sorterId != null) {
@@ -43,6 +44,12 @@ public class InitiativeQuery {
     public void withLimit(@Nullable Integer limit) {
         if (limit != null) {
             this.limit = limit;
+        }
+    }
+
+    public void withOffset(Integer offset) {
+        if (offset != null) {
+            this.offset = offset;
         }
     }
 }

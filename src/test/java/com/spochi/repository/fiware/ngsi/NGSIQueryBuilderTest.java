@@ -30,8 +30,8 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("build | with single attribute | ok")
-    void buildWithSingleAttributeOk() {
+    @DisplayName("build | with single attributeEq | ok")
+    void buildWithSingleAttributeEqOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
         queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue");
 
@@ -39,13 +39,22 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("build | with multiple values for same attribute | ok")
-    void buildWithMultipleAttributesOk() {
+    @DisplayName("build | with multiple values for same attributeEq | ok")
+    void buildWithMultipleAttributeEqOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
         queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue");
         queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "bValue");
 
         assertEquals("?q=aAttribute==aValue,bValue", queryBuilder.build());
+    }
+
+    @Test
+    @DisplayName("build | with attributeLs | ok")
+    void buildWithSingleAttributeLsOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.attributeLs(NGSITestFields.A_ATTRIBUTE, "aValue");
+
+        assertEquals("?q=aAttribute<aValue", queryBuilder.build());
     }
 
     @Test

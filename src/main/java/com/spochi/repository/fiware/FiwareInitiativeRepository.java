@@ -68,7 +68,6 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         return find(queryBuilder);
     }
 
-    // todo cuando va por refUser se caga en el resto de los filtos
     private NGSIQueryBuilder parseInitiativeQuery(InitiativeQuery initiativeQuery) {
         final NGSIQueryBuilder ngsiQueryBuilder = new NGSIQueryBuilder();
 
@@ -92,6 +91,10 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
 
         if (initiativeQuery.getLimit() != null) {
             ngsiQueryBuilder.limit(initiativeQuery.getLimit());
+        }
+
+        if (initiativeQuery.getOffset() != null) {
+            ngsiQueryBuilder.offset(initiativeQuery.getOffset());
         }
 
         return ngsiQueryBuilder;
