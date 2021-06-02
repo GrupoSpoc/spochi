@@ -152,4 +152,12 @@ class NGSIQueryBuilderTest {
         assertEquals("?q=bAttribute==bValue&offset=2&options=keyValues&limit=5&orderBy=!bOrder&type=testEntity&attr=bAttribute", queryBuilder.build());
     }
 
+    @Test
+    @DisplayName("comparator | ok")
+    void comparatorOk() {
+        assertEquals("=", NGSIQueryBuilder.comparator("key"));
+        assertEquals("", NGSIQueryBuilder.comparator("key>"));
+        assertEquals("", NGSIQueryBuilder.comparator("key<"));
+    }
+
 }

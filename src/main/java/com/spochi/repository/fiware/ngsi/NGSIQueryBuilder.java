@@ -83,7 +83,7 @@ public class NGSIQueryBuilder {
         }).collect(Collectors.joining("&"));
     }
 
-    private String comparator(String key) {
+    protected static String comparator(String key) {
         if (key.contains("<") || key.contains(">")) {
             return "";
         } else {
