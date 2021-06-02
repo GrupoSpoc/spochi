@@ -9,6 +9,7 @@ import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -124,6 +125,7 @@ class InitiativeServiceTest {
     }
 
     @Test
+    @DisplayName("Get all")
     void getAllInitiativeOK() {
         final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
         final Initiative.InitiativeBuilder builder = Initiative.builder();
@@ -159,10 +161,6 @@ class InitiativeServiceTest {
        List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
 
        assertEquals(3,list_dto.size());
-       assertTrue(list_dto.get(0).isFrom_current_user());
-       assertTrue(list_dto.get(1).isFrom_current_user());
-       assertFalse(list_dto.get(2).isFrom_current_user());
-
     }
 
     @Test

@@ -43,7 +43,7 @@ public class Initiative implements NGSISerializable {
         this.statusId = statusId;
     }
 
-    public InitiativeResponseDTO toDTO(String user_id) {
+    public InitiativeResponseDTO toDTO() {
         final InitiativeResponseDTO dto = new InitiativeResponseDTO();
 
         dto.set_id(this._id);
@@ -52,7 +52,6 @@ public class Initiative implements NGSISerializable {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
-        dto.setFrom_current_user(user_id.equals(this.userId));
 
         return dto;
     }

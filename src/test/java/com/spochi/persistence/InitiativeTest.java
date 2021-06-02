@@ -157,30 +157,4 @@ class InitiativeTest {
         assertEquals("Initiative", Initiative.NGSIType.label());
     }
 
-    @Test
-    void testToDtoOK(){
-        final String userId = "user-id";
-        final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
-
-        final Initiative.InitiativeBuilder builder = Initiative.builder();
-        builder.nickname("author");
-        builder.date(date);
-        builder.description("description");
-        builder.statusId(2);
-        builder.image("image");
-        builder.userId(userId);
-
-
-        final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
-        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
-
-        assertTrue(dtoFromCurrentUser.isFrom_current_user());
-        assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
-
-        assertEquals("author",dtoFromCurrentUser.getNickname());
-        assertEquals(date.toString(),dtoFromCurrentUser.getDate());
-        assertEquals("description",dtoFromCurrentUser.getDescription());
-        assertEquals(2,dtoFromCurrentUser.getStatus_id());
-        assertEquals("image",dtoFromCurrentUser.getImage());
-    }
 }

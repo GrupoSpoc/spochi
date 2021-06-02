@@ -36,7 +36,7 @@ public class InitiativeTestUtil {
     }
 
     public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
-        return initiatives.stream().map(initiative -> initiative.toDTO(user)).collect(Collectors.toList());
+        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
     public static List<Initiative> getInitiatives() {

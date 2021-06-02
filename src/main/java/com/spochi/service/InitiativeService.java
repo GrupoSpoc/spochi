@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InitiativeService {
@@ -25,33 +26,30 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
+    // todo borrar
     public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter, String uid) {
         final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
         final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
         final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
 
         for (Initiative i : orderedInitiatives) {
-            responseDTOS.add(i.toDTO(user.getId()));
+            responseDTOS.add(i.toDTO());
         }
 
         return responseDTOS;
     }
 
+    // todo mover consulta al repo cuando es currentUser, borrar fromCurrentUser
     public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
-        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
-        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
 
         if (currentUser) {
+            final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
             query.withUserId(user.getId());
         }
 
         final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(query);
 
-        for (Initiative i : orderedInitiatives) {
-            responseDTOS.add(i.toDTO(user.getId()));
-        }
-
-        return responseDTOS;
+        return orderedInitiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
@@ -78,7 +76,7 @@ public class InitiativeService {
         );
 
         initiativeRepository.create(initiative);
-        responseDTO = initiative.toDTO(user.getId());
+        responseDTO = initiative.toDTO();
 
         return responseDTO;
     }
