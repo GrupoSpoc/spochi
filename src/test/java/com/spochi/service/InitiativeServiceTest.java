@@ -7,6 +7,7 @@ import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.MongoUserRepository;
+import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -125,9 +126,8 @@ class InitiativeServiceTest {
     }
 
     @Test
-    @DisplayName("Get all")
+    @DisplayName("getAll | default comparator | not from current user | ok")
     void getAllInitiativeOK() {
-        final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname(NICKNAME);
         builder.date(LocalDateTime.now());
@@ -147,6 +147,40 @@ class InitiativeServiceTest {
         initiativeRepository.create(initiativeFromCurrentUser_2);
         initiativeRepository.create(initiativeNotFromCurrentUser);
 
+        final InitiativeQuery query = new InitiativeQuery();
+
+        query.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
+
+        List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, false);
+
+        assertEquals(3, list_dto.size());
+    }
+
+    @Test
+    @DisplayName("getAll | date desc comparator, by status, dateTop | from current user | ok")
+    void getAllInitiativeFiltersOK() {
+        final LocalDateTime date = LocalDateTime.now();
+
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname(NICKNAME);
+        builder.date(date);
+        builder.description(DESCRIPTION);
+        builder.statusId(InitiativeStatus.PENDING.getId());
+        builder.image(IMAGE_BASE64);
+        builder.userId(USER_ID);
+        builder._id("1");
+
+        final Initiative initiativeFromCurrentUser_1 = builder.build();
+        final Initiative initiativeFromCurrentUser_2 = builder._id("2").date(date.minusDays(4)).description("initiative-2").build();
+
+        builder.userId("another_user");
+        builder._id("3");
+        builder.date(date.minusDays(5));
+        final Initiative initiativeNotFromCurrentUser = builder.build();
+
+        initiativeRepository.create(initiativeFromCurrentUser_1);
+        initiativeRepository.create(initiativeFromCurrentUser_2);
+        initiativeRepository.create(initiativeNotFromCurrentUser);
 
         final User.UserBuilder userBuilder = User.builder();
         userBuilder.uid(UID);
@@ -154,19 +188,23 @@ class InitiativeServiceTest {
         final User user = userBuilder.build();
         userRepository.create(user);
 
-
         when(userRepository.findByUid(UID)).thenReturn(Optional.of(user));
 
+        final InitiativeQuery query = new InitiativeQuery();
+        query.withSorter(InitiativeSorter.DATE_DESC.getId()); // aplican las 3
+        query.withStatuses(new Integer[]{InitiativeStatus.PENDING.getId()}); // aplican las 3
+        query.withDateTop(date.minusDays(3).toString()); // aplican 2 y 3
 
-       List<InitiativeResponseDTO> list_dto = service.getAll(sorter,UID);
+        // al ser currentUser = true solo me va a traer la 2
+        List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, true);
 
-       assertEquals(3,list_dto.size());
+        assertEquals(1, list_dto.size());
+        assertEquals("initiative-2", list_dto.get(0).getDescription());
     }
 
     @Test
+    @DisplayName("getAll | exception because user is not found")
     void getAllInitiativeThrowException(){
-        final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
-
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname(NICKNAME);
         builder.date(LocalDateTime.now());
@@ -179,7 +217,7 @@ class InitiativeServiceTest {
 
         initiativeRepository.create(initiative);
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(sorter, UID), "The Services fail because : user not found when initiative getAll");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(new InitiativeQuery(), UID, true), "The Services fail because : user not found when initiative getAll");
     }
     @Test
     void createThrowException(){
