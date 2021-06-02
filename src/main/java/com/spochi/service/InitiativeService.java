@@ -33,15 +33,14 @@ public class InitiativeService {
             query.withUserId(user.getId());
         }
 
-        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(query);
+        final List<Initiative> initiatives = initiativeRepository.getAllInitiatives(query);
 
-        return orderedInitiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
+        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
         final User user;
         final Initiative initiative;
-        final InitiativeResponseDTO responseDTO;
 
         validateFields(request);
 
@@ -61,10 +60,9 @@ public class InitiativeService {
                 InitiativeStatus.PENDING.getId()
         );
 
-        initiativeRepository.create(initiative);
-        responseDTO = initiative.toDTO();
+        final Initiative initiativeCreated = initiativeRepository.create(initiative);
 
-        return responseDTO;
+        return initiativeCreated.toDTO();
     }
 
     private void validateFields(InitiativeRequestDTO request) throws InitiativeServiceException {
