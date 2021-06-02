@@ -1,6 +1,5 @@
 package com.spochi.persistence;
 
-import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.repository.MongoInitiativeRepositoryInterface;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;

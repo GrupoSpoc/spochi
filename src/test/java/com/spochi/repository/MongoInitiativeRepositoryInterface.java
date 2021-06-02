@@ -2,17 +2,15 @@ package com.spochi.repository;
 
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
-import com.spochi.entity.User;
 import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
-import com.spochi.util.DateUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -24,23 +22,15 @@ import java.util.stream.Stream;
 public interface MongoInitiativeRepositoryInterface extends MongoRepository<Initiative,String>, InitiativeRepository {
 
     @Override
-    default List<Initiative> getAllInitiatives(InitiativeSorter sorter){
-
-       final Stream<Initiative> initiatives = findAll().stream();
-       return initiatives
-               .sorted(sorter.getComparator())
-               .collect(Collectors.toList());
-    }
-
-    @Override
     default List<Initiative> getAllInitiatives(InitiativeQuery query){
         final Stream<Initiative> initiatives = findAll().stream();
 
+        final Comparator<Initiative> comparator = query.getSorter() != null ? query.getSorter().getComparator() : InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
         final Predicate<Initiative> predicate = parseQuery(query);
 
         return initiatives
                 .filter(predicate)
-                .sorted(query.getSorter().getComparator())
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 
@@ -62,7 +52,7 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
         }
 
         return i -> predicates.stream().allMatch(p -> p.test(i));
-    };
+    }
 
     @Override
     default Initiative create(@NotNull Initiative initiative) {

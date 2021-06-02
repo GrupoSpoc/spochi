@@ -1,26 +1,27 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
+import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.DateUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class FiwareInitiativeRepositoryTest {
     private static final LocalDateTime dateTime = LocalDateTime.now();
     private static final Initiative initiative1 = Initiative.builder()
-
             .description("description1")
             .statusId(1)
             .image("image1")
@@ -30,7 +31,6 @@ public class FiwareInitiativeRepositoryTest {
             .build();
 
     private static final Initiative initiative2 = Initiative.builder()
-
             .description("description2")
             .statusId(2)
             .image("image2")
@@ -122,33 +122,25 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("getAllInitiativesByDefaultOrder | having initiatives | return all initiatives in default order ")
+    @DisplayName("getAll | having result | should call find with given query")
     void getAllInitiativesByDefaultOrder() {
-
+        final LocalDateTime dateTop = LocalDateTime.of(2020, Month.APRIL, 6, 12, 0, 0);
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
+
+        final InitiativeQuery initiativeQuery = new InitiativeQuery();
+        initiativeQuery.withDateTop(dateTop.toString());
+        initiativeQuery.withStatuses(new Integer[]{InitiativeStatus.APPROVED.getId()});
+        initiativeQuery.withLimit(3);
+        initiativeQuery.withOffset(1);
+        initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
+        initiativeQuery.withUserId("user-id");
+
         when(performer.get(anyString())).thenReturn(bothInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
 
-        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
+        final List<Initiative> initiatives = repository.getAllInitiatives(initiativeQuery);
 
-        assertAll("Expected result",
-                () -> assertEquals(2, initiatives.size()),
-                () -> assertEquals(id1, initiatives.get(0).get_id()),
-                () -> assertEquals(id2, initiatives.get(1).get_id()));
-    }
-
-
-    @Test
-    @DisplayName("getAllInitiativesByDescDateOrder | having initiatives | return all initiatives by desc date order ")
-    void getAllInitiativesByDescDateOrder() {
-
-        final RestPerformer performer = mock(RestPerformer.class);
-        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
-        when(performer.get(anyString())).thenReturn(bothInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DATE_DESC);
-
-        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&orderBy=!date&type=Initiative"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=status_id==2&q=date<1586174400000&offset=1&limit=3&options=keyValues&type=Initiative&q=refUser==user-id"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
@@ -157,13 +149,13 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("getAllInitiativesWithoutHavingCreated | without having initiatives | return an empty Json ")
+    @DisplayName("getAll | no result | return an empty Json ")
     void getAllInitiativesWithoutHavingCreated() {
 
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
         when(performer.get(anyString())).thenReturn(noInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
+        final List<Initiative> initiatives = repository.getAllInitiatives(new InitiativeQuery());
 
         verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
 

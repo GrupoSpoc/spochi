@@ -47,17 +47,6 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
     }
 
     @Override
-    public List<Initiative> getAllInitiatives(InitiativeSorter sorter) {
-
-        final NGSIQueryBuilder builder = new NGSIQueryBuilder();
-
-        if (sorter == InitiativeSorter.DATE_DESC) {
-            builder.orderByDesc(Initiative.Fields.DATE);
-        }
-        return find(builder);
-    }
-
-    @Override
     public Optional<Initiative> findInitiativeById(String id) {
         return findById(id);
     }
