@@ -15,7 +15,6 @@ class DateUtilTest {
     void dateToMilliUTC() {
         assertEquals(LocalDateTime.parse("2021-04-12T16:27:52.038"), DateUtil.milliToDateUTC(1618244872038L));
         assertEquals(LocalDateTime.parse("2019-01-23T11:35:21.021"), DateUtil.milliToDateUTC(1548243321021L));
-
     }
 
     @Test

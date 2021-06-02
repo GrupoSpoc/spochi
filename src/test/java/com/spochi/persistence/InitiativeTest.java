@@ -151,6 +151,23 @@ class InitiativeTest {
     }
 
     @Test
+    @DisplayName("dto equals | ok")
+    void dtoEqualsOk() {
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname("author");
+        builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
+        builder.description("description");
+        builder.statusId(2);
+        builder.image("image");
+        builder.userId("user-id");
+
+        final Initiative initiative1 = builder.build();
+        final Initiative initiative2 = builder.build();
+
+        assertEquals(initiative1.toDTO(), initiative2.toDTO());
+    }
+
+    @Test
     @DisplayName("get entity type | ok")
     void getEntityTypeOk() {
         assertEquals("Initiative", Initiative.NGSIType.label());
