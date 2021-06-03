@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public interface MongoInitiativeRepositoryInterface extends MongoRepository<Initiative,String>, InitiativeRepository {
 
     @Override
-    default List<Initiative> getAllInitiatives(InitiativeQuery query){
+    default List<Initiative> getAllInitiatives(InitiativeQuery query) {
         final Stream<Initiative> initiatives = findAll().stream();
 
         final Comparator<Initiative> comparator = query.getSorter() != null ? query.getSorter().getComparator() : InitiativeSorter.DEFAULT_COMPARATOR.getComparator();
@@ -36,6 +36,7 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
 
     default Predicate<Initiative> parseQuery(InitiativeQuery initiativeQuery) {
         List<Predicate<Initiative>> predicates = new ArrayList<>();
+
         if (initiativeQuery.getUserId() != null) {
             predicates.add(i -> i.getUserId().equals(initiativeQuery.getUserId()));
         }
@@ -60,7 +61,7 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
     }
 
     @Override
-    default Optional<Initiative> findInitiativeById(String id){
+    default Optional<Initiative> findInitiativeById(String id) {
        return findById(id);
     }
 }

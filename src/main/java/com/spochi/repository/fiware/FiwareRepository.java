@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 public abstract class FiwareRepository<T extends NGSISerializable> {
     // PROD
-    // private static final String BASE_URL = "http://46.17.108.37:1026/v2";
+    private static final String BASE_URL = "http://46.17.108.37:1026/v2";
 
     // LOCAL
-    private static final String BASE_URL = "http://localhost:1026/v2";
+    // private static final String BASE_URL = "http://localhost:1026/v2";
     private static final String ENTITIES_URL = BASE_URL + "/entities";
 
     private final RestPerformer performer;

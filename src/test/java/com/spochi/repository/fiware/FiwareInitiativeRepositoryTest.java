@@ -149,7 +149,7 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("getAll | no result | return an empty Json ")
+    @DisplayName("getAll | no result | should return an empty Json ")
     void getAllInitiativesWithoutHavingCreated() {
 
         final RestPerformer performer = mock(RestPerformer.class);

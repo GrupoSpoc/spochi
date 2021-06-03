@@ -26,6 +26,17 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
     }
 
     @Override
+    public Optional<Initiative> findInitiativeById(String id) {
+        return findById(id);
+    }
+
+    @Override
+    public List<Initiative> getAllInitiatives(InitiativeQuery query) {
+        final NGSIQueryBuilder queryBuilder = parseInitiativeQuery(query);
+        return find(queryBuilder);
+    }
+
+    @Override
     protected NGSIEntityType getEntityType() {
         return Initiative.NGSIType;
     }
@@ -44,17 +55,6 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         final int statusId = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID)).getId();
 
         return new Initiative(id, description, image, nickname, date, userId, statusId);
-    }
-
-    @Override
-    public Optional<Initiative> findInitiativeById(String id) {
-        return findById(id);
-    }
-
-    @Override
-    public List<Initiative> getAllInitiatives(InitiativeQuery query) {
-        final NGSIQueryBuilder queryBuilder = parseInitiativeQuery(query);
-        return find(queryBuilder);
     }
 
     private NGSIQueryBuilder parseInitiativeQuery(InitiativeQuery initiativeQuery) {

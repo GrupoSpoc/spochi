@@ -84,7 +84,7 @@ public class NGSIQueryBuilder {
     }
 
     protected static String comparator(String key) {
-        if (key.contains("<") || key.contains(">")) {
+        if (key.endsWith("<") || key.endsWith(">")) {
             return "";
         } else {
             return "=";

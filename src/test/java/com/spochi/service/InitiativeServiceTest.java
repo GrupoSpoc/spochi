@@ -173,6 +173,7 @@ class InitiativeServiceTest {
         final Initiative initiativeFromCurrentUser_1 = builder.build();
         final Initiative initiativeFromCurrentUser_2 = builder._id("2").date(date.minusDays(4)).description("initiative-2").build();
 
+        builder.description("initiative-3");
         builder.userId("another_user");
         builder._id("3");
         builder.date(date.minusDays(5));
