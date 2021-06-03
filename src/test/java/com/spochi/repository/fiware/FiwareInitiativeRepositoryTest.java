@@ -140,7 +140,7 @@ public class FiwareInitiativeRepositoryTest {
 
         final List<Initiative> initiatives = repository.getAllInitiatives(initiativeQuery);
 
-        verify(performer, times(1)).get(contains("/v2/entities?q=status_id==2&q=date<1586174400000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative&q=refUser==user-id"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==user-id;status_id==2;date<1586174400000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),

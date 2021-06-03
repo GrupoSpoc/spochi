@@ -69,8 +69,8 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         }
 
         if (initiativeQuery.getStatuses() != null) {
-            initiativeQuery.getStatuses()
-                    .forEach(status -> ngsiQueryBuilder.attributeEq(Initiative.Fields.STATUS_ID, String.valueOf(status.getId())));
+            ngsiQueryBuilder.attributeEq(Initiative.Fields.STATUS_ID,
+                    initiativeQuery.getStatuses().stream().map(s -> String.valueOf(s.getId())).toArray(String[]::new));
         }
 
         if (initiativeQuery.getDateTop() != null) {

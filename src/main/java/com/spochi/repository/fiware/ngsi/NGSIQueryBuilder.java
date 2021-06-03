@@ -5,6 +5,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NGSIQueryBuilder {
+    private static final String Q = "q";
+    private static final String SIMPLE_EQ = "=";
+    private static final String EQ = "==";
+    private static final String LS = "<";
+
+
     private final Map<String, String> params;
 
     public NGSIQueryBuilder() {
@@ -16,21 +22,12 @@ public class NGSIQueryBuilder {
         return this;
     }
 
-    public NGSIQueryBuilder attributeEq(NGSIField attribute, String value) {
-        final String key = "q=" + attribute.label() + "=";
-
-        if (params.containsKey(key)) {
-            params.put(key, params.get(key) + "," + value);
-        } else {
-            params.put(key, value);
-        }
-
-        return this;
+    public NGSIQueryBuilder attributeEq(NGSIField attribute, String ... values) {
+        return qExpression(attribute.label() + EQ + String.join(",", values));
     }
 
     public NGSIQueryBuilder attributeLs(NGSIField attribute, String value) {
-        params.put("q=" + attribute.label() + "<", value);
-        return this;
+        return qExpression(attribute.label() + LS + value);
     }
 
     public NGSIQueryBuilder count() {
@@ -63,8 +60,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder ref(NGSIEntityType type, String id) {
-        params.put("q=ref" + type.label() + "=", id);
-        return this;
+        return qExpression("ref" + type.label() + EQ + id);
     }
 
     public NGSIQueryBuilder offset(int offset) {
@@ -84,10 +80,20 @@ public class NGSIQueryBuilder {
     }
 
     protected static String comparator(String key) {
-        if (key.endsWith("<") || key.endsWith(">")) {
+        if (key.endsWith(LS) || key.endsWith(">")) {
             return "";
         } else {
-            return "=";
+            return SIMPLE_EQ;
         }
+    }
+
+    private NGSIQueryBuilder qExpression(String expression) {
+        if (params.containsKey(Q)) {
+            params.put(Q, params.get(Q) + ";" + expression);
+        } else {
+            params.put(Q, expression);
+        }
+
+        return this;
     }
 }
