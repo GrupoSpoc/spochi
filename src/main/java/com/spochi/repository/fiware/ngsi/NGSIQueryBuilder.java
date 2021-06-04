@@ -5,11 +5,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NGSIQueryBuilder {
-    private static final String Q = "q";
+    private static final String Q_KEY = "q";
     private static final String SIMPLE_EQ = "=";
-    private static final String EQ = "==";
+    private static final String DOUBLE_EQ = "==";
     private static final String LS = "<";
-
+    private static final String GT = ">";
+    private static final String Q_SEPARATOR = ";";
+    private static final String BLANK = "";
 
     private final Map<String, String> params;
 
@@ -23,7 +25,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder attributeEq(NGSIField attribute, String ... values) {
-        return qExpression(attribute.label() + EQ + String.join(",", values));
+        return qExpression(attribute.label() + DOUBLE_EQ + String.join(",", values));
     }
 
     public NGSIQueryBuilder attributeLs(NGSIField attribute, String value) {
@@ -60,7 +62,7 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder ref(NGSIEntityType type, String id) {
-        return qExpression("ref" + type.label() + EQ + id);
+        return qExpression("ref" + type.label() + DOUBLE_EQ + id);
     }
 
     public NGSIQueryBuilder offset(int offset) {
@@ -80,18 +82,18 @@ public class NGSIQueryBuilder {
     }
 
     protected static String comparator(String key) {
-        if (key.endsWith(LS) || key.endsWith(">")) {
-            return "";
+        if (key.endsWith(LS) || key.endsWith(GT)) {
+            return BLANK;
         } else {
             return SIMPLE_EQ;
         }
     }
 
     private NGSIQueryBuilder qExpression(String expression) {
-        if (params.containsKey(Q)) {
-            params.put(Q, params.get(Q) + ";" + expression);
+        if (params.containsKey(Q_KEY)) {
+            params.put(Q_KEY, params.get(Q_KEY) + Q_SEPARATOR + expression);
         } else {
-            params.put(Q, expression);
+            params.put(Q_KEY, expression);
         }
 
         return this;
