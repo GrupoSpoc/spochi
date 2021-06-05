@@ -39,7 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     static {
         skippedEndpoints = new ArrayList<>();
-
+        skippedEndpoints.add("/authenticateAdmin");
         skippedEndpoints.add("/authenticate");
         skippedEndpoints.add("/ping");
     }

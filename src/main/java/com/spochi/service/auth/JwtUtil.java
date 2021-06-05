@@ -22,7 +22,11 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, uid);
     }
-
+    public String generateAdminToken(String uid) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("admin", true);
+        return createToken(claims, uid);
+    }
     public boolean isTokenValid(String token) {
         return !isTokenExpired(token);
     }
