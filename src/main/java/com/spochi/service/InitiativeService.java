@@ -96,6 +96,11 @@ public class InitiativeService {
 
     public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
 
+        return updateStatus(initiativeId,InitiativeStatus.APPROVED);
+    }
+
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status){
+
         final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
 
         if (!toBeApproved.isPresent()) {
@@ -106,10 +111,11 @@ public class InitiativeService {
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
             throw new InitiativeServiceException("Only pending initiatives can be approved");
         }
+        initiativeRepository.changeStatus(initiative,status);
 
-        initiative.setStatusId(InitiativeStatus.APPROVED.getId());
+        final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 
-        return initiative.toDTO();
+        return updatedInitiative.map(Initiative::toDTO).orElse(null);
     }
 
     public static class InitiativeServiceException extends BadRequestException {
