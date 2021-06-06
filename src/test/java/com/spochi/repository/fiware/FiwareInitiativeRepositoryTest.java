@@ -1,25 +1,27 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
+import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
+import com.spochi.util.DateUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class FiwareInitiativeRepositoryTest {
     private static final LocalDateTime dateTime = LocalDateTime.now();
     private static final Initiative initiative1 = Initiative.builder()
-
             .description("description1")
             .statusId(1)
             .image("image1")
@@ -29,7 +31,6 @@ public class FiwareInitiativeRepositoryTest {
             .build();
 
     private static final Initiative initiative2 = Initiative.builder()
-
             .description("description2")
             .statusId(2)
             .image("image2")
@@ -58,24 +59,6 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("ToNGSIJson | returns initiative")
-    void toNGSIJsonOk() {
-        final RestPerformer performer = mock(RestPerformer.class);
-        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
-        final Initiative testInitiative = repository.fromNGSIJson(initiative1Json);
-
-        assertAll("Expected initiative",
-                () -> assertEquals(testInitiative.get_id(), id1),
-                () -> assertEquals(testInitiative.getUserId(), initiative1Json.getString(Initiative.Fields.USER_ID)),
-                () -> assertEquals(testInitiative.getDate().toString(), initiative1Json.getString(Initiative.Fields.DATE)),
-                () -> assertEquals(testInitiative.getDescription(), initiative1Json.getString(Initiative.Fields.DESCRIPTION)),
-                () -> assertEquals(testInitiative.getNickname(), initiative1Json.getString(Initiative.Fields.NICKNAME)),
-                () -> assertEquals(testInitiative.getStatusId(), initiative1Json.getInt(Initiative.Fields.STATUS_ID)),
-                () -> assertEquals(testInitiative.getImage(), initiative1Json.getString(Initiative.Fields.IMAGE))
-        );
-    }
-
-    @Test
     @DisplayName("InitiativeFieldsTest | Ok")
     void initiativeFieldsTest() {
         String id = "id";
@@ -85,10 +68,6 @@ public class FiwareInitiativeRepositoryTest {
         String date = "date";
         String userId = "refUser";
         String statusId = "status_id";
-        NGSIFieldType idType = NGSIFieldType.INTEGER;
-        NGSIFieldType textType = NGSIFieldType.TEXT;
-        NGSIFieldType dateType = NGSIFieldType.DATE;
-        NGSIFieldType referenceType = NGSIFieldType.REFERENCE;
 
         assertAll("Labels",
                 () -> assertEquals(id, Initiative.Fields.ID.label()),
@@ -100,15 +79,18 @@ public class FiwareInitiativeRepositoryTest {
                 () -> assertEquals(statusId, Initiative.Fields.STATUS_ID.label()));
 
         assertAll("Types",
-                () -> assertEquals(idType, Initiative.Fields.ID.type()),
-                () -> assertEquals(textType, Initiative.Fields.DESCRIPTION.type()),
-                () -> assertEquals(dateType, Initiative.Fields.DATE.type()),
-                () -> assertEquals(referenceType, Initiative.Fields.USER_ID.type()));
+                () -> assertEquals(NGSIFieldType.INTEGER, Initiative.Fields.ID.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.DESCRIPTION.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.NICKNAME.type()),
+                () -> assertEquals(NGSIFieldType.TEXT, Initiative.Fields.IMAGE.type()),
+                () -> assertEquals(NGSIFieldType.INTEGER, Initiative.Fields.STATUS_ID.type()),
+                () -> assertEquals(NGSIFieldType.LONG, Initiative.Fields.DATE.type()),
+                () -> assertEquals(NGSIFieldType.REFERENCE, Initiative.Fields.USER_ID.type()));
     }
 
     @Test
-    @DisplayName("getSerializatedInitiative | ok")
-    void getSerializatedInitiative() {
+    @DisplayName("fromNGSIJson | ok")
+    void fromNGSIJsonOk() {
         String description = "testDescription";
         String id = "200";
         int status = 1;
@@ -123,7 +105,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.STATUS_ID.label(), status);
         json.put(Initiative.Fields.IMAGE.label(), image);
         json.put(Initiative.Fields.NICKNAME.label(), nickname);
-        json.put(Initiative.Fields.DATE.label(), date.toString());
+        json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(date));
         json.put(Initiative.Fields.USER_ID.label(), userId);
 
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(mock(RestPerformer.class));
@@ -135,38 +117,30 @@ public class FiwareInitiativeRepositoryTest {
                 () -> assertEquals(status, testInitiative.getStatusId()),
                 () -> assertEquals(image, testInitiative.getImage()),
                 () -> assertEquals(nickname, testInitiative.getNickname()),
-                () -> assertEquals(date, testInitiative.getDate()),
+                () -> assertEquals(date.withNano(0), testInitiative.getDate().withNano(0)),
                 () -> assertEquals(userId, testInitiative.getUserId()));
     }
 
     @Test
-    @DisplayName("getAllInitiativesByDefaultOrder | having initiatives | return all initiatives in default order ")
+    @DisplayName("getAll | having result | should call find with given query")
     void getAllInitiativesByDefaultOrder() {
-
+        final LocalDateTime dateTop = LocalDateTime.of(2020, Month.APRIL, 6, 12, 0, 0);
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
+
+        final InitiativeQuery initiativeQuery = new InitiativeQuery();
+        initiativeQuery.withDateTop(dateTop.toString());
+        initiativeQuery.withStatuses(new Integer[]{InitiativeStatus.APPROVED.getId()});
+        initiativeQuery.withLimit(3);
+        initiativeQuery.withOffset(1);
+        initiativeQuery.withSorter(InitiativeSorter.DATE_DESC.getId());
+        initiativeQuery.withUserId("user-id");
+
         when(performer.get(anyString())).thenReturn(bothInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
 
-        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
+        final List<Initiative> initiatives = repository.getAllInitiatives(initiativeQuery);
 
-        assertAll("Expected result",
-                () -> assertEquals(2, initiatives.size()),
-                () -> assertEquals(id1, initiatives.get(0).get_id()),
-                () -> assertEquals(id2, initiatives.get(1).get_id()));
-    }
-
-
-    @Test
-    @DisplayName("getAllInitiativesByDescDateOrder | having initiatives | return all initiatives by desc date order ")
-    void getAllInitiativesByDescDateOrder() {
-
-        final RestPerformer performer = mock(RestPerformer.class);
-        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
-        when(performer.get(anyString())).thenReturn(bothInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DATE_DESC);
-
-        verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&orderBy=!date&type=Initiative"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==user-id;status_id==2;date<1586174400000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
@@ -175,13 +149,13 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("getAllInitiativesWithoutHavingCreated | without having initiatives | return an empty Json ")
+    @DisplayName("getAll | no result | should return an empty Json ")
     void getAllInitiativesWithoutHavingCreated() {
 
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
         when(performer.get(anyString())).thenReturn(noInitiatives);
-        final List<Initiative> initiatives = repository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR);
+        final List<Initiative> initiatives = repository.getAllInitiatives(new InitiativeQuery());
 
         verify(performer, times(1)).get(contains("/v2/entities?options=keyValues&type=Initiative"));
 
@@ -194,7 +168,7 @@ public class FiwareInitiativeRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
 
-        final Optional<Initiative> testInitiative = repository.findById(id1);
+        final Optional<Initiative> testInitiative = repository.findInitiativeById(id1);
     }
 
     private static NGSIJson buildTestInitiativeJsonResponse(Initiative initiative, String id1) {
@@ -206,7 +180,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.IMAGE.label(), initiative.getImage());
         json.put(Initiative.Fields.NICKNAME.label(), initiative.getNickname());
         json.put(Initiative.Fields.USER_ID.label(), initiative.getUserId());
-        json.put(Initiative.Fields.DATE.label(), initiative.getDate().withNano(0).toString());
+        json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(initiative.getDate().withNano(0)));
 
         return json;
     }
