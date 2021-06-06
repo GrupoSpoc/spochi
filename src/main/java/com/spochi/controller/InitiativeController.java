@@ -4,7 +4,7 @@ import com.spochi.controller.handler.Uid;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.service.InitiativeService;
-import com.spochi.service.query.InitiativeSorter;
+import com.spochi.service.query.InitiativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,16 +18,23 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
-    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order, @Uid String uid) {
-        final InitiativeSorter sorter;
+    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order,
+                                              @RequestParam (required = false) Integer[] statusId,
+                                              @RequestParam (required = false) boolean currentUser,
+                                              @RequestParam (required = false) String dateTop,
+                                              @RequestParam (required = false) Integer limit,
+                                              @RequestParam (required = false) Integer offset,
+                                              @Uid String uid) {
 
-        if (order != null) {
-            sorter = InitiativeSorter.fromIdOrElseThrow(order);
-        } else {
-            sorter = InitiativeSorter.DEFAULT_COMPARATOR;
-        }
+        final InitiativeQuery query = new InitiativeQuery();
 
-        return service.getAll(sorter, uid);
+        query.withSorter(order);
+        query.withStatuses(statusId);
+        query.withDateTop(dateTop);
+        query.withLimit(limit);
+        query.withOffset(offset);
+
+        return service.getAll(query, uid, currentUser);
     }
 
     @PostMapping

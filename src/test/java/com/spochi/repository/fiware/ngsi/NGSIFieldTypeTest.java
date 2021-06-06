@@ -16,6 +16,7 @@ class NGSIFieldTypeTest {
     void getName() {
         assertEquals("Text", TEXT.label());
         assertEquals("Number", INTEGER.label());
+        assertEquals("Number", LONG.label());
         assertEquals("LocalDateTime", DATE.label());
         assertEquals("Reference", REFERENCE.label());
     }
@@ -37,6 +38,16 @@ class NGSIFieldTypeTest {
         assertException(InvalidValueException.class, () -> INTEGER.validateValue(10.4d), "Type Number expected an instance of Integer but [10.4] is a Double");
         assertException(InvalidValueException.class, () -> INTEGER.validateValue("a-text"), "Type Number expected an instance of Integer but [a-text] is a String");
         assertException(InvalidValueException.class, () -> INTEGER.validateValue(null), "Null values are not allowed");
+    }
+
+    @Test
+    @DisplayName("validate value | when type is LONG")
+    void validateValueLong() {
+        assertDoesNotThrow(() -> LONG.validateValue(10L));
+
+        assertException(InvalidValueException.class, () -> LONG.validateValue(1), "Type Number expected an instance of Long but [1] is a Integer");
+        assertException(InvalidValueException.class, () -> LONG.validateValue("a-text"), "Type Number expected an instance of Long but [a-text] is a String");
+        assertException(InvalidValueException.class, () -> LONG.validateValue(null), "Null values are not allowed");
     }
 
     @Test
