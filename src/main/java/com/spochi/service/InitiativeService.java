@@ -109,7 +109,7 @@ public class InitiativeService {
 
         initiative.setStatusId(InitiativeStatus.APPROVED.getId());
 
-        return initiative.toDTO(initiative.getUserId());
+        return initiative.toDTO();
     }
 
     public static class InitiativeServiceException extends BadRequestException {

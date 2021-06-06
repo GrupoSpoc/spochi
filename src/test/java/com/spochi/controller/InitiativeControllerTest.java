@@ -68,7 +68,7 @@ public class InitiativeControllerTest {
         expectedInitiative.setStatusId(InitiativeStatus.APPROVED.getId());
         expectedInitiative.setImage("imageData");
 
-        final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO("someID");
+        final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO();
 
         when(service.approveInitiative(anyString())).thenReturn(expectedDTO);
 

@@ -218,96 +218,97 @@ class InitiativeServiceTest {
         final InitiativeSorter sorter = InitiativeSorter.DEFAULT_COMPARATOR;
 
 
-    @DisplayName("getAll | exception because user is not found")
-    void getAllInitiativeThrowException(){
+        @DisplayName("getAll | exception because user is not found")
+        void getAllInitiativeThrowException () {
 
-        final Initiative.InitiativeBuilder builder = Initiative.builder();
-        builder.nickname(NICKNAME);
-        builder.date(LocalDateTime.now());
-        builder.description(DESCRIPTION);
-        builder.statusId(2);
-        builder.image(IMAGE_BASE64);
-        builder.userId(USER_ID);
-        builder._id("1");
-        final Initiative initiative = builder.build();
+            final Initiative.InitiativeBuilder builder = Initiative.builder();
+            builder.nickname(NICKNAME);
+            builder.date(LocalDateTime.now());
+            builder.description(DESCRIPTION);
+            builder.statusId(2);
+            builder.image(IMAGE_BASE64);
+            builder.userId(USER_ID);
+            builder._id("1");
+            final Initiative initiative = builder.build();
 
-        initiativeRepository.create(initiative);
+            initiativeRepository.create(initiative);
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(new InitiativeQuery(), UID, true), "The Services fail because : user not found when initiative getAll");
+            AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(new InitiativeQuery(), UID, true), "The Services fail because : user not found when initiative getAll");
+        }
+
+        @Test
+        void createThrowException () {
+            final String wrong_uid = "no user";
+
+            right_initiative.setDescription(DESCRIPTION);
+            right_initiative.setDate(DATE);
+            right_initiative.setImage(IMAGE_BASE64);
+
+
+            AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(right_initiative, wrong_uid), "The Services fail because : User not found");
+        }
+
+        @Test
+        @DisplayName("approveInitiative | for a pending initiative | change status to approved")
+        void approveInitiative () {
+            Initiative testInitiative = new Initiative();
+            testInitiative.setStatusId(1);
+            testInitiative.set_id("someID");
+            testInitiative.setUserId("userId");
+            testInitiative.setDate(LocalDateTime.now().withNano(0));
+            testInitiative.setDescription("SomeDescription");
+            testInitiative.setNickname("User Nickname");
+            initiativeRepository.create(testInitiative);
+
+            InitiativeResponseDTO initiativeResponseDTO = service.approveInitiative(testInitiative.get_id());
+
+            assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.APPROVED.getId());
+
+        }
+
+        @Test
+        @DisplayName("approveInitiativeException | for a invalid id initiative | throw invalid id exception")
+        void approveInitiativeException(){
+
+            Initiative testInitiative = new Initiative();
+            testInitiative.setStatusId(1);
+            testInitiative.set_id("an unknown id");
+            testInitiative.setUserId("userId");
+            testInitiative.setDate(LocalDateTime.now().withNano(0));
+            testInitiative.setDescription("SomeDescription");
+            testInitiative.setNickname("User Nickname");
+
+            AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO("an unknown id 1").get_id()), "The Services fail because : There are no initiatives with this id");
+        }
+
+        @Test
+        @DisplayName("approveNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+        void approveNotPendingInitiativeException () {
+
+            Initiative testApprovedInitiative = new Initiative();
+            testApprovedInitiative.setStatusId(2);
+            testApprovedInitiative.set_id("someID");
+            testApprovedInitiative.setUserId("userId");
+            testApprovedInitiative.setDate(LocalDateTime.now().withNano(0));
+            testApprovedInitiative.setDescription("SomeDescription");
+            testApprovedInitiative.setNickname("User Nickname");
+
+            Initiative testRejectedInitiative = new Initiative();
+            testRejectedInitiative.setStatusId(3);
+            testRejectedInitiative.set_id("someID1");
+            testRejectedInitiative.setUserId("userId1");
+            testRejectedInitiative.setDate(LocalDateTime.now().withNano(0));
+            testRejectedInitiative.setDescription("SomeDescription1");
+            testRejectedInitiative.setNickname("User Nickname 1");
+
+            initiativeRepository.create(testApprovedInitiative);
+            initiativeRepository.create(testRejectedInitiative);
+
+            AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO("someUserId").get_id()), "The Services fail because : Only pending initiatives can be approved");
+            AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be approved");
+
+        }
+
+
     }
-
-    @Test
-    void createThrowException() {
-        final String wrong_uid = "no user";
-
-        right_initiative.setDescription(DESCRIPTION);
-        right_initiative.setDate(DATE);
-        right_initiative.setImage(IMAGE_BASE64);
-
-
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(right_initiative, wrong_uid), "The Services fail because : User not found");
-    }
-
-    @Test
-    @DisplayName("approveInitiative | for a pending initiative | change status to approved")
-    void approveInitiative() {
-        Initiative testInitiative = new Initiative();
-        testInitiative.setStatusId(1);
-        testInitiative.set_id("someID");
-        testInitiative.setUserId("userId");
-        testInitiative.setDate(LocalDateTime.now().withNano(0));
-        testInitiative.setDescription("SomeDescription");
-        testInitiative.setNickname("User Nickname");
-        initiativeRepository.create(testInitiative);
-
-        InitiativeResponseDTO initiativeResponseDTO = service.approveInitiative(testInitiative.get_id());
-
-        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.APPROVED.getId());
-
-    }
-
-    @Test
-    @DisplayName("approveInitiativeException | for a invalid id initiative | throw invalid id exception")
-    void approveInitiativeException() {
-
-        Initiative testInitiative = new Initiative();
-        testInitiative.setStatusId(1);
-        testInitiative.set_id("an unknown id");
-        testInitiative.setUserId("userId");
-        testInitiative.setDate(LocalDateTime.now().withNano(0));
-        testInitiative.setDescription("SomeDescription");
-        testInitiative.setNickname("User Nickname");
-
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO("an unknown id 1").get_id()), "The Services fail because : There are no initiatives with this id");
-    }
-
-    @Test
-    @DisplayName("approveNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
-    void approveNotPendingInitiativeException() {
-
-        Initiative testApprovedInitiative = new Initiative();
-        testApprovedInitiative.setStatusId(2);
-        testApprovedInitiative.set_id("someID");
-        testApprovedInitiative.setUserId("userId");
-        testApprovedInitiative.setDate(LocalDateTime.now().withNano(0));
-        testApprovedInitiative.setDescription("SomeDescription");
-        testApprovedInitiative.setNickname("User Nickname");
-
-        Initiative testRejectedInitiative = new Initiative();
-        testRejectedInitiative.setStatusId(3);
-        testRejectedInitiative.set_id("someID1");
-        testRejectedInitiative.setUserId("userId1");
-        testRejectedInitiative.setDate(LocalDateTime.now().withNano(0));
-        testRejectedInitiative.setDescription("SomeDescription1");
-        testRejectedInitiative.setNickname("User Nickname 1");
-
-        initiativeRepository.create(testApprovedInitiative);
-        initiativeRepository.create(testRejectedInitiative);
-
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO("someUserId").get_id()), "The Services fail because : Only pending initiatives can be approved");
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO("someUserId1").get_id()), "The Services fail because : Only pending initiatives can be approved");
-
-    }
-
-
 }
