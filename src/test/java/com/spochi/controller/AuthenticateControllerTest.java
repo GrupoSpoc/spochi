@@ -26,14 +26,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
-import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -147,7 +144,6 @@ class AuthenticateControllerTest {
         adminRequestDTO.setPassword(password);
 
         final TokenInfo expected = new TokenInfo();
-
         expected.setJwt("jwt");
         expected.setUser(userResponseDTO);
 
@@ -161,9 +157,11 @@ class AuthenticateControllerTest {
 
         final TokenInfo tokenInfo = objectMapper.readValue(result.getResponse().getContentAsString(), TokenInfo.class);
         final UserResponseDTO actual= tokenInfo.getUser();
+
         assertEquals(expected.getUser().getType_id(),actual.getType_id());
         assertEquals(expected.getJwt(), tokenInfo.getJwt());
     }
+
     @Test
     void AuthenticationThrowException() throws Exception {
         final AdminRequestDTO adminRequestDTO = new AdminRequestDTO();
@@ -177,6 +175,6 @@ class AuthenticateControllerTest {
                 .andReturn();
 
         assertTrue(result.getResolvedException() instanceof AdminAuthorizationException);
-        assertEquals("AdminRequest invalid", result.getResponse().getContentAsString());
+        assertEquals("Invalid AdminRequest", result.getResponse().getContentAsString());
     }
 }

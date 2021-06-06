@@ -1,6 +1,5 @@
 package com.spochi.service.auth;
 
-import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.TokenInfo;
 import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.dto.AdminRequestDTO;
@@ -24,7 +23,7 @@ public class AdminAuthService {
     public TokenInfo authenticate(AdminRequestDTO requestDTO) {
 
             Optional<User> optionalUser = userRepository.findByUid(requestDTO.getUid());
-            if (optionalUser==null||!optionalUser.isPresent()) {
+            if (optionalUser.isEmpty()) {
                 throw new AdminAuthorizationException();
             }
 
@@ -45,10 +44,10 @@ public class AdminAuthService {
 
     private void isValidAdmin(User user, String password) {
 
-        if (user.getType()==null || !(user.getType() == UserType.ADMIN)) {
+        if (user.getType() == null || !(user.getType() == UserType.ADMIN)) {
             throw new AdminAuthorizationException();
         }
-        if (user.getPassword()==null|| !BCrypt.checkpw(password, user.getPassword())) {
+        if (user.getPassword() == null || !BCrypt.checkpw(password, user.getPassword())) {
             throw new AdminAuthorizationException();
         }
     }

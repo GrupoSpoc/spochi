@@ -50,7 +50,7 @@ class AdminAuthServiceTest {
         when(jwtUtil.generateAdminToken(requestDTO.getUid())).thenReturn("jwt");
         TokenInfo tokenInfo = adminAuthService.authenticate(requestDTO);
 
-        assertTrue( tokenInfo.getUser().isAdmin());
+        assertEquals(UserType.ADMIN.getId(),tokenInfo.getUser().getType_id());
         assertEquals("jwt", tokenInfo.getJwt());
     }
 
@@ -96,7 +96,7 @@ class AdminAuthServiceTest {
     void authenticateFailsUserNotFound(){
         AdminRequestDTO requestDTO = new AdminRequestDTO();
 
-        when(repository.findByUid(requestDTO.getUid())).thenReturn(null);
+        when(repository.findByUid(requestDTO.getUid())).thenReturn(Optional.empty());
         assertThrows(AdminAuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
     }
 }
