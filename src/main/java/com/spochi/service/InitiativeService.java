@@ -113,7 +113,7 @@ public class InitiativeService {
     }
 
     public static class InitiativeServiceException extends BadRequestException {
-        private InitiativeServiceException(String failField) {
+        public InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
         }
     }
