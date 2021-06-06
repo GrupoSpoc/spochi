@@ -5,6 +5,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NGSIQueryBuilder {
+    private static final String Q_KEY = "q";
+    private static final String SIMPLE_EQ = "=";
+    private static final String DOUBLE_EQ = "==";
+    private static final String LS = "<";
+    private static final String GT = ">";
+    private static final String Q_SEPARATOR = ";";
+    private static final String BLANK = "";
+
     private final Map<String, String> params;
 
     public NGSIQueryBuilder() {
@@ -16,9 +24,12 @@ public class NGSIQueryBuilder {
         return this;
     }
 
-    public NGSIQueryBuilder attribute(NGSIField attribute, String value) {
-        params.put("q=" + attribute.label() + "=", value);
-        return this;
+    public NGSIQueryBuilder attributeEq(NGSIField attribute, String ... values) {
+        return qExpression(attribute.label() + DOUBLE_EQ + String.join(",", values));
+    }
+
+    public NGSIQueryBuilder attributeLs(NGSIField attribute, String value) {
+        return qExpression(attribute.label() + LS + value);
     }
 
     public NGSIQueryBuilder count() {
@@ -51,7 +62,11 @@ public class NGSIQueryBuilder {
     }
 
     public NGSIQueryBuilder ref(NGSIEntityType type, String id) {
-        params.put("q=ref" + type.label() + "=", id);
+        return qExpression("ref" + type.label() + DOUBLE_EQ + id);
+    }
+
+    public NGSIQueryBuilder offset(int offset) {
+        params.put("offset", String.valueOf(offset));
         return this;
     }
 
@@ -62,7 +77,25 @@ public class NGSIQueryBuilder {
         return "?" + this.params.entrySet().stream().map(entry -> {
             String key = entry.getKey();
             String value = entry.getValue();
-            return key + "=" + value;
+            return key + comparator(key) + value;
         }).collect(Collectors.joining("&"));
+    }
+
+    protected static String comparator(String key) {
+        if (key.endsWith(LS) || key.endsWith(GT)) {
+            return BLANK;
+        } else {
+            return SIMPLE_EQ;
+        }
+    }
+
+    private NGSIQueryBuilder qExpression(String expression) {
+        if (params.containsKey(Q_KEY)) {
+            params.put(Q_KEY, params.get(Q_KEY) + Q_SEPARATOR + expression);
+        } else {
+            params.put(Q_KEY, expression);
+        }
+
+        return this;
     }
 }

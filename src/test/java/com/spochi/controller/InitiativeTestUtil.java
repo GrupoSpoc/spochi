@@ -2,7 +2,6 @@ package com.spochi.controller;
 
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
-import org.h2.value.ValueStringIgnoreCase;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,8 +9,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.mockito.ArgumentMatchers.anyString;
 
 public class InitiativeTestUtil {
     private static final List<Initiative> initiatives = new ArrayList<>();
@@ -36,7 +33,7 @@ public class InitiativeTestUtil {
     }
 
     public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
-        return initiatives.stream().map(initiative -> initiative.toDTO(user)).collect(Collectors.toList());
+        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
     public static List<Initiative> getInitiatives() {

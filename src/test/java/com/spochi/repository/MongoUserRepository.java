@@ -1,6 +1,7 @@
 package com.spochi.repository;
 
 import com.spochi.entity.User;
+import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -36,7 +37,10 @@ public class MongoUserRepository implements UserRepository {
 
     @Override
     public int getAmountOfInitiatives(String id) {
-        return (int) initiativeRepository.getAllInitiatives(InitiativeSorter.DEFAULT_COMPARATOR)
+        final InitiativeQuery initiativeQuery = new InitiativeQuery();
+        initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
+
+        return (int) initiativeRepository.getAllInitiatives(initiativeQuery)
                 .stream()
                 .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id))
                 .count();

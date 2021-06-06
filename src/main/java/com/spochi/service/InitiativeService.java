@@ -8,13 +8,16 @@ import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
-import com.spochi.service.query.InitiativeSorter;
+import com.spochi.service.query.InitiativeQuery;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InitiativeService {
@@ -24,22 +27,20 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(InitiativeSorter sorter, String uid) {
-        final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
-        final ArrayList<InitiativeResponseDTO> responseDTOS = new ArrayList<>();
-        final List<Initiative> orderedInitiatives = initiativeRepository.getAllInitiatives(sorter);
-
-        for (Initiative i : orderedInitiatives) {
-            responseDTOS.add(i.toDTO(user.getId()));
+    public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
+        if (currentUser) {
+            final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+            query.withUserId(user.getId());
         }
 
-        return responseDTOS;
+        final List<Initiative> initiatives = initiativeRepository.getAllInitiatives(query);
+
+        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
         final User user;
         final Initiative initiative;
-        final InitiativeResponseDTO responseDTO;
 
         validateFields(request);
 
@@ -59,10 +60,9 @@ public class InitiativeService {
                 InitiativeStatus.PENDING.getId()
         );
 
-        initiativeRepository.create(initiative);
-        responseDTO = initiative.toDTO(user.getId());
+        final Initiative initiativeCreated = initiativeRepository.create(initiative);
 
-        return responseDTO;
+        return initiativeCreated.toDTO();
     }
 
     private void validateFields(InitiativeRequestDTO request) throws InitiativeServiceException {

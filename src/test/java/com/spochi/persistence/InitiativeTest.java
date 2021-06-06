@@ -1,10 +1,10 @@
 package com.spochi.persistence;
 
-import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.repository.MongoInitiativeRepositoryInterface;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
+import com.spochi.util.DateUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,11 +33,12 @@ class InitiativeTest {
     @Test
     @DisplayName("initiativeToJson | ok")
     void initiativeToJson() {
+        final LocalDateTime date = LocalDateTime.now();
 
         final Initiative testInitiative = new Initiative();
         testInitiative.set_id("test1");
         testInitiative.setUserId(NGSICommonFields.ID.prefix() + "userTest1");
-        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDate(date);
         testInitiative.setNickname("nickname1");
         testInitiative.setDescription("Some description");
         testInitiative.setImage("myImage");
@@ -48,7 +49,7 @@ class InitiativeTest {
         assertAll("expectedJsonData",
                 () -> assertEquals(testInitiative.get_id(), json.getId()),
                 () -> assertEquals(testInitiative.getUserId(), json.getJSONObject(Initiative.Fields.USER_ID.label()).getString(NGSICommonFields.VALUE.label())),
-                () -> assertEquals(testInitiative.getDate().toString(), json.getJSONObject(Initiative.Fields.DATE.label()).getString(NGSICommonFields.VALUE.label())),
+                () -> assertEquals(DateUtil.dateToMilliUTC(date), json.getJSONObject(Initiative.Fields.DATE.label()).getLong(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getNickname(), json.getJSONObject(Initiative.Fields.NICKNAME.label()).getString(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getDescription(), json.getJSONObject(Initiative.Fields.DESCRIPTION.label()).getString(NGSICommonFields.VALUE.label())),
                 () -> assertEquals(testInitiative.getImage(), json.getJSONObject(Initiative.Fields.IMAGE.label()).getString(NGSICommonFields.VALUE.label())),
@@ -150,35 +151,26 @@ class InitiativeTest {
     }
 
     @Test
+    @DisplayName("dto equals | ok")
+    void dtoEqualsOk() {
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+        builder.nickname("author");
+        builder.date(LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC")));
+        builder.description("description");
+        builder.statusId(2);
+        builder.image("image");
+        builder.userId("user-id");
+
+        final Initiative initiative1 = builder.build();
+        final Initiative initiative2 = builder.build();
+
+        assertEquals(initiative1.toDTO(), initiative2.toDTO());
+    }
+
+    @Test
     @DisplayName("get entity type | ok")
     void getEntityTypeOk() {
         assertEquals("Initiative", Initiative.NGSIType.label());
     }
 
-    @Test
-    void testToDtoOK(){
-        final String userId = "user-id";
-        final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
-
-        final Initiative.InitiativeBuilder builder = Initiative.builder();
-        builder.nickname("author");
-        builder.date(date);
-        builder.description("description");
-        builder.statusId(2);
-        builder.image("image");
-        builder.userId(userId);
-
-
-        final InitiativeResponseDTO dtoFromCurrentUser = builder.build().toDTO(userId);
-        final InitiativeResponseDTO dtoNotFromCurrentUSer = builder.userId("otro_id").build().toDTO(userId);
-
-        assertTrue(dtoFromCurrentUser.isFrom_current_user());
-        assertFalse(dtoNotFromCurrentUSer.isFrom_current_user());
-
-        assertEquals("author",dtoFromCurrentUser.getNickname());
-        assertEquals(date.toString(),dtoFromCurrentUser.getDate());
-        assertEquals("description",dtoFromCurrentUser.getDescription());
-        assertEquals(2,dtoFromCurrentUser.getStatus_id());
-        assertEquals("image",dtoFromCurrentUser.getImage());
-    }
 }
