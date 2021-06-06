@@ -23,7 +23,8 @@ public class AdminAuthService {
     public TokenInfo authenticate(AdminRequestDTO requestDTO) {
 
             Optional<User> optionalUser = userRepository.findByUid(requestDTO.getUid());
-            if (optionalUser.isEmpty()) {
+
+            if (!optionalUser.isPresent()) {
                 throw new AdminAuthorizationException();
             }
 

@@ -1,6 +1,5 @@
 package com.spochi.service.auth;
 
-import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.TokenInfo;
 import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.dto.AdminRequestDTO;
@@ -13,9 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
