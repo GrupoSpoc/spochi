@@ -82,15 +82,42 @@ public class InitiativeControllerTest {
         assertNotNull(actualResult);
     }
 
+    @Test
+    @DisplayName("rejectInitiativeOk | having a proper initiative | change status to Rejected")
+    void rejectInitiativeOk() throws Exception {
+
+        final Initiative expectedInitiative = new Initiative();
+        expectedInitiative.set_id("2");
+        expectedInitiative.setUserId("UserId");
+        expectedInitiative.setNickname("some Nickname");
+        expectedInitiative.setDescription("Description");
+        expectedInitiative.setDate(LocalDateTime.now().withNano(0));
+        expectedInitiative.setStatusId(InitiativeStatus.PENDING.getId());
+        expectedInitiative.setImage("imageData");
+
+        final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO();
+
+        when(service.rejectInitiative(anyString())).thenReturn(expectedDTO);
+
+        final MvcResult result = mvc.perform(post("/initiative/reject/{id}", expectedInitiative.get_id())
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + "jwt"))
+                .andExpect(status().is(HttpStatus.OK.value()))
+                .andReturn();
+
+        final InitiativeResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO.class);
+
+        assertNotNull(actualResult);
+    }
+
 
     @Test
-    @DisplayName("approveInitiativeException | when initiative is not found | 404 not found")
+    @DisplayName("approveInitiativeException | when initiative is not found | 800 Bad_Request")
     void approveInitiativeException() throws Exception {
 
         final InitiativeRequestDTO requestDTO = new InitiativeRequestDTO();
 
 
-        when(service.approveInitiative("a")).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT"));
+        when(service.approveInitiative("a")).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT approve"));
 
        final MvcResult result =  mvc.perform(post("/initiative/approve/{id}", "a")
                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(requestDTO))
@@ -100,6 +127,26 @@ public class InitiativeControllerTest {
                 .andReturn();
 
        assertTrue(result.getResolvedException() instanceof InitiativeService.InitiativeServiceException);
-       assertEquals(result.getResponse().getContentAsString(), "The Services fail because : TEST RESULT");
+       assertEquals(result.getResponse().getContentAsString(), "The Services fail because : TEST RESULT approve");
+    }
+
+    @Test
+    @DisplayName("rejectInitiativeException | when initiative is not found | 800 Bad_Request")
+    void rejectInitiativeException() throws Exception {
+
+        final InitiativeRequestDTO requestDTO = new InitiativeRequestDTO();
+
+
+        when(service.rejectInitiative("a")).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT Reject"));
+
+        final MvcResult result =  mvc.perform(post("/initiative/reject/{id}", "a")
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(requestDTO))
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + "jwt"))
+                .andDo(print())
+                .andExpect(status().is(com.spochi.controller.HttpStatus.BAD_REQUEST.getCode()))
+                .andReturn();
+
+        assertTrue(result.getResolvedException() instanceof InitiativeService.InitiativeServiceException);
+        assertEquals(result.getResponse().getContentAsString(), "The Services fail because : TEST RESULT Reject");
     }
 }

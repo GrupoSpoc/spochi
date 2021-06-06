@@ -29,7 +29,7 @@ public class InitiativeService {
 
     public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
         if (currentUser) {
-            final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+            final User user = userRepository.findByUid(uid).orElseThrow(() -> new InitiativeServiceException("user not found when initiative getAll"));
             query.withUserId(user.getId());
         }
 
@@ -80,15 +80,15 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
+        if (!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }
 
-    private boolean isDateFormatValid(String date){
-        try{
+    private boolean isDateFormatValid(String date) {
+        try {
             LocalDateTime.parse(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -96,10 +96,14 @@ public class InitiativeService {
 
     public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
 
-        return updateStatus(initiativeId,InitiativeStatus.APPROVED);
+        return updateStatus(initiativeId, InitiativeStatus.APPROVED);
     }
 
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status){
+    public InitiativeResponseDTO rejectInitiative(String initiativeId) {
+        return updateStatus(initiativeId, InitiativeStatus.REJECTED);
+    }
+
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status) {
 
         final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
 
@@ -111,7 +115,7 @@ public class InitiativeService {
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
             throw new InitiativeServiceException("Only pending initiatives can be approved");
         }
-        initiativeRepository.changeStatus(initiative,status);
+        initiativeRepository.changeStatus(initiative, status);
 
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 

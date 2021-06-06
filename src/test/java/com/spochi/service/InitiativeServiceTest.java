@@ -295,4 +295,21 @@ class InitiativeServiceTest {
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO().get_id()), "The Services fail because : Only pending initiatives can be approved");
 
     }
+
+    @Test
+    @DisplayName("rejectInitiative | for a pending initiative | change status to rejected")
+    void rejectInitiative() {
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        initiativeRepository.create(testInitiative);
+
+        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
+
+        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
+    }
 }
