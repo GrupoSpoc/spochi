@@ -1,6 +1,7 @@
 package com.spochi.dto;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -17,23 +18,24 @@ class InitiativeResponseDTOTest {
         final LocalDateTime date = LocalDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
         final String description = "description";
         final String image = "image";
-        final String user = "user_";
+        final String userId = "user_id";
 
         final Initiative initiative = new Initiative();
         initiative.setImage(image);
         initiative.setNickname(nickname);
         initiative.setDate(date);
-        initiative.setStatusId(2);
-        initiative.setUserId(user);
+        initiative.setStatusId(InitiativeStatus.APPROVED.getId());
+        initiative.setUserId(userId);
+        initiative.setDescription(description);
 
-        final InitiativeResponseDTO dto = initiative.toDTO(user);
+        final InitiativeResponseDTO dto = initiative.toDTO();
 
-        assertEquals(initiative.getNickname(),dto.getNickname());
-        assertEquals(initiative.getDate().toString(),dto.getDate());
-        assertEquals(initiative.getDescription(),dto.getDescription());
-        assertEquals(initiative.getImage(),dto.getImage());
-        assertEquals(initiative.getStatusId(),dto.getStatus_id());
-        assertTrue(dto.isFrom_current_user());
+        assertEquals(initiative.getNickname(), dto.getNickname());
+        assertEquals(initiative.getDate().toString(), dto.getDate());
+        assertEquals(initiative.getDescription(), dto.getDescription());
+        assertEquals(initiative.getImage(), dto.getImage());
+        assertEquals(initiative.getStatusId(), dto.getStatus_id());
+        assertEquals(initiative.getDescription(), dto.getDescription());
     }
 
 }
