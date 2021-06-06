@@ -2,6 +2,7 @@ package com.spochi.service.auth;
 
 import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.TokenInfo;
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.dto.AdminRequestDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
@@ -54,7 +55,7 @@ class AdminAuthServiceTest {
     }
 
     @Test
-    void authenticateButUserIsNotAdmin(){
+    void authenticateFailsUserIsNotAdmin(){
         final String uid = "uid";
         final String password = "pass";
         final String encrypted_pass = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -70,10 +71,10 @@ class AdminAuthServiceTest {
         requestDTO.setPassword(password);
 
         when(repository.findByUid(requestDTO.getUid())).thenReturn(Optional.of(user));
-        assertThrows(AuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
+        assertThrows(AdminAuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
     }
     @Test
-    void authenticateFailPassIncorrect(){
+    void authenticateFailsPassIncorrect(){
         final String uid = "uid";
         final String password = "pass";
         final String encrypted_pass = BCrypt.hashpw("otra_password", BCrypt.gensalt());
@@ -81,7 +82,7 @@ class AdminAuthServiceTest {
         User user = new User();
         user.setUid(uid);
         user.setId("2");
-        user.setTypeId(UserType.ORGANIZATION);
+        user.setTypeId(UserType.ADMIN);
         user.setPassword(encrypted_pass);
 
         AdminRequestDTO requestDTO = new AdminRequestDTO();
@@ -89,6 +90,13 @@ class AdminAuthServiceTest {
         requestDTO.setPassword(password);
 
         when(repository.findByUid(requestDTO.getUid())).thenReturn(Optional.of(user));
-        assertThrows(AuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
+        assertThrows(AdminAuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
+    }
+    @Test
+    void authenticateFailsUserNotFound(){
+        AdminRequestDTO requestDTO = new AdminRequestDTO();
+
+        when(repository.findByUid(requestDTO.getUid())).thenReturn(null);
+        assertThrows(AdminAuthorizationException.class, ()-> adminAuthService.authenticate(requestDTO));
     }
 }

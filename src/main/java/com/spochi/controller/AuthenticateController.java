@@ -1,10 +1,12 @@
 package com.spochi.controller;
 
-import com.spochi.service.auth.AdminAuthService;
 import com.spochi.auth.AuthorizationException;
-import com.spochi.auth.firebase.FirebaseService;
 import com.spochi.auth.TokenInfo;
+import com.spochi.auth.firebase.FirebaseService;
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.dto.AdminRequestDTO;
+import com.spochi.service.auth.AdminAuthService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +36,11 @@ public class AuthenticateController {
     @PostMapping("/admin")
     public ResponseEntity<TokenInfo> authenticateAdmin(@RequestBody  AdminRequestDTO requestDTO){
         return ResponseEntity.ok(adminService.authenticate(requestDTO)) ;
+    }
+
+    @ExceptionHandler(value = {AdminAuthorizationException.class})
+    protected ResponseEntity<String> handleAdminAuthorizationException(AdminAuthorizationException e) {
+        return ResponseEntity.status(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode())
+                .body("AdminRequest invalid");
     }
 }

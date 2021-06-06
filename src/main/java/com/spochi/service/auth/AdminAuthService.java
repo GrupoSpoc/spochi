@@ -2,12 +2,12 @@ package com.spochi.service.auth;
 
 import com.spochi.auth.AuthorizationException;
 import com.spochi.auth.TokenInfo;
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.dto.AdminRequestDTO;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
-import com.spochi.service.UserServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -24,17 +24,17 @@ public class AdminAuthService {
     public TokenInfo authenticate(AdminRequestDTO requestDTO) {
 
             Optional<User> optionalUser = userRepository.findByUid(requestDTO.getUid());
-            if (!optionalUser.isPresent()) {
-                throw new UserServiceException("user not found");
+            if (optionalUser==null||!optionalUser.isPresent()) {
+                throw new AdminAuthorizationException();
             }
 
             User user = optionalUser.get();
             isValidAdmin(user, requestDTO.getPassword());
+
             final UserResponseDTO userResponseDTO = new UserResponseDTO();
             userResponseDTO.setAdmin(user.getType().equals(UserType.ADMIN));
             userResponseDTO.setType_id(user.getType().getId());
             userResponseDTO.setNickname(user.getNickname());
-
 
             TokenInfo tokenInfo = new TokenInfo();
             tokenInfo.setUser(userResponseDTO);
@@ -43,14 +43,13 @@ public class AdminAuthService {
             return tokenInfo;
     }
 
-
     private void isValidAdmin(User user, String password) {
 
-        if (!(user.getType() == UserType.ADMIN)) {
-            throw new AuthorizationException();
+        if (user.getType()==null || !(user.getType() == UserType.ADMIN)) {
+            throw new AdminAuthorizationException();
         }
-        if (!BCrypt.checkpw(password, user.getPassword())) {
-            throw new AuthorizationException();
+        if (user.getPassword()==null|| !BCrypt.checkpw(password, user.getPassword())) {
+            throw new AdminAuthorizationException();
         }
     }
 }

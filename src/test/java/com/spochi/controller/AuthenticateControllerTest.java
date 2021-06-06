@@ -2,6 +2,10 @@ package com.spochi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.spochi.controller.exception.AdminAuthorizationException;
+import com.spochi.dto.AdminRequestDTO;
+import com.spochi.entity.UserType;
+import com.spochi.service.auth.AdminAuthService;
 import com.spochi.service.auth.JwtUtil;
 import com.spochi.auth.TokenInfo;
 import com.spochi.auth.AuthorizationException;
@@ -9,6 +13,7 @@ import com.spochi.service.auth.firebase.FirebaseTokenProvider;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.UserResponseDTO;
 import com.spochi.service.UserService;
+import net.minidev.json.JSONValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +26,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
+import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +56,9 @@ class AuthenticateControllerTest {
 
     @MockBean
     UserService userService;
+
+    @MockBean
+    AdminAuthService adminAuthService;
 
     private static final String PATH = "/authenticate";
 
@@ -121,4 +133,50 @@ class AuthenticateControllerTest {
         assertEquals("jwt", tokenInfo.getJwt());
     }
 
+    @Test
+    void AuthenticateAdminOk() throws Exception {
+        final String uid = "uid_admin";
+        final String password = "pass";
+
+        final UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setAdmin(true);
+        userResponseDTO.setType_id(UserType.ADMIN.getId());
+
+        final AdminRequestDTO adminRequestDTO = new AdminRequestDTO();
+        adminRequestDTO.setUid(uid);
+        adminRequestDTO.setPassword(password);
+
+        final TokenInfo expected = new TokenInfo();
+
+        expected.setJwt("jwt");
+        expected.setUser(userResponseDTO);
+
+        when(adminAuthService.authenticate(any(AdminRequestDTO.class))).thenReturn(expected);
+
+        final MvcResult result = mvc.perform(post("/authenticate/admin")
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(adminRequestDTO)))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.OK.value()))
+                .andReturn();
+
+        final TokenInfo tokenInfo = objectMapper.readValue(result.getResponse().getContentAsString(), TokenInfo.class);
+        final UserResponseDTO actual= tokenInfo.getUser();
+        assertEquals(expected.getUser().getType_id(),actual.getType_id());
+        assertEquals(expected.getJwt(), tokenInfo.getJwt());
+    }
+    @Test
+    void AuthenticationThrowException() throws Exception {
+        final AdminRequestDTO adminRequestDTO = new AdminRequestDTO();
+        adminRequestDTO.setPassword(null);
+
+        when(adminAuthService.authenticate(any(AdminRequestDTO.class))).thenThrow(new AdminAuthorizationException());
+        final MvcResult result = mvc.perform(post("/authenticate/admin")
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(adminRequestDTO)))
+                .andDo(print())
+                .andExpect(status().is(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode()))
+                .andReturn();
+
+        assertTrue(result.getResolvedException() instanceof AdminAuthorizationException);
+        assertEquals("AdminRequest invalid", result.getResponse().getContentAsString());
+    }
 }
