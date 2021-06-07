@@ -1,5 +1,6 @@
 package com.spochi.service.auth;
 
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
@@ -68,5 +69,15 @@ class JwtUtilTest {
         final JwtUtilForTest jwtUtilAfterThreeHoursAndOneMinute = new JwtUtilForTest(() -> millisAfterTwoHours);
 
         assertTrue(jwtUtilAfterThreeHoursAndOneMinute.isTokenValid(jwt));
+    }
+
+    @Test
+    void  generateAdminToken(){
+        final JwtUtilForTest jwtUtil = new JwtUtilForTest();
+        final String tokenResult = jwtUtil.generateAdminToken("uid");
+
+        assertEquals("uid",jwtUtil.extractUid(tokenResult));
+        Claims claims = jwtUtil.extractAllClaims(tokenResult);
+        assertTrue(Boolean.parseBoolean(claims.get("admin").toString()));
     }
 }
