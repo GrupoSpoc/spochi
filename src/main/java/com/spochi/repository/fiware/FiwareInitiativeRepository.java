@@ -31,6 +31,13 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
     }
 
     @Override
+    public void changeStatus(Initiative initiative, InitiativeStatus status) {
+        final NGSIJson statusJson = new NGSIJson();
+        statusJson.addAttribute(Initiative.Fields.STATUS_ID, status.getId());
+        update(initiative.get_id(), statusJson);
+    }
+
+    @Override
     public List<Initiative> getAllInitiatives(InitiativeQuery query) {
         final NGSIQueryBuilder queryBuilder = parseInitiativeQuery(query);
         return find(queryBuilder);

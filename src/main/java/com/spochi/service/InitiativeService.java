@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
@@ -29,7 +30,7 @@ public class InitiativeService {
 
     public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
         if (currentUser) {
-            final User user = userRepository.findByUid(uid).orElseThrow(()-> new InitiativeServiceException("user not found when initiative getAll"));
+            final User user = userRepository.findByUid(uid).orElseThrow(() -> new InitiativeServiceException("user not found when initiative getAll"));
             query.withUserId(user.getId());
         }
 
@@ -80,23 +81,54 @@ public class InitiativeService {
             throw new InitiativeServiceException("Initiative Date is empty");
 
         }
-        if(!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
+        if (!isDateFormatValid(request.getDate()) || LocalDateTime.parse(request.getDate()).isAfter(LocalDateTime.now(ZoneId.of("UTC")))) {
             throw new InitiativeServiceException("Initiative Date invalid");
         }
     }
 
-    private boolean isDateFormatValid(String date){
-        try{
+    private boolean isDateFormatValid(String date) {
+        try {
             LocalDateTime.parse(date);
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
     }
 
+    public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
+
+        return updateStatus(initiativeId, InitiativeStatus.APPROVED);
+    }
+
+    public InitiativeResponseDTO rejectInitiative(String initiativeId) {
+        return updateStatus(initiativeId, InitiativeStatus.REJECTED);
+    }
+
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status) {
+
+        final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
+
+        if (!toBeApproved.isPresent()) {
+            throw new InitiativeServiceException("There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
+        }
+        final Initiative initiative = toBeApproved.get();
+
+        if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
+            throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+        }
+        initiativeRepository.changeStatus(initiative, status);
+
+        final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
+
+        return updatedInitiative.map(Initiative::toDTO).orElse(null);
+    }
+
     public static class InitiativeServiceException extends BadRequestException {
-        private InitiativeServiceException(String failField) {
+        public InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
+        }
+        public InitiativeServiceException(String message, HttpStatus status) {
+            super(String.format("The Services fail because : %s", message), status);
         }
     }
 }

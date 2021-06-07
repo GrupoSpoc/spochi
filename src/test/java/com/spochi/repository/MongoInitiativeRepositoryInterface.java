@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 @Repository
 @Primary
-public interface MongoInitiativeRepositoryInterface extends MongoRepository<Initiative,String>, InitiativeRepository {
+public interface MongoInitiativeRepositoryInterface extends MongoRepository<Initiative, String>, InitiativeRepository {
 
     @Override
     default List<Initiative> getAllInitiatives(InitiativeQuery query) {
@@ -32,6 +32,14 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
                 .filter(predicate)
                 .sorted(comparator)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    default void changeStatus(Initiative initiative, InitiativeStatus status) {
+        Optional<Initiative> foundInitiative = findById(initiative.get_id());
+        Initiative initiative1 = foundInitiative.get();
+        initiative1.setStatusId(status.getId());
+        save(initiative1);
     }
 
     default Predicate<Initiative> parseQuery(InitiativeQuery initiativeQuery) {
@@ -57,11 +65,11 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
 
     @Override
     default Initiative create(@NotNull Initiative initiative) {
-       return save(initiative);
+        return save(initiative);
     }
 
     @Override
     default Optional<Initiative> findInitiativeById(String id) {
-       return findById(id);
+        return findById(id);
     }
 }
