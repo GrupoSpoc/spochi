@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
@@ -108,12 +109,12 @@ public class InitiativeService {
         final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
 
         if (!toBeApproved.isPresent()) {
-            throw new InitiativeServiceException("There are no initiatives with this id");
+            throw new InitiativeServiceException("There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
         }
         final Initiative initiative = toBeApproved.get();
 
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
-            throw new InitiativeServiceException("Only pending initiatives can be approved");
+            throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
         }
         initiativeRepository.changeStatus(initiative, status);
 
@@ -125,6 +126,9 @@ public class InitiativeService {
     public static class InitiativeServiceException extends BadRequestException {
         public InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
+        }
+        public InitiativeServiceException(String message, HttpStatus status) {
+            super(String.format("The Services fail because : %s", message), status);
         }
     }
 }

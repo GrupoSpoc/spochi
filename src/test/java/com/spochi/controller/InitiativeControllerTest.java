@@ -79,7 +79,7 @@ public class InitiativeControllerTest {
 
         final InitiativeResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO.class);
 
-        assertNotNull(actualResult);
+        assertEquals(expectedDTO, actualResult);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class InitiativeControllerTest {
         expectedInitiative.setNickname("some Nickname");
         expectedInitiative.setDescription("Description");
         expectedInitiative.setDate(LocalDateTime.now().withNano(0));
-        expectedInitiative.setStatusId(InitiativeStatus.PENDING.getId());
+        expectedInitiative.setStatusId(InitiativeStatus.REJECTED.getId());
         expectedInitiative.setImage("imageData");
 
         final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO();
@@ -106,7 +106,7 @@ public class InitiativeControllerTest {
 
         final InitiativeResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO.class);
 
-        assertNotNull(actualResult);
+        assertEquals(expectedDTO, actualResult);
     }
 
 

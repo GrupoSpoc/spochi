@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -265,7 +266,7 @@ class InitiativeServiceTest {
         testInitiative.setDescription("SomeDescription");
         testInitiative.setNickname("User Nickname");
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO().get_id()), "The Services fail because : There are no initiatives with this id");
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO().get_id()), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
     }
 
     @Test
@@ -291,9 +292,7 @@ class InitiativeServiceTest {
         initiativeRepository.create(testApprovedInitiative);
         initiativeRepository.create(testRejectedInitiative);
 
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO().get_id()), "The Services fail because : Only pending initiatives can be approved");
-        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testRejectedInitiative.toDTO().get_id()), "The Services fail because : Only pending initiatives can be approved");
-
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO().get_id()), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
     }
 
     @Test
