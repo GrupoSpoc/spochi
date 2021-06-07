@@ -1,11 +1,11 @@
 package com.spochi.controller;
 
 import com.spochi.auth.AuthorizationException;
-import com.spochi.auth.firebase.FirebaseService;
 import com.spochi.auth.TokenInfo;
-import com.spochi.dto.AdminLoginRequestDTO;
-import com.spochi.repository.UserRepository;
-import com.spochi.service.auth.JwtUtil;
+import com.spochi.auth.firebase.FirebaseService;
+import com.spochi.controller.exception.AdminAuthorizationException;
+import com.spochi.dto.AdminRequestDTO;
+import com.spochi.service.auth.AdminAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,20 +19,11 @@ public class AuthenticateController {
     FirebaseService firebaseService;
 
     @Autowired
-    JwtUtil jwtUtil;
+    AdminAuthService adminService;
 
     @PostMapping
     public ResponseEntity<TokenInfo> authenticate(@RequestBody (required = false) String firebaseToken) {
         return ResponseEntity.ok(firebaseService.parseToken(firebaseToken));
-    }
-
-    @PostMapping("/admin")
-    protected ResponseEntity<TokenInfo> authenticateAdmin(@RequestBody AdminLoginRequestDTO requestDTO) {
-        final String jwt = jwtUtil.generateToken(requestDTO.getUid());
-        final TokenInfo tokenInfo = new TokenInfo();
-        tokenInfo.setJwt(jwt);
-
-        return ResponseEntity.ok(tokenInfo);
     }
 
     @ExceptionHandler(value = {AuthorizationException.class})
@@ -41,5 +32,14 @@ public class AuthenticateController {
                 .body("Invalid or expired token");
     }
 
+    @PostMapping("/admin")
+    public ResponseEntity<TokenInfo> authenticateAdmin(@RequestBody  AdminRequestDTO requestDTO){
+        return ResponseEntity.ok(adminService.authenticate(requestDTO)) ;
+    }
 
+    @ExceptionHandler(value = {AdminAuthorizationException.class})
+    protected ResponseEntity<String> handleAdminAuthorizationException(AdminAuthorizationException e) {
+        return ResponseEntity.status(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode())
+                .body("Invalid AdminRequest");
+    }
 }

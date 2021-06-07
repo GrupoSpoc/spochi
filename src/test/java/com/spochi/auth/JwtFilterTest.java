@@ -1,7 +1,5 @@
 package com.spochi.auth;
 
-import com.spochi.entity.User;
-import com.spochi.repository.UserRepository;
 import com.spochi.service.auth.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,11 +16,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,9 +34,6 @@ class JwtFilterTest {
 
     @MockBean
     JwtUtil jwtUtil;
-
-    @MockBean
-    UserRepository userRepository;
 
     @BeforeEach
     void before() {
@@ -133,5 +126,21 @@ class JwtFilterTest {
                 .andReturn();
 
         assertEquals(JwtFilter.INVALID_CLIENT_MESSAGE, result.getResponse().getContentAsString());
+    }
+
+    @Test
+    @DisplayName("do filter internal | when request is pre-flight | ok")
+    void doFilterInternalPreFlightOk() throws Exception {
+        when(jwtUtil.extractUid(anyString())).thenReturn("uid");
+
+        final MvcResult mvcResult = mvc.perform(get("/user")
+                .header(JwtFilter.ACCESS_CONTROL_REQUEST_HEADERS, "some-value"))
+                .andDo(print())
+                .andReturn();
+
+        final int actualStatus = mvcResult.getResponse().getStatus();
+
+        assertNotEquals(HttpStatus.NOT_ACCEPTABLE.value(), actualStatus);
+        assertNotEquals(HttpStatus.UNAUTHORIZED.value(), actualStatus);
     }
 }

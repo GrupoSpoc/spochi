@@ -47,7 +47,7 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     @Override
     public Optional<User> findByNickname(String nickname) {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attribute(User.Fields.NICKNAME, nickname);
+        queryBuilder.attributeEq(User.Fields.NICKNAME, nickname);
 
         return findFirst(queryBuilder);
     }

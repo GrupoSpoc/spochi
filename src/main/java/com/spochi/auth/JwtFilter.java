@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     static {
         skippedEndpoints = new ArrayList<>();
-
+        skippedEndpoints.add("/authenticate/admin");
         skippedEndpoints.add("/authenticate");
         skippedEndpoints.add("/authenticate/admin");
         skippedEndpoints.add("/ping");
@@ -61,13 +61,14 @@ public class JwtFilter extends OncePerRequestFilter {
      * Si es válido llama al filterChain.doFilter() lo cual significa seguir el curso natural de la petición (ir al controller)
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            if (request.getHeaders(ACCESS_CONTROL_REQUEST_HEADERS) == null) {
+
+            if (!isPreFlight(request)) {
 
                 final String invokedEndpoint = request.getRequestURI();
 
-                if (!invokedEndpoint.equals("/ping") && !validateClient(request)) {
+                if (!invokedEndpoint.equals("/ping") && !isClientValid(request)) {
                     throw new ClientAuthorizationException();
                 }
 
@@ -98,7 +99,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean validateClient(HttpServletRequest request){
+    private boolean isPreFlight(HttpServletRequest request) {
+        return request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS) != null;
+    }
+
+    private boolean isClientValid(HttpServletRequest request){
         return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
 }
