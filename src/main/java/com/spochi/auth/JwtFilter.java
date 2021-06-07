@@ -31,22 +31,22 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
+    protected static final List<String> client_list;
+
+    // Endpoints que NO necesitan ser autorizados con JWT
+    private static final List<String> skippedEndpoints;
+
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-    protected static final List<String> client_list;
-    // Endpoints que NO necesitan ser autorizados con JWT
-    private static final List<String> skippedEndpoints;
 
     static {
         skippedEndpoints = new ArrayList<>();
         skippedEndpoints.add("/authenticate/admin");
         skippedEndpoints.add("/authenticate");
-        skippedEndpoints.add("/authenticate/admin");
         skippedEndpoints.add("/ping");
-        skippedEndpoints.add("/admin/login");
-
     }
+
     static {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
