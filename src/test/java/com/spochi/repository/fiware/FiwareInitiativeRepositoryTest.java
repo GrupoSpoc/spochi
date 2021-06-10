@@ -2,6 +2,7 @@ package com.spochi.repository.fiware;
 
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
+import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIFieldType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
@@ -172,7 +173,7 @@ public class FiwareInitiativeRepositoryTest {
     }
 
     @Test
-    @DisplayName("changeStatus | ok")
+    @DisplayName("changeStatus | approved | ok")
     void changeInitiativeStatus(){
 
         final RestPerformer performer = mock(RestPerformer.class);
@@ -180,12 +181,11 @@ public class FiwareInitiativeRepositoryTest {
         initiative1.set_id("123");
         repository.changeStatus(initiative1,InitiativeStatus.APPROVED);
 
-        //verify(repository, times(1)).update(anyString(),any(NGSIJson.class));
         verify(performer, times(1)).patch(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":2}}"));
     }
 
     @Test
-    @DisplayName("changeStatus | ok")
+    @DisplayName("changeStatus | rejected | ok")
     void changeInitiativeStatusReject(){
 
         final RestPerformer performer = mock(RestPerformer.class);
@@ -194,6 +194,15 @@ public class FiwareInitiativeRepositoryTest {
         repository.changeStatus(initiative1,InitiativeStatus.REJECTED);
 
         verify(performer, times(1)).patch(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":3}}"));
+    }
+
+    @Test
+    @DisplayName("nextId | ok")
+    void nextIdOk() {
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
+
+        assertEquals(NGSICommonFields.ID.prefix() + Initiative.NGSIType.label() + ":" + DateUtil.dateToMilliUTC(initiative1.getDate()), repository.nextId(initiative1));
     }
 
     private static NGSIJson buildTestInitiativeJsonResponse(Initiative initiative, String id1) {

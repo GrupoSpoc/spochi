@@ -49,6 +49,11 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
     }
 
     @Override
+    protected String nextId(Initiative initiative) {
+        return buildId(String.valueOf(DateUtil.dateToMilliUTC(initiative.getDate())));
+    }
+
+    @Override
     protected Initiative fromNGSIJson(NGSIJson json) {
         final String id = json.getId();
         final String description = json.getString(Initiative.Fields.DESCRIPTION);
