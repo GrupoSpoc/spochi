@@ -130,4 +130,16 @@ class JwtFilterTest {
 
         assertEquals(JwtFilter.INVALID_CLIENT_MESSAGE, result.getResponse().getContentAsString());
     }
+
+    @Test
+    void doFilterInternalTokenAdminOk() throws Exception {
+        when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(true);
+
+        mvc.perform(get("/approve")
+                .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
+                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.adminEndpoint.get(1)))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.OK.value()))
+                .andReturn();
+    }
 }

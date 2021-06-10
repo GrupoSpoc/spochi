@@ -20,6 +20,7 @@ public class JwtUtil {
 
     public String generateToken(String uid) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("admin", false);
         return createToken(claims, uid);
     }
     public String generateAdminToken(String uid) {
@@ -62,6 +63,11 @@ public class JwtUtil {
     private boolean isTokenExpired(String token) {
         final Date now = new Date(currentMillis());
         return extractExpiration(token).before(DateUtils.addMinutes(now, 1));
+    }
+
+    public boolean isAdminTokenValid(String token){
+        final Claims claims = extractAllClaims(token);
+        return claims.get("admin").equals(true);
     }
 
     protected String getSecretKey() {

@@ -1,5 +1,6 @@
 package com.spochi.auth;
 
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.service.auth.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,8 @@ public class JwtFilter extends OncePerRequestFilter {
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
+
+    protected static final List<String> adminEndpoint;
     protected static final List<String> client_list;
     // Endpoints que NO necesitan ser autorizados con JWT
     private static final List<String> skippedEndpoints;
@@ -46,6 +49,11 @@ public class JwtFilter extends OncePerRequestFilter {
     static {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
+    }
+    static{
+        adminEndpoint = new ArrayList<>();
+        adminEndpoint.add("/approve");
+        adminEndpoint.add("/reject");
     }
 
 
@@ -76,6 +84,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 if (!jwtUtil.isTokenValid(token)) {
                     throw new AuthorizationException();
+                }
+                if (adminEndpoint.contains(invokedEndpoint) && !jwtUtil.isAdminTokenValid(token)){
+                    throw new  AdminAuthorizationException();
                 }
             }
 
