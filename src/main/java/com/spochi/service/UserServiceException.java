@@ -5,6 +5,7 @@ import com.spochi.controller.HttpStatus;
 
 public class UserServiceException extends BadRequestException {
     public UserServiceException(String failField) {
+
         super(String.format("The Services fail because : %s", failField));
     }
 

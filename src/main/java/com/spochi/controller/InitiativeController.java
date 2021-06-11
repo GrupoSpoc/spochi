@@ -18,12 +18,12 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
-    public List<InitiativeResponseDTO> getAll(@RequestParam (required = false) Integer order,
-                                              @RequestParam (required = false) Integer[] statusId,
-                                              @RequestParam (required = false) boolean currentUser,
-                                              @RequestParam (required = false) String dateTop,
-                                              @RequestParam (required = false) Integer limit,
-                                              @RequestParam (required = false) Integer offset,
+    public List<InitiativeResponseDTO> getAll(@RequestParam(required = false) Integer order,
+                                              @RequestParam(required = false) Integer[] statusId,
+                                              @RequestParam(required = false) boolean currentUser,
+                                              @RequestParam(required = false) String dateTop,
+                                              @RequestParam(required = false) Integer limit,
+                                              @RequestParam(required = false) Integer offset,
                                               @Uid String uid) {
 
         final InitiativeQuery query = new InitiativeQuery();
@@ -35,6 +35,18 @@ public class InitiativeController {
         query.withOffset(offset);
 
         return service.getAll(query, uid, currentUser);
+    }
+
+    @RequestMapping(value = "/approve/{initiativeId}", method = RequestMethod.POST)
+    public InitiativeResponseDTO approveInitiative(@PathVariable String initiativeId) {
+
+        return service.approveInitiative(initiativeId);
+    }
+
+    @RequestMapping(value = "/reject/{initiativeId}", method = RequestMethod.POST)
+    public InitiativeResponseDTO rejectInitiative(@PathVariable String initiativeId) {
+
+        return service.rejectInitiative(initiativeId);
     }
 
     @PostMapping

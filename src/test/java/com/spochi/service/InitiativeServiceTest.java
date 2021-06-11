@@ -1,5 +1,6 @@
 package com.spochi.service;
 
+import com.spochi.controller.HttpStatus;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -137,8 +138,8 @@ class InitiativeServiceTest {
         builder.userId(USER_ID);
         builder._id("1");
 
-        final Initiative initiativeFromCurrentUser_1= builder.build();
-        final Initiative initiativeFromCurrentUser_2= builder._id("2").build();
+        final Initiative initiativeFromCurrentUser_1 = builder.build();
+        final Initiative initiativeFromCurrentUser_2 = builder._id("2").build();
         builder.userId("another_user");
         builder._id("3");
         final Initiative initiativeNotFromCurrentUser = builder.build();
@@ -153,7 +154,7 @@ class InitiativeServiceTest {
 
         List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, false);
 
-        assertEquals(3, list_dto.size());
+        assertEquals(4, list_dto.size());
     }
 
     @Test
@@ -199,13 +200,15 @@ class InitiativeServiceTest {
         // al ser currentUser = true solo me va a traer la 2
         List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, true);
 
+
         assertEquals(1, list_dto.size());
         assertEquals("initiative-2", list_dto.get(0).getDescription());
     }
 
     @Test
     @DisplayName("getAll | exception because user is not found")
-    void getAllInitiativeThrowException(){
+    void getAllInitiativeThrowException() {
+
         final Initiative.InitiativeBuilder builder = Initiative.builder();
         builder.nickname(NICKNAME);
         builder.date(LocalDateTime.now());
@@ -220,8 +223,9 @@ class InitiativeServiceTest {
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.getAll(new InitiativeQuery(), UID, true), "The Services fail because : user not found when initiative getAll");
     }
+
     @Test
-    void createThrowException(){
+    void createThrowException() {
         final String wrong_uid = "no user";
 
         right_initiative.setDescription(DESCRIPTION);
@@ -230,5 +234,81 @@ class InitiativeServiceTest {
 
 
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(right_initiative, wrong_uid), "The Services fail because : User not found");
+    }
+
+    @Test
+    @DisplayName("approveInitiative | for a pending initiative | change status to approved")
+    void approveInitiative() {
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        initiativeRepository.create(testInitiative);
+
+        InitiativeResponseDTO initiativeResponseDTO = service.approveInitiative(testInitiative.get_id());
+
+        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.APPROVED.getId());
+
+    }
+
+    @Test
+    @DisplayName("approveInitiativeException | for a invalid id initiative | throw invalid id exception")
+    void approveInitiativeException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("an unknown id");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testInitiative.toDTO().get_id()), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("approveNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+    void approveNotPendingInitiativeException() {
+
+        Initiative testApprovedInitiative = new Initiative();
+        testApprovedInitiative.setStatusId(2);
+        testApprovedInitiative.set_id("someID");
+        testApprovedInitiative.setUserId("userId");
+        testApprovedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testApprovedInitiative.setDescription("SomeDescription");
+        testApprovedInitiative.setNickname("User Nickname");
+
+        Initiative testRejectedInitiative = new Initiative();
+        testRejectedInitiative.setStatusId(3);
+        testRejectedInitiative.set_id("someID1");
+        testRejectedInitiative.setUserId("userId1");
+        testRejectedInitiative.setDate(LocalDateTime.now().withNano(0));
+        testRejectedInitiative.setDescription("SomeDescription1");
+        testRejectedInitiative.setNickname("User Nickname 1");
+
+        initiativeRepository.create(testApprovedInitiative);
+        initiativeRepository.create(testRejectedInitiative);
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.approveInitiative(testApprovedInitiative.toDTO().get_id()), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+    }
+
+    @Test
+    @DisplayName("rejectInitiative | for a pending initiative | change status to rejected")
+    void rejectInitiative() {
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        initiativeRepository.create(testInitiative);
+
+        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
+
+        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
     }
 }

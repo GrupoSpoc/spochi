@@ -23,8 +23,9 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
+    public static final String ACCESS_CONTROL_REQUEST_HEADERS = "access-control-request-headers";
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
@@ -32,14 +33,15 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
+    protected static final List<String> adminEndpoint;
+    protected static final List<String> client_list;
+
+    // Endpoints que NO necesitan ser autorizados con JWT
+    private static final List<String> skippedEndpoints;
+
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
-
-    protected static final List<String> adminEndpoint;
-    protected static final List<String> client_list;
-    // Endpoints que NO necesitan ser autorizados con JWT
-    private static final List<String> skippedEndpoints;
 
     static {
         skippedEndpoints = new ArrayList<>();
@@ -47,10 +49,12 @@ public class JwtFilter extends OncePerRequestFilter {
         skippedEndpoints.add("/authenticate");
         skippedEndpoints.add("/ping");
     }
+
     static {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
         client_list.add("REACTlKld8UY310AQ0OPBsp4K98H51");
+
     }
     static{
         adminEndpoint = new ArrayList<>();
@@ -66,35 +70,39 @@ public class JwtFilter extends OncePerRequestFilter {
      * Si es válido llama al filterChain.doFilter() lo cual significa seguir el curso natural de la petición (ir al controller)
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
         try {
 
-            final String invokedEndpoint = httpServletRequest.getRequestURI();
+            if (!isPreFlight(request)) {
 
-            if(!invokedEndpoint.equals("/ping") && !validateClient(httpServletRequest)){
-                throw new ClientAuthorizationException();
+                final String invokedEndpoint = request.getRequestURI();
+
+                if (!invokedEndpoint.equals("/ping") && !isClientValid(request)) {
+                    throw new ClientAuthorizationException();
+                }
+
+                if (!skippedEndpoints.contains(invokedEndpoint)) {
+                    String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+
+                    if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_SUFFIX)) {
+                        throw new AuthorizationException();
+                    }
+
+                    String token = authorizationHeader.substring(BEARER_SUFFIX.length());
+
+                    if (!jwtUtil.isTokenValid(token)) {
+                        throw new AuthorizationException();
+                    }
+
+                    if (adminEndpoint.contains(invokedEndpoint) && !jwtUtil.isAdminTokenValid(token)) {
+                        throw new AdminAuthorizationException();
+                    }
+                }
             }
 
-            if (!skippedEndpoints.contains(invokedEndpoint)) {
-                String authorizationHeader = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+            filterChain.doFilter(request, httpServletResponse);
 
-                if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_SUFFIX)) {
-                    throw new AuthorizationException();
-                }
-
-                String token = authorizationHeader.substring(BEARER_SUFFIX.length());
-
-                if (!jwtUtil.isTokenValid(token)) {
-                    throw new AuthorizationException();
-                }
-                if (adminEndpoint.contains(invokedEndpoint) && !jwtUtil.isAdminTokenValid(token)){
-                    throw new  AdminAuthorizationException();
-                }
-            }
-
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-
-        }catch (AuthorizationException | JwtException e) {
+        } catch (AuthorizationException | JwtException e) {
             httpServletResponse.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
             httpServletResponse.getWriter().write(INVALID_TOKEN_MESSAGE);
 
@@ -107,7 +115,12 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean validateClient(HttpServletRequest request){
+    private boolean isPreFlight(HttpServletRequest request) {
+        return request.getHeader(ACCESS_CONTROL_REQUEST_HEADERS) != null;
+    }
+
+    private boolean isClientValid(HttpServletRequest request){
         return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
+
 }
