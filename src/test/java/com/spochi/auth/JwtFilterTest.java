@@ -1,5 +1,6 @@
 package com.spochi.auth;
 
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.service.auth.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -134,12 +134,18 @@ class JwtFilterTest {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
         when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(true);
 
-        mvc.perform(get("/approve")
+        final MvcResult result = mvc.perform(get("/initiative/reject/2")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
                 .andDo(print())
-                .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
+
+        final Exception resolvedException = result.getResolvedException();
+        final int actualStatus = result.getResponse().getStatus();
+
+        assertFalse(resolvedException instanceof AdminAuthorizationException);
+        assertNotEquals(HttpStatus.NOT_ACCEPTABLE.value(), actualStatus);
+        assertNotEquals(HttpStatus.UNAUTHORIZED.value(), actualStatus);
     }
 
     @Test
@@ -147,7 +153,7 @@ class JwtFilterTest {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
         when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(false);
 
-        final MvcResult result = mvc.perform(get("/reject")
+        final MvcResult result = mvc.perform(get("/initiative/reject/2")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
                 .andDo(print())
@@ -172,5 +178,4 @@ class JwtFilterTest {
         assertNotEquals(HttpStatus.NOT_ACCEPTABLE.value(), actualStatus);
         assertNotEquals(HttpStatus.UNAUTHORIZED.value(), actualStatus);
     }
-
 }

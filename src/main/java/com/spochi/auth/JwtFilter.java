@@ -122,5 +122,4 @@ public class JwtFilter extends OncePerRequestFilter {
     private boolean isClientValid(HttpServletRequest request){
         return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
-
 }
