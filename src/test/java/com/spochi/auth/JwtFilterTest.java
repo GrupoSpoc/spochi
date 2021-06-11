@@ -1,6 +1,5 @@
 package com.spochi.auth;
 
-import com.spochi.repository.UserRepository;
 import com.spochi.service.auth.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,8 +34,6 @@ class JwtFilterTest {
     @MockBean
     JwtUtil jwtUtil;
 
-    @MockBean
-    UserRepository userRepository;
 
     @BeforeEach
     void before() {
@@ -133,13 +130,30 @@ class JwtFilterTest {
 
     @Test
     void doFilterInternalTokenAdminOk() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
         when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(true);
 
         mvc.perform(get("/approve")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
-                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.adminEndpoint.get(1)))
+                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
                 .andDo(print())
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
     }
+
+    @Test
+    void doFilterInternalTokenAdminFails() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
+        when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(false);
+
+        final MvcResult result = mvc.perform(get("/reject")
+                .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
+                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
+                .andDo(print())
+                .andExpect(status().is(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode()))
+                .andReturn();
+
+        assertEquals(JwtFilter.INVALID_ADMIN_MESSAGE, result.getResponse().getContentAsString());
+    }
+
 }

@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
+    public static final String INVALID_ADMIN_MESSAGE = "Admin not authorized";
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
@@ -49,6 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
     static {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
+        client_list.add("REACTlKld8UY310AQ0OPBsp4K98H51");
     }
     static{
         adminEndpoint = new ArrayList<>();
@@ -99,6 +101,9 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (ClientAuthorizationException e){
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
+        } catch (AdminAuthorizationException e){
+            httpServletResponse.setStatus(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode());
+            httpServletResponse.getWriter().write(INVALID_ADMIN_MESSAGE);
         }
     }
 
