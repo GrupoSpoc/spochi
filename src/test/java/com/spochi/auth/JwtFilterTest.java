@@ -134,7 +134,7 @@ class JwtFilterTest {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
         when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(true);
 
-        final MvcResult result = mvc.perform(get("/initiative/reject/2")
+        final MvcResult result = mvc.perform(get("/initiative/approve/2")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
                 .andDo(print())
@@ -153,7 +153,7 @@ class JwtFilterTest {
         when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
         when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(false);
 
-        final MvcResult result = mvc.perform(get("/initiative/reject/2")
+        final MvcResult result = mvc.perform(get("/initiative/reject")
                 .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
                 .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
                 .andDo(print())

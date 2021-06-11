@@ -58,8 +58,8 @@ public class JwtFilter extends OncePerRequestFilter {
     }
     static{
         adminEndpoint = new ArrayList<>();
-        adminEndpoint.add("/approve");
-        adminEndpoint.add("/reject");
+        adminEndpoint.add("/initiative/approve");
+        adminEndpoint.add("/initiative/reject");
     }
 
 
