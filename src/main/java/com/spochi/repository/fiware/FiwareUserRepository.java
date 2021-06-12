@@ -89,7 +89,7 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
         return splitInitiativesByStatus(array);
     }
 
-    private Map<Integer, Integer> splitInitiativesByStatus(JSONArray array) {
+    protected Map<Integer, Integer> splitInitiativesByStatus(JSONArray array) {
         Map<Integer, Integer> resultMap = new HashMap<>();
         int pendingInitiatives = 0, approvedInitiatives = 0, rejectedInitiatives = 0;
 

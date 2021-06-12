@@ -5,18 +5,22 @@ import com.spochi.entity.UserType;
 import com.spochi.repository.fiware.ngsi.NGSICommonFields;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.rest.RestPerformer;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.relational.core.sql.In;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.spochi.util.AssertUtils.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class FiwareUserRepositoryTest {
 
@@ -214,6 +218,7 @@ class FiwareUserRepositoryTest {
 
         final FiwareUserRepository repository = new FiwareUserRepository(performer);
 
+
         assertException(RuntimeException.class, () -> repository.getAmountOfInitiatives("id"), "count-error");
     }
 
@@ -224,6 +229,25 @@ class FiwareUserRepositoryTest {
 
         assertEquals(NGSICommonFields.ID.prefix() + User.NGSIType.label() + ":" + testUser1.getUid(), repository.nextId(testUser1));
         assertEquals(NGSICommonFields.ID.prefix() + User.NGSIType.label() + ":" + testUser2.getUid(), repository.nextId(testUser2));
+    }
+
+    @Test
+    @DisplayName("getInitiativesByStatus | ok")
+    void getInitiativesByStatus() {
+        final String uid = "user id";
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareUserRepository repository = new FiwareUserRepository(performer);
+
+        when(performer.get(anyString())).thenReturn("[{\"id\":\"urn:ngsi-ld:Initiative:001\",\"type\":\"Initiative\",\"status_id\":2},{\"id\":\"urn:ngsi-ld:Initiative:2\",\"type\":\"Initiative\",\"status_id\":1},{\"id\":\"urn:ngsi-ld:Initiative:3\",\"type\":\"Initiative\",\"status_id\":2},{\"id\":\"urn:ngsi-ld:Initiative:4\",\"type\":\"Initiative\",\"status_id\":3}]");
+
+        Map<Integer, Integer> initiativeMap = repository.getUserInitiativesByStatus(uid);
+
+        verify(performer, times(1)).get(contains("//46.17.108.37:1026/v2/entities?q=refUser==user id&options=keyValues&type=Initiative&attr=status_id"));
+        assertAll("Fiware response",
+        () -> assertEquals(initiativeMap.size(), 3),
+                () -> assertEquals(initiativeMap.get(1), 1),
+                () -> assertEquals(initiativeMap.get(2), 2),
+                () -> assertEquals(initiativeMap.get(3), 1));
     }
 
     private static NGSIJson buildTestUserJsonResponse(User user, String id1) {
