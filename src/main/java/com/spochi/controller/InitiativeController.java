@@ -1,14 +1,13 @@
 package com.spochi.controller;
 
 import com.spochi.controller.handler.Uid;
+import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.service.InitiativeService;
 import com.spochi.service.query.InitiativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/initiative")
@@ -18,13 +17,13 @@ public class InitiativeController {
     InitiativeService service;
 
     @GetMapping("/all")
-    public List<InitiativeResponseDTO> getAll(@RequestParam(required = false) Integer order,
-                                              @RequestParam(required = false) Integer[] statusId,
-                                              @RequestParam(required = false) boolean currentUser,
-                                              @RequestParam(required = false) String dateTop,
-                                              @RequestParam(required = false) Integer limit,
-                                              @RequestParam(required = false) Integer offset,
-                                              @Uid String uid) {
+    public InitiativeListResponseDTO getAll(@RequestParam(required = false) Integer order,
+                                             @RequestParam(required = false) Integer[] statusId,
+                                             @RequestParam(required = false) boolean currentUser,
+                                             @RequestParam(required = false) String dateTop,
+                                             @RequestParam(required = false) Integer limit,
+                                             @RequestParam(required = false) Integer offset,
+                                             @Uid String uid) {
 
         final InitiativeQuery query = new InitiativeQuery();
 

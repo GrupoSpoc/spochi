@@ -1,16 +1,18 @@
 package com.spochi.service;
 
 import com.spochi.controller.HttpStatus;
+import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
-import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.MongoInitiativeRepositoryInterface;
 import com.spochi.repository.MongoUserRepository;
 import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
 import com.spochi.util.AssertUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ class InitiativeServiceTest {
     InitiativeService service;
 
     @Autowired
-    InitiativeRepository initiativeRepository;
+    MongoInitiativeRepositoryInterface initiativeRepository;
 
     @MockBean
     MongoUserRepository userRepository;
@@ -53,6 +55,10 @@ class InitiativeServiceTest {
     private final InitiativeRequestDTO wrong_initiative = new InitiativeRequestDTO();
     private final InitiativeRequestDTO right_initiative = new InitiativeRequestDTO();
 
+    @AfterEach
+    void afterEach() {
+        initiativeRepository.deleteAll();
+    }
 
     @Test
     void initiativeDescriptionIsEmpty() {
@@ -152,9 +158,9 @@ class InitiativeServiceTest {
 
         query.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
 
-        List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, false);
+        final InitiativeListResponseDTO dto = service.getAll(query, UID, false);
 
-        assertEquals(4, list_dto.size());
+        assertEquals(3, dto.getInitiatives().size());
     }
 
     @Test
@@ -198,7 +204,7 @@ class InitiativeServiceTest {
         query.withDateTop(date.minusDays(3).toString()); // aplican 2 y 3
 
         // al ser currentUser = true solo me va a traer la 2
-        List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, true);
+        List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, true).getInitiatives();
 
 
         assertEquals(1, list_dto.size());
@@ -310,5 +316,67 @@ class InitiativeServiceTest {
         InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
 
         assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
+    }
+
+    @Test
+    @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")
+    void getAllLimit1LastBatchFalse() {
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+
+        builder.nickname(NICKNAME);
+        builder.date(LocalDateTime.now());
+        builder.description(DESCRIPTION);
+        builder.statusId(2);
+        builder.image(IMAGE_BASE64);
+        builder.userId(USER_ID);
+        builder._id("1");
+
+        final Initiative initiative1 = builder.build();
+        final Initiative initiative2 = builder.build();
+
+        initiativeRepository.create(initiative1);
+        initiativeRepository.create(initiative2);
+
+        InitiativeQuery query = new InitiativeQuery();
+        query.withLimit(1);
+
+        final InitiativeListResponseDTO dto = service.getAll(query, "uid", false);
+
+        assertEquals(dto.getInitiatives().size(), 1);
+        assertFalse(dto.isLast_batch());
+    }
+
+    @Test
+    @DisplayName("getAll | given limit 2 and repo has only 1 initiative | lastBatch should be true")
+    void getAllLimit2LastBatchTrue() {
+        final Initiative.InitiativeBuilder builder = Initiative.builder();
+
+        builder.nickname(NICKNAME);
+        builder.date(LocalDateTime.now());
+        builder.description(DESCRIPTION);
+        builder.statusId(2);
+        builder.image(IMAGE_BASE64);
+        builder.userId(USER_ID);
+        builder._id("1");
+
+        final Initiative initiative = builder.build();
+        initiativeRepository.create(initiative);
+
+        InitiativeQuery query = new InitiativeQuery();
+        query.withLimit(2);
+
+        final InitiativeListResponseDTO dto = service.getAll(query, "uid", false);
+
+        assertEquals(dto.getInitiatives().size(), 1);
+        assertTrue(dto.isLast_batch());
+    }
+
+    @Test
+    @DisplayName("getAll | when repo has no initiatives | without limit | lastBatch should be true")
+    void getAllNoInitiativesLastBatchTrue() {
+        final InitiativeListResponseDTO dto = service.getAll(new InitiativeQuery(), "uid", false);
+
+        assertTrue(dto.getInitiatives().isEmpty());
+        assertTrue(dto.isLast_batch());
     }
 }

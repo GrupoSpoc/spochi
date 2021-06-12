@@ -30,9 +30,10 @@ public class InitiativeTestUtil {
         initiatives.add(builder.statusId(1).date(epochDate.plusYears(20)).build());
         initiatives.add(builder.statusId(2).date(epochDate.plusYears(30)).build());
         initiatives.add(builder.statusId(3).date(epochDate).userId(UNIQUE_ID).build());
+        initiatives.add(builder.statusId(3).date(epochDate).userId(UNIQUE_ID).build());
     }
 
-    public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
+    public static List<InitiativeResponseDTO> getAllAsDTOs() {
         return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 
