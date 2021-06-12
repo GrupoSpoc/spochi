@@ -1,5 +1,6 @@
 package com.spochi.repository;
 
+import com.spochi.entity.Initiative;
 import com.spochi.entity.User;
 import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,11 @@ public class MongoUserRepository implements UserRepository {
                 .stream()
                 .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id))
                 .count();
+    }
+
+    @Override
+    public Map<Integer,Integer> getUserInitiativesByStatus(String id) {
+        return null;
     }
 
     public void deleteAll() {

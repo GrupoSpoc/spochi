@@ -1,6 +1,7 @@
 package com.spochi.repository.fiware;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
 import com.spochi.entity.UserType;
 import com.spochi.repository.UserRepository;
@@ -8,10 +9,18 @@ import com.spochi.repository.fiware.ngsi.NGSIEntityType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
 import com.spochi.repository.fiware.rest.RestPerformer;
+import com.spochi.service.query.InitiativeQuery;
+import com.spochi.service.query.InitiativeSorter;
+
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class FiwareUserRepository extends FiwareRepository<User> implements UserRepository {
@@ -20,6 +29,9 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     public FiwareUserRepository(RestPerformer performer) {
         super(performer);
     }
+
+    @Autowired
+    FiwareInitiativeRepository initiativeRepository;
 
     @Override
     protected NGSIEntityType getEntityType() {
@@ -60,6 +72,44 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
                 .count();
 
         return super.count(queryBuilder);
+    }
+
+    @Override
+    public Map<Integer, Integer> getUserInitiativesByStatus(String id) {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+
+        queryBuilder.type(Initiative.NGSIType)
+                .ref(getEntityType(), id)
+                .getAttribute(Initiative.Fields.STATUS_ID)
+                .keyValues();
+
+        String response = super.performer.get(ENTITIES_URL + queryBuilder.build());
+        JSONArray array = new JSONArray(response);
+
+        return splitInitiativesByStatus(array);
+    }
+
+    private Map<Integer, Integer> splitInitiativesByStatus(JSONArray array) {
+        Map<Integer, Integer> resultMap = new HashMap<>();
+        int pendingInitiatives = 0, approvedInitiatives = 0, rejectedInitiatives = 0;
+
+        for (Object i : array) {
+
+            NGSIJson json = new NGSIJson(i.toString());
+            InitiativeStatus status = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID));
+
+            if (status == InitiativeStatus.PENDING) {
+                pendingInitiatives++;
+            } else if (status == InitiativeStatus.APPROVED) {
+                approvedInitiatives++;
+            } else if(status == InitiativeStatus.REJECTED) {
+                rejectedInitiatives++;
+            }
+        }
+        resultMap.put(InitiativeStatus.PENDING.getId(), pendingInitiatives);
+        resultMap.put(InitiativeStatus.APPROVED.getId(), approvedInitiatives);
+        resultMap.put(InitiativeStatus.REJECTED.getId(), rejectedInitiatives);
+        return resultMap;
     }
 
     @Override

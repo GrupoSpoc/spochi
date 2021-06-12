@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -22,11 +23,13 @@ public class UserService {
         if (userOpt.isPresent()) {
             final User user = userOpt.get();
             final int amountOfInitiatives = repository.getAmountOfInitiatives(user.getId());
+            final Map<Integer,Integer> userInitiatives= repository.getUserInitiativesByStatus(user.getId());
 
             final UserResponseDTO dto = new UserResponseDTO();
             dto.setNickname(user.getNickname());
             dto.setAdmin(user.getType() == UserType.ADMIN);
             dto.setAmount_of_initiatives(amountOfInitiatives);
+            dto.setInitiatives_by_status(userInitiatives);
             dto.setType_id(user.getTypeId());
 
             return dto;
