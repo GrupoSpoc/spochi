@@ -22,6 +22,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
@@ -60,6 +63,7 @@ public class UserIntegrationTest {
     void getUserFoundOk() throws Exception {
         final String uid = "uid";
         final String jwt = "jwt";
+        final Map<Integer,Integer> initiativeMap = repository.getUserInitiativesByStatus(uid);
 
         final User user = UserDummyBuilder.build(uid);
 
@@ -68,6 +72,7 @@ public class UserIntegrationTest {
         expectedResult.setAmount_of_initiatives(0);
         expectedResult.setNickname(user.getNickname());
         expectedResult.setAdmin(false);
+        expectedResult.setInitiatives_by_status(initiativeMap);
 
         repository.create(user);
 
@@ -106,6 +111,7 @@ public class UserIntegrationTest {
         final String uid = "uid";
         final String jwt = "jwt";
 
+
         final UserRequestDTO request = new UserRequestDTO();
         request.setNickname("nickname");
         request.setType_id(1);
@@ -122,11 +128,14 @@ public class UserIntegrationTest {
         final UserResponseDTO response = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
         final User createdUser = repository.findByUid(uid).orElse(null);
+
         final UserResponseDTO expectedResult = new UserResponseDTO();
+        final Map<Integer,Integer> initiativeMap = repository.getUserInitiativesByStatus(uid);
         expectedResult.setType_id(createdUser.getTypeId());
         expectedResult.setAmount_of_initiatives(0);
         expectedResult.setNickname(createdUser.getNickname());
         expectedResult.setAdmin(false);
+        expectedResult.setInitiatives_by_status(initiativeMap);
 
         assertAll("Expected result",
                 () -> assertNotNull(createdUser),

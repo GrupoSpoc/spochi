@@ -1,16 +1,19 @@
 package com.spochi.repository;
 
 import com.spochi.entity.Initiative;
+import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.service.query.InitiativeQuery;
 import com.spochi.service.query.InitiativeSorter;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -50,7 +53,15 @@ public class MongoUserRepository implements UserRepository {
 
     @Override
     public Map<Integer,Integer> getUserInitiativesByStatus(String id) {
-        return null;
+        final InitiativeQuery initiativeQuery = new InitiativeQuery();
+        initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
+
+        List<Initiative> initiatives = initiativeRepository.getAllInitiatives(initiativeQuery)
+                .stream()
+                .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id))
+                .collect(Collectors.toList());
+
+        return splitInitiativesByStatus(initiatives);
     }
 
     public void deleteAll() {
@@ -63,5 +74,25 @@ public class MongoUserRepository implements UserRepository {
 
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    private Map<Integer, Integer> splitInitiativesByStatus(List<Initiative> array) {
+        Map<Integer, Integer> resultMap = new HashMap<>();
+        int pendingInitiatives = 0, approvedInitiatives = 0, rejectedInitiatives = 0;
+
+        for (Initiative i : array) {
+
+            if (i.getStatusId() == InitiativeStatus.PENDING.getId()) {
+                pendingInitiatives++;
+            } else if (i.getStatusId() == InitiativeStatus.APPROVED.getId()) {
+                approvedInitiatives++;
+            } else if(i.getStatusId() == InitiativeStatus.REJECTED.getId()) {
+                rejectedInitiatives++;
+            }
+        }
+        resultMap.put(InitiativeStatus.PENDING.getId(), pendingInitiatives);
+        resultMap.put(InitiativeStatus.APPROVED.getId(), approvedInitiatives);
+        resultMap.put(InitiativeStatus.REJECTED.getId(), rejectedInitiatives);
+        return resultMap;
     }
 }

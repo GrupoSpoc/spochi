@@ -70,6 +70,6 @@ public class UserResponseDTO {
         return nullOrEquals(this.nickname, other.nickname) &&
                 nullOrEquals(this.type_id, other.type_id) &&
                 nullOrEquals(this.amount_of_initiatives, other.amount_of_initiatives) &&
-                nullOrEquals(this.admin, other.admin) && nullOrEquals(this.initiatives_by_status, other.initiatives_by_status);
+                nullOrEquals(this.admin, other.admin);
     }
 }
