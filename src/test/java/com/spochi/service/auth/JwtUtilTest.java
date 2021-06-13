@@ -80,4 +80,19 @@ class JwtUtilTest {
         Claims claims = jwtUtil.extractAllClaims(tokenResult);
         assertTrue(Boolean.parseBoolean(claims.get("admin").toString()));
     }
+
+    @Test
+    void isValidAdminToken(){
+        final JwtUtilForTest jwtUtil = new JwtUtilForTest();
+        final String tokenResult = jwtUtil.generateAdminToken("uid");
+
+        assertTrue(jwtUtil.isAdminTokenValid(tokenResult));
+    }
+    @Test
+    void isNotAdminTokenFails(){
+        final JwtUtilForTest jwtUtil = new JwtUtilForTest();
+        final String tokenResult = jwtUtil.generateToken("uid");
+
+        assertFalse(jwtUtil.isAdminTokenValid(tokenResult));
+    }
 }

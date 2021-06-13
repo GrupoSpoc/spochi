@@ -1,5 +1,6 @@
 package com.spochi.auth;
 
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.service.auth.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -34,6 +34,7 @@ class JwtFilterTest {
 
     @MockBean
     JwtUtil jwtUtil;
+
 
     @BeforeEach
     void before() {
@@ -126,6 +127,40 @@ class JwtFilterTest {
                 .andReturn();
 
         assertEquals(JwtFilter.INVALID_CLIENT_MESSAGE, result.getResponse().getContentAsString());
+    }
+
+    @Test
+    void doFilterInternalTokenAdminOk() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
+        when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(true);
+
+        final MvcResult result = mvc.perform(get("/initiative/approve/2")
+                .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
+                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
+                .andDo(print())
+                .andReturn();
+
+        final Exception resolvedException = result.getResolvedException();
+        final int actualStatus = result.getResponse().getStatus();
+
+        assertFalse(resolvedException instanceof AdminAuthorizationException);
+        assertNotEquals(HttpStatus.NOT_ACCEPTABLE.value(), actualStatus);
+        assertNotEquals(HttpStatus.UNAUTHORIZED.value(), actualStatus);
+    }
+
+    @Test
+    void doFilterInternalTokenAdminFails() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
+        when(jwtUtil.isAdminTokenValid(anyString())).thenReturn(false);
+
+        final MvcResult result = mvc.perform(get("/initiative/reject")
+                .header(JwtFilter.AUTHORIZATION_HEADER, JwtFilter.BEARER_SUFFIX + "token")
+                .header(JwtFilter.ID_CLIENT_HEADER, JwtFilter.client_list.get(1)))
+                .andDo(print())
+                .andExpect(status().is(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode()))
+                .andReturn();
+
+        assertEquals(JwtFilter.INVALID_ADMIN_MESSAGE, result.getResponse().getContentAsString());
     }
 
     @Test

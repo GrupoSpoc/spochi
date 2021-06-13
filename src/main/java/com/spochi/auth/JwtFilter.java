@@ -1,5 +1,6 @@
 package com.spochi.auth;
 
+import com.spochi.controller.exception.AdminAuthorizationException;
 import com.spochi.service.auth.JwtUtil;
 import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
@@ -28,9 +29,11 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String INVALID_TOKEN_MESSAGE = "Invalid or expired token";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String INVALID_CLIENT_MESSAGE = "Client not authorized";
+    public static final String INVALID_ADMIN_MESSAGE = "Admin not authorized";
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
+    protected static final List<String> adminEndpoints;
     protected static final List<String> client_list;
 
     // Endpoints que NO necesitan ser autorizados con JWT
@@ -51,6 +54,12 @@ public class JwtFilter extends OncePerRequestFilter {
         client_list = new ArrayList<>();
         client_list.add("ANDROIDvYjfU7ff2oCiWazVKbEt2xJ");
         client_list.add("REACTlKld8UY310AQ0OPBsp4K98H51");
+
+    }
+    static{
+        adminEndpoints = new ArrayList<>();
+        adminEndpoints.add("/initiative/approve");
+        adminEndpoints.add("/initiative/reject");
     }
 
 
@@ -84,6 +93,10 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (!jwtUtil.isTokenValid(token)) {
                         throw new AuthorizationException();
                     }
+
+                    if (adminEndpoints.stream().anyMatch(invokedEndpoint::startsWith) && !jwtUtil.isAdminTokenValid(token)) {
+                        throw new AdminAuthorizationException();
+                    }
                 }
             }
 
@@ -96,6 +109,9 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (ClientAuthorizationException e){
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.getWriter().write(INVALID_CLIENT_MESSAGE);
+        } catch (AdminAuthorizationException e){
+            httpServletResponse.setStatus(com.spochi.controller.HttpStatus.BAD_ADMIN_REQUEST.getCode());
+            httpServletResponse.getWriter().write(INVALID_ADMIN_MESSAGE);
         }
     }
 
@@ -106,5 +122,4 @@ public class JwtFilter extends OncePerRequestFilter {
     private boolean isClientValid(HttpServletRequest request){
         return (request.getHeader(ID_CLIENT_HEADER) != null && client_list.contains(request.getHeader(ID_CLIENT_HEADER)));
     }
-
 }
