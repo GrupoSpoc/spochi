@@ -2,6 +2,7 @@ package com.spochi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spochi.controller.exception.BadRequestException;
+import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -27,12 +28,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static com.spochi.controller.HttpStatus.BAD_REQUEST;
+import static com.spochi.controller.InitiativeTestUtil.UNIQUE_ID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,7 +72,7 @@ class InitiativeIntegrationTest {
         InitiativeTestUtil.getInitiatives().forEach(initiative -> repository.save(initiative));
         User.UserBuilder builder = User.builder();
         builder.uid(UID);
-        builder.id(InitiativeTestUtil.UNIQUE_ID);
+        builder.id(UNIQUE_ID);
         User user = builder.build();
         userRepository.create(user);
     }
@@ -87,7 +88,7 @@ class InitiativeIntegrationTest {
     @DisplayName("getAll | without order param | ok")
     void getAllWithoutOrderParamOk() throws Exception {
         // setup
-        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs(InitiativeTestUtil.UNIQUE_ID);
+        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs();
 
         when(jwtUtil.extractUid(jwt)).thenReturn(UID);
 
@@ -98,11 +99,13 @@ class InitiativeIntegrationTest {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        List<InitiativeResponseDTO> actualDTOs = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO[].class));
+        InitiativeListResponseDTO responseDTO = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeListResponseDTO.class);
+        List<InitiativeResponseDTO> actualDTOs = responseDTO.getInitiatives();
 
         // assert
         assertEquals(expectedDTOs.size(), actualDTOs.size());
         assertTrue(actualDTOs.containsAll(expectedDTOs));
+        assertFalse(responseDTO.isLast_batch());
     }
 
     @Test
@@ -117,7 +120,8 @@ class InitiativeIntegrationTest {
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
 
-        List<InitiativeResponseDTO> actualDTOs = Arrays.asList(objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeResponseDTO[].class));
+        InitiativeListResponseDTO responseDTO = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeListResponseDTO.class);
+        List<InitiativeResponseDTO> actualDTOs = responseDTO.getInitiatives();
 
         // assert
         // bubble compare:
@@ -130,6 +134,31 @@ class InitiativeIntegrationTest {
                 assertTrue(LocalDateTime.parse(nextDto.getDate()).compareTo(currentDate) <= 0);
             }
         }
+    }
+
+    @Test
+    @DisplayName("getAll | with limit more than initiatives | last batch")
+    void getAllLastBatch() throws Exception {
+        // setup
+        List<InitiativeResponseDTO> expectedDTOs = InitiativeTestUtil.getAllAsDTOs();
+
+        when(jwtUtil.extractUid(jwt)).thenReturn(UID);
+
+        // perform
+        final MvcResult result = mvc.perform(get(GET_ALL_PATH)
+                .param("limit", String.valueOf(expectedDTOs.size() + 1))
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.OK.value()))
+                .andReturn();
+
+        InitiativeListResponseDTO responseDTO = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeListResponseDTO.class);
+        List<InitiativeResponseDTO> actualDTOs = responseDTO.getInitiatives();
+
+        // assert
+        assertEquals(expectedDTOs.size(), actualDTOs.size());
+        assertTrue(actualDTOs.containsAll(expectedDTOs));
+        assertTrue(responseDTO.isLast_batch());
     }
 
     @Test

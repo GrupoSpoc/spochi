@@ -32,7 +32,7 @@ public class InitiativeTestUtil {
         initiatives.add(builder.statusId(3).date(epochDate).userId(UNIQUE_ID).build());
     }
 
-    public static List<InitiativeResponseDTO> getAllAsDTOs(String user) {
+    public static List<InitiativeResponseDTO> getAllAsDTOs() {
         return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
     }
 

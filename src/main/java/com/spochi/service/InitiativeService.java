@@ -2,6 +2,7 @@ package com.spochi.service;
 
 import com.spochi.controller.HttpStatus;
 import com.spochi.controller.exception.BadRequestException;
+import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
 import com.spochi.entity.Initiative;
@@ -28,7 +29,7 @@ public class InitiativeService {
     @Autowired
     UserRepository userRepository;
 
-    public List<InitiativeResponseDTO> getAll(InitiativeQuery query, String uid, boolean currentUser) {
+    public InitiativeListResponseDTO getAll(InitiativeQuery query, String uid, boolean currentUser) {
         if (currentUser) {
             final User user = userRepository.findByUid(uid).orElseThrow(() -> new InitiativeServiceException("user not found when initiative getAll"));
             query.withUserId(user.getId());
@@ -36,7 +37,20 @@ public class InitiativeService {
 
         final List<Initiative> initiatives = initiativeRepository.getAllInitiatives(query);
 
-        return initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList());
+        final InitiativeListResponseDTO dto = new InitiativeListResponseDTO();
+        dto.setInitiatives(initiatives.stream().map(Initiative::toDTO).collect(Collectors.toList()));
+
+        boolean lastBatch;
+
+        if (query.getLimit() != null) {
+            lastBatch = initiatives.size() < query.getLimit();
+        } else {
+            lastBatch = initiatives.size() == 0;
+        }
+
+        dto.setLast_batch(lastBatch);
+
+        return dto;
     }
 
     public InitiativeResponseDTO create(InitiativeRequestDTO request, String uid) {
