@@ -33,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
     public static final String ID_CLIENT_HEADER = "client_id";
     public static final String BEARER_SUFFIX = "Bearer ";
 
-    protected static final List<String> adminEndpoint;
+    protected static final List<String> adminEndpoints;
     protected static final List<String> client_list;
 
     // Endpoints que NO necesitan ser autorizados con JWT
@@ -57,9 +57,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
     static{
-        adminEndpoint = new ArrayList<>();
-        adminEndpoint.add("/initiative/approve");
-        adminEndpoint.add("/initiative/reject");
+        adminEndpoints = new ArrayList<>();
+        adminEndpoints.add("/initiative/approve");
+        adminEndpoints.add("/initiative/reject");
     }
 
 
@@ -94,7 +94,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         throw new AuthorizationException();
                     }
 
-                    if (adminEndpoint.contains(invokedEndpoint) && !jwtUtil.isAdminTokenValid(token)) {
+                    if (adminEndpoints.stream().anyMatch(invokedEndpoint::startsWith) && !jwtUtil.isAdminTokenValid(token)) {
                         throw new AdminAuthorizationException();
                     }
                 }
