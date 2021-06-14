@@ -11,7 +11,6 @@ class TokenInfoTest {
     void testInstantiation() {
         final UserResponseDTO userDTO = new UserResponseDTO();
 
-        userDTO.setAmount_of_initiatives(3);
         userDTO.setAdmin(false);
         userDTO.setNickname("user");
         userDTO.setType_id(1);
@@ -22,7 +21,6 @@ class TokenInfoTest {
         assertAll("Expected userDTO",
                 () -> assertEquals(userDTO.getNickname(), actualDTO.getNickname()),
                 () -> assertEquals(userDTO.getType_id(), actualDTO.getType_id()),
-                () -> assertEquals(userDTO.getAmount_of_initiatives(), actualDTO.getAmount_of_initiatives()),
                 () -> assertFalse(actualDTO.isAdmin()));
         assertEquals("jwt", tokenInfo.getJwt());
     }

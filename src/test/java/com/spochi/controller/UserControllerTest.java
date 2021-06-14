@@ -52,7 +52,6 @@ class UserControllerTest {
         final UserResponseDTO expectedResult = new UserResponseDTO();
         expectedResult.setType_id(1);
         expectedResult.setNickname("nickname");
-        expectedResult.setAmount_of_initiatives(2);
         expectedResult.setAdmin(false);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);

@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class FiwareUserRepository extends FiwareRepository<User> implements UserRepository {
@@ -29,9 +28,6 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     public FiwareUserRepository(RestPerformer performer) {
         super(performer);
     }
-
-    @Autowired
-    FiwareInitiativeRepository initiativeRepository;
 
     @Override
     protected NGSIEntityType getEntityType() {
@@ -62,16 +58,6 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
         queryBuilder.attributeEq(User.Fields.NICKNAME, nickname);
 
         return findFirst(queryBuilder);
-    }
-
-    @Override
-    public int getAmountOfInitiatives(String id) {
-        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.type(Initiative.NGSIType)
-                .ref(getEntityType(), id)
-                .count();
-
-        return super.count(queryBuilder);
     }
 
     @Override

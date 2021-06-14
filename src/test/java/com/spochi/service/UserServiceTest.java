@@ -37,20 +37,17 @@ class UserServiceTest {
     void findByUidFound() {
 
         final User mockedUser = UserDummyBuilder.buildWithId();
-        final Map <Integer,Integer> userInitiativesByStatus = repository.getUserInitiativesByStatus(mockedUser.getUid());
         final UserResponseDTO expectedDTO = new UserResponseDTO();
         expectedDTO.setType_id(mockedUser.getTypeId());
-        expectedDTO.setAmount_of_initiatives(0);
         expectedDTO.setNickname(mockedUser.getNickname());
-        expectedDTO.setInitiatives_by_status(userInitiativesByStatus);
         expectedDTO.setAdmin(false);
 
         when(repository.findByUid(anyString())).thenReturn(Optional.of(mockedUser));
 
         final UserResponseDTO actualDTO = service.findByUid("uid");
 
-        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId());
         assertEquals(expectedDTO, actualDTO);
+        assertEquals(expectedDTO.getInitiatives_by_status(), actualDTO.getInitiatives_by_status());
     }
 
     @Test
@@ -78,8 +75,7 @@ class UserServiceTest {
 
         assertAll("Expected result",
                 () -> assertEquals(nickname, result.getNickname()),
-                () -> assertEquals(typeId, result.getType_id()),
-                () -> assertEquals(0, result.getAmount_of_initiatives()));
+                () -> assertEquals(typeId, result.getType_id()));
     }
 
     @Test

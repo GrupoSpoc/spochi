@@ -197,30 +197,8 @@ class FiwareUserRepositoryTest {
         assertException(IllegalArgumentException.class, () -> repository.findByNickname("nickname"), "nickname-error");
     }
 
-    @Test
-    @DisplayName("get amount of initiatives | ok")
-    void getAmountOfInitiativesOk() {
-        final RestPerformer performer = mock(RestPerformer.class);
-
-        when(performer.count(anyString())).thenReturn(3);
-
-        final FiwareUserRepository repository = new FiwareUserRepository(performer);
-
-        assertEquals(3, repository.getAmountOfInitiatives("id"));
-    }
-
-    @Test
-    @DisplayName("get amount of initiatives | when exception is thrown | should not catch")
-    void getAmountOfInitiativesException() {
-        final RestPerformer performer = mock(RestPerformer.class);
-
-        when(performer.count(anyString())).thenThrow(new RuntimeException("count-error"));
-
-        final FiwareUserRepository repository = new FiwareUserRepository(performer);
 
 
-        assertException(RuntimeException.class, () -> repository.getAmountOfInitiatives("id"), "count-error");
-    }
 
     @Test
     @DisplayName("build next id | ok")
@@ -242,12 +220,27 @@ class FiwareUserRepositoryTest {
 
         Map<Integer, Integer> initiativeMap = repository.getUserInitiativesByStatus(uid);
 
-        verify(performer, times(1)).get(contains("//46.17.108.37:1026/v2/entities?q=refUser==user id&options=keyValues&type=Initiative&attr=status_id"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==user id&options=keyValues&type=Initiative&attr=status_id"));
         assertAll("Fiware response",
         () -> assertEquals(initiativeMap.size(), 3),
                 () -> assertEquals(initiativeMap.get(1), 1),
                 () -> assertEquals(initiativeMap.get(2), 2),
                 () -> assertEquals(initiativeMap.get(3), 1));
+    }
+
+    @Test
+    @DisplayName("getInitiativesByStatus | no initiatives")
+    void getInitiativesByStatusNoInitiatives() {
+        final String uid = "";
+        final RestPerformer performer = mock(RestPerformer.class);
+        final FiwareUserRepository repository = new FiwareUserRepository(performer);
+
+        when(performer.get(anyString())).thenReturn("[]");
+
+        Map<Integer, Integer> initiativeMap = repository.getUserInitiativesByStatus(uid);
+
+        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==&options=keyValues&type=Initiative&attr=status_id"));
+        assertEquals("{1=0, 2=0, 3=0}",initiativeMap.toString() );
     }
 
     private static NGSIJson buildTestUserJsonResponse(User user, String id1) {

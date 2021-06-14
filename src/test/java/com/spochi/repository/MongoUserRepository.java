@@ -41,17 +41,6 @@ public class MongoUserRepository implements UserRepository {
     }
 
     @Override
-    public int getAmountOfInitiatives(String id) {
-        final InitiativeQuery initiativeQuery = new InitiativeQuery();
-        initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());
-
-        return (int) initiativeRepository.getAllInitiatives(initiativeQuery)
-                .stream()
-                .filter(i -> i.getUserId() != null && i.getUserId().equalsIgnoreCase(id))
-                .count();
-    }
-
-    @Override
     public Map<Integer,Integer> getUserInitiativesByStatus(String id) {
         final InitiativeQuery initiativeQuery = new InitiativeQuery();
         initiativeQuery.withSorter(InitiativeSorter.DEFAULT_COMPARATOR.getId());

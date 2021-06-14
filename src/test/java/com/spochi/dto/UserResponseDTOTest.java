@@ -19,14 +19,12 @@ class UserResponseDTOTest {
     public void responseDTOtest(){
         populateMap();
         UserResponseDTO responseDTO = new UserResponseDTO();
-        responseDTO.setAmount_of_initiatives(AMOUNT_INITIATIVES);
         responseDTO.setNickname(NICKNAME);
         responseDTO.setType_id(TYPE);
         responseDTO.setAdmin(IS_NOT_ADMIN);
         responseDTO.setInitiatives_by_status(initiativesByStatus);
 
         System.out.println(initiativesByStatus);
-        assertEquals(AMOUNT_INITIATIVES,responseDTO.getAmount_of_initiatives());
         assertEquals(NICKNAME,responseDTO.getNickname());
         assertEquals(TYPE,responseDTO.getType_id());
         assertFalse(responseDTO.isAdmin());
