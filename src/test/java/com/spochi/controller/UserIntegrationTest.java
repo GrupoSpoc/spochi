@@ -81,14 +81,6 @@ public class UserIntegrationTest {
         final String description = "description";
         final String image = "image";
 
-        final Initiative initiativeTest = new Initiative();
-        initiativeTest.setImage(image);
-        initiativeTest.setNickname(nickname);
-        initiativeTest.setDate(date);
-        initiativeTest.setStatusId(InitiativeStatus.APPROVED.getId());
-        initiativeTest.setUserId(uid);
-        initiativeTest.setDescription(description);
-
         final User user = UserDummyBuilder.build(uid);
 
         final UserResponseDTO expectedResult = new UserResponseDTO();
@@ -96,7 +88,16 @@ public class UserIntegrationTest {
         expectedResult.setNickname(user.getNickname());
         expectedResult.setAdmin(false);
 
-        repository.create(user);
+        User createdUserTest = repository.create(user);
+
+        final Initiative initiativeTest = new Initiative();
+        initiativeTest.setImage(image);
+        initiativeTest.setNickname(nickname);
+        initiativeTest.setDate(date);
+        initiativeTest.setStatusId(InitiativeStatus.APPROVED.getId());
+        initiativeTest.setUserId(createdUserTest.getId());
+        initiativeTest.setDescription(description);
+
         initiativeRepository.create(initiativeTest);
 
         when(jwtUtil.extractUid(jwt)).thenReturn(uid);
@@ -110,8 +111,7 @@ public class UserIntegrationTest {
         final UserResponseDTO actualResult = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponseDTO.class);
 
         assertNotNull(actualResult);
-        assertEquals(initiativeMap, actualResult.getInitiatives_by_status());
-        assertEquals(repository.getUserInitiativesByStatus(user.getUid()).get(InitiativeStatus.APPROVED.getId()), 1 );
+        assertEquals(1, actualResult.getInitiatives_by_status().get(InitiativeStatus.APPROVED.getId()) );
         assertFalse(actualResult.getInitiatives_by_status().isEmpty());
         assertEquals(expectedResult, actualResult);
     }

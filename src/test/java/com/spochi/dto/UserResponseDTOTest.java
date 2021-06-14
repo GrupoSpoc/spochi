@@ -24,7 +24,6 @@ class UserResponseDTOTest {
         responseDTO.setAdmin(IS_NOT_ADMIN);
         responseDTO.setInitiatives_by_status(initiativesByStatus);
 
-        System.out.println(initiativesByStatus);
         assertEquals(NICKNAME,responseDTO.getNickname());
         assertEquals(TYPE,responseDTO.getType_id());
         assertFalse(responseDTO.isAdmin());
