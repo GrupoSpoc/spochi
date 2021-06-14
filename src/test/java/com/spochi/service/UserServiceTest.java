@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Map;
 import java.util.Optional;
 
 import static com.spochi.util.AssertUtils.assertBadRequestException;
@@ -34,10 +35,10 @@ class UserServiceTest {
     @Test
     @DisplayName("find by uid | when user is found | should return UserResponseDTO | ok")
     void findByUidFound() {
+
         final User mockedUser = UserDummyBuilder.buildWithId();
         final UserResponseDTO expectedDTO = new UserResponseDTO();
         expectedDTO.setType_id(mockedUser.getTypeId());
-        expectedDTO.setAmount_of_initiatives(0);
         expectedDTO.setNickname(mockedUser.getNickname());
         expectedDTO.setAdmin(false);
 
@@ -45,8 +46,8 @@ class UserServiceTest {
 
         final UserResponseDTO actualDTO = service.findByUid("uid");
 
-        verify(repository, times(1)).getAmountOfInitiatives(mockedUser.getId());
         assertEquals(expectedDTO, actualDTO);
+        assertEquals(expectedDTO.getInitiatives_by_status(), actualDTO.getInitiatives_by_status());
     }
 
     @Test
@@ -74,8 +75,7 @@ class UserServiceTest {
 
         assertAll("Expected result",
                 () -> assertEquals(nickname, result.getNickname()),
-                () -> assertEquals(typeId, result.getType_id()),
-                () -> assertEquals(0, result.getAmount_of_initiatives()));
+                () -> assertEquals(typeId, result.getType_id()));
     }
 
     @Test

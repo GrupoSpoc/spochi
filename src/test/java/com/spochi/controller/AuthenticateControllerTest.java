@@ -104,7 +104,6 @@ class AuthenticateControllerTest {
     void authenticateOk() throws Exception {
         final UserResponseDTO expectedDTO = new UserResponseDTO();
 
-        expectedDTO.setAmount_of_initiatives(3);
         expectedDTO.setAdmin(false);
         expectedDTO.setNickname("user");
         expectedDTO.setType_id(1);
@@ -125,7 +124,6 @@ class AuthenticateControllerTest {
         assertAll("Expected userDTO",
                 () -> assertEquals(expectedDTO.getNickname(), actualDTO.getNickname()),
                 () -> assertEquals(expectedDTO.getType_id(), actualDTO.getType_id()),
-                () -> assertEquals(expectedDTO.getAmount_of_initiatives(), actualDTO.getAmount_of_initiatives()),
                 () -> assertFalse(actualDTO.isAdmin()));
         assertEquals("jwt", tokenInfo.getJwt());
     }

@@ -28,7 +28,6 @@ class MongoEntityRepositoryTest {
         final User user = repository.create(UserDummyBuilder.build());
         final UserResponseDTO expectedResult = new UserResponseDTO();
         expectedResult.setType_id(user.getTypeId());
-        expectedResult.setAmount_of_initiatives(0);
         expectedResult.setNickname(user.getNickname());
         expectedResult.setAdmin(false);
 
@@ -36,7 +35,6 @@ class MongoEntityRepositoryTest {
         final User userFoundByUid = repository.findByUid(user.getUid()).orElse(null);
         final UserResponseDTO actualResult = new UserResponseDTO();
         actualResult.setType_id(userFoundByUid.getTypeId());
-        actualResult.setAmount_of_initiatives(0);
         actualResult.setNickname(userFoundByUid.getNickname());
         actualResult.setAdmin(false);
 
@@ -58,14 +56,12 @@ class MongoEntityRepositoryTest {
         final User user = repository.create(UserDummyBuilder.build());
         final UserResponseDTO expectedResult = new UserResponseDTO();
         expectedResult.setType_id(user.getTypeId());
-        expectedResult.setAmount_of_initiatives(0);
         expectedResult.setNickname(user.getNickname());
         expectedResult.setAdmin(false);
 
         final User userFoundByNickname = repository.findByNickname(user.getNickname()).orElse(null);
         final UserResponseDTO actualResult = new UserResponseDTO();
         actualResult.setType_id(userFoundByNickname.getTypeId());
-        actualResult.setAmount_of_initiatives(0);
         actualResult.setNickname(userFoundByNickname.getNickname());
         actualResult.setAdmin(false);
 
