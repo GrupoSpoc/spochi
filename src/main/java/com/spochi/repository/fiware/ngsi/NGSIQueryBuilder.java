@@ -24,12 +24,16 @@ public class NGSIQueryBuilder {
         return this;
     }
 
-    public NGSIQueryBuilder attributeEq(NGSIField attribute, String ... values) {
+    public NGSIQueryBuilder attributeEQ(NGSIField attribute, String ... values) {
         return qExpression(attribute.label() + DOUBLE_EQ + String.join(",", values));
     }
 
-    public NGSIQueryBuilder attributeLs(NGSIField attribute, String value) {
+    public NGSIQueryBuilder attributeLS(NGSIField attribute, String value) {
         return qExpression(attribute.label() + LS + value);
+    }
+
+    public NGSIQueryBuilder attributeGT(NGSIField attribute, String value) {
+        return qExpression(attribute.label() + GT + value);
     }
 
     public NGSIQueryBuilder count() {

@@ -130,7 +130,7 @@ public class FiwareInitiativeRepositoryTest {
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
 
         final InitiativeQuery initiativeQuery = new InitiativeQuery();
-        initiativeQuery.withDateTop(dateTop.toString());
+        initiativeQuery.withDateTo(dateTop.toString());
         initiativeQuery.withStatuses(new Integer[]{InitiativeStatus.APPROVED.getId()});
         initiativeQuery.withLimit(3);
         initiativeQuery.withOffset(1);

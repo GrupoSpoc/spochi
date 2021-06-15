@@ -20,6 +20,7 @@ public class InitiativeController {
     public InitiativeListResponseDTO getAll(@RequestParam(required = false) Integer order,
                                              @RequestParam(required = false) Integer[] statusId,
                                              @RequestParam(required = false) boolean currentUser,
+                                             @RequestParam(required = false) String dateFrom,
                                              @RequestParam(required = false) String dateTop,
                                              @RequestParam(required = false) Integer limit,
                                              @RequestParam(required = false) Integer offset,
@@ -29,7 +30,8 @@ public class InitiativeController {
 
         query.withSorter(order);
         query.withStatuses(statusId);
-        query.withDateTop(dateTop);
+        query.withDateFrom(dateFrom);
+        query.withDateTo(dateTop);
         query.withLimit(limit);
         query.withOffset(offset);
 

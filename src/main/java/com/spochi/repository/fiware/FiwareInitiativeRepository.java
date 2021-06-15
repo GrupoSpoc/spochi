@@ -81,13 +81,18 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         }
 
         if (initiativeQuery.getStatuses() != null) {
-            ngsiQueryBuilder.attributeEq(Initiative.Fields.STATUS_ID,
+            ngsiQueryBuilder.attributeEQ(Initiative.Fields.STATUS_ID,
                     initiativeQuery.getStatuses().stream().map(s -> String.valueOf(s.getId())).toArray(String[]::new));
         }
 
-        if (initiativeQuery.getDateTop() != null) {
-            final long milli = DateUtil.dateToMilliUTC(initiativeQuery.getDateTop());
-            ngsiQueryBuilder.attributeLs(Initiative.Fields.DATE, String.valueOf(milli));
+        if (initiativeQuery.getDateTo() != null) {
+            final long milliTo = DateUtil.dateToMilliUTC(initiativeQuery.getDateTo());
+            ngsiQueryBuilder.attributeLS(Initiative.Fields.DATE, String.valueOf(milliTo));
+        }
+
+        if (initiativeQuery.getDateFrom() != null) {
+            final long milliFrom = DateUtil.dateToMilliUTC(initiativeQuery.getDateFrom());
+            ngsiQueryBuilder.attributeGT(Initiative.Fields.DATE, String.valueOf(milliFrom));
         }
 
         if (initiativeQuery.getLimit() != null) {

@@ -56,8 +56,8 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
                     .anyMatch(s -> s == i.getStatusId()));
         }
 
-        if (initiativeQuery.getDateTop() != null) {
-            predicates.add(i -> i.getDate().isBefore(initiativeQuery.getDateTop()));
+        if (initiativeQuery.getDateTo() != null) {
+            predicates.add(i -> i.getDate().isBefore(initiativeQuery.getDateTo()));
         }
 
         return i -> predicates.stream().allMatch(p -> p.test(i));

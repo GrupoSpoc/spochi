@@ -10,7 +10,8 @@ import java.util.Comparator;
 @Getter
 public enum InitiativeSorter {
     DEFAULT_COMPARATOR(Integer.MIN_VALUE, (i1, i2) -> 0),
-    DATE_DESC (1, Comparator.comparing(Initiative::getDate).reversed());
+    DATE_DESC (1, Comparator.comparing(Initiative::getDate).reversed()),
+    DATE_ASC (2, Comparator.comparing(Initiative::getDate));
 
     private final int id;
     private final Comparator<Initiative> comparator;

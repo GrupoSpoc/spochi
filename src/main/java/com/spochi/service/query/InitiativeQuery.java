@@ -15,7 +15,8 @@ public class InitiativeQuery {
     private InitiativeSorter sorter;
     private List<InitiativeStatus> statuses;
     private String userId;
-    private LocalDateTime dateTop;
+    private LocalDateTime dateFrom;
+    private LocalDateTime dateTo;
     private Integer limit;
     private Integer offset;
 
@@ -35,9 +36,9 @@ public class InitiativeQuery {
         this.userId = userId;
     }
 
-    public void withDateTop(@Nullable String dateTop) {
+    public void withDateTo(@Nullable String dateTop) {
         if (dateTop != null) {
-            this.dateTop = LocalDateTime.parse(dateTop);
+            this.dateTo = LocalDateTime.parse(dateTop);
         }
     }
 
@@ -50,6 +51,12 @@ public class InitiativeQuery {
     public void withOffset(Integer offset) {
         if (offset != null && offset > 0) {
             this.offset = offset;
+        }
+    }
+
+    public void withDateFrom(String dateFrom) {
+        if (dateFrom != null) {
+            this.dateFrom = LocalDateTime.parse(dateFrom);
         }
     }
 }
