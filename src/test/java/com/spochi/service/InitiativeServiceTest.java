@@ -164,7 +164,7 @@ class InitiativeServiceTest {
     }
 
     @Test
-    @DisplayName("getAll | date desc comparator, by status, dateTop | from current user | ok")
+    @DisplayName("getAll | date desc comparator, by status, dateTo | from current user | ok")
     void getAllInitiativeFiltersOK() {
         final LocalDateTime date = LocalDateTime.now();
 

@@ -21,7 +21,7 @@ public class InitiativeController {
                                              @RequestParam(required = false) Integer[] statusId,
                                              @RequestParam(required = false) boolean currentUser,
                                              @RequestParam(required = false) String dateFrom,
-                                             @RequestParam(required = false) String dateTop,
+                                             @RequestParam(required = false) String dateTo,
                                              @RequestParam(required = false) Integer limit,
                                              @RequestParam(required = false) Integer offset,
                                              @Uid String uid) {
@@ -31,7 +31,7 @@ public class InitiativeController {
         query.withSorter(order);
         query.withStatuses(statusId);
         query.withDateFrom(dateFrom);
-        query.withDateTo(dateTop);
+        query.withDateTo(dateTo);
         query.withLimit(limit);
         query.withOffset(offset);
 

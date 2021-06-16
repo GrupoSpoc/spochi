@@ -36,9 +36,9 @@ public class InitiativeQuery {
         this.userId = userId;
     }
 
-    public void withDateTo(@Nullable String dateTop) {
-        if (dateTop != null) {
-            this.dateTo = LocalDateTime.parse(dateTop);
+    public void withDateTo(@Nullable String dateTo) {
+        if (dateTo != null) {
+            this.dateTo = LocalDateTime.parse(dateTo);
         }
     }
 
