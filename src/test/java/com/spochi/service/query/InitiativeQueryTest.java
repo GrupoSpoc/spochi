@@ -56,18 +56,33 @@ class InitiativeQueryTest {
     }
 
     @Test
-    void withDateTop() {
+    void withDateTo() {
         final InitiativeQuery query = new InitiativeQuery();
 
-        final LocalDateTime dateTop = LocalDateTime.now();
+        final LocalDateTime dateTo = LocalDateTime.now();
 
         query.withDateTo(null);
         assertNull(query.getDateTo());
 
-        query.withDateTo(dateTop.toString());
-        assertEquals(dateTop, query.getDateTo());
+        query.withDateTo(dateTo.toString());
+        assertEquals(dateTo, query.getDateTo());
 
         assertThrows(DateTimeParseException.class, () -> query.withDateTo("not-a-date"));
+    }
+
+    @Test
+    void withDateFrom() {
+        final InitiativeQuery query = new InitiativeQuery();
+
+        final LocalDateTime dateFrom = LocalDateTime.now();
+
+        query.withDateFrom(null);
+        assertNull(query.getDateFrom());
+
+        query.withDateFrom(dateFrom.toString());
+        assertEquals(dateFrom, query.getDateFrom());
+
+        assertThrows(DateTimeParseException.class, () -> query.withDateFrom("not-a-date"));
     }
 
     @Test

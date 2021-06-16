@@ -110,7 +110,7 @@ class InitiativeIntegrationTest {
 
     @Test
     @DisplayName("getAll | with order param | date desc | ok")
-    void getAllWithValidOrderParamOk() throws Exception {
+    void getAllWithValidOrderDateDescOk() throws Exception {
         // perform
         when(jwtUtil.extractUid(jwt)).thenReturn(UID);
         final MvcResult result = mvc.perform(get(GET_ALL_PATH)
@@ -132,6 +132,34 @@ class InitiativeIntegrationTest {
             for (int j = i + 1; j + 1 < actualDTOs.size(); j++) {
                 final InitiativeResponseDTO nextDto = actualDTOs.get(j);
                 assertTrue(LocalDateTime.parse(nextDto.getDate()).compareTo(currentDate) <= 0);
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("getAll | with order param | date asc | ok")
+    void getAllWithValidOrderDateAscOk() throws Exception {
+        // perform
+        when(jwtUtil.extractUid(jwt)).thenReturn(UID);
+        final MvcResult result = mvc.perform(get(GET_ALL_PATH)
+                .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + jwt)
+                .param("order", String.valueOf(InitiativeSorter.DATE_ASC.getId())))
+                .andDo(print())
+                .andExpect(status().is(HttpStatus.OK.value()))
+                .andReturn();
+
+        InitiativeListResponseDTO responseDTO = objectMapper.readValue(result.getResponse().getContentAsString(), InitiativeListResponseDTO.class);
+        List<InitiativeResponseDTO> actualDTOs = responseDTO.getInitiatives();
+
+        // assert
+        // bubble compare:
+        // recorro todos los DTOs y por cada uno me aseguro que todos los que siguen tengan la misma fecha o posterior
+        for (int i = 0; i < actualDTOs.size(); i++) {
+            final InitiativeResponseDTO currentDto = actualDTOs.get(i);
+            final LocalDateTime currentDate = LocalDateTime.parse(currentDto.getDate());
+            for (int j = i + 1; j + 1 < actualDTOs.size(); j++) {
+                final InitiativeResponseDTO nextDto = actualDTOs.get(j);
+                assertTrue(LocalDateTime.parse(nextDto.getDate()).compareTo(currentDate) >= 0);
             }
         }
     }
