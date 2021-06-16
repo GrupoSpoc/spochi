@@ -4,6 +4,7 @@ import com.spochi.controller.handler.Uid;
 import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.service.InitiativeService;
 import com.spochi.service.query.InitiativeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +44,9 @@ public class InitiativeController {
     }
 
     @RequestMapping(value = "/reject/{initiativeId}", method = RequestMethod.POST)
-    public InitiativeResponseDTO rejectInitiative(@PathVariable String initiativeId) {
+    public InitiativeResponseDTO rejectInitiative(@RequestBody RejectedInitiativeDTO rejectedDTOMotive) {
 
-        return service.rejectInitiative(initiativeId);
+        return service.rejectInitiative(rejectedDTOMotive);
     }
 
     @PostMapping

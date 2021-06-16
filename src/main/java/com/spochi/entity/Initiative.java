@@ -26,6 +26,7 @@ public class Initiative implements NGSISerializable {
     private String image;
     private String nickname;
     private LocalDateTime date;
+    private String reject_motive;
 
 
     @Field(name = "user_id")
@@ -34,13 +35,14 @@ public class Initiative implements NGSISerializable {
     @Field(name = "status_id")
     private int statusId;
 
-    public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId) {
+    public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId,String reject_Motive) {
         this.description = description;
         this.image = image;
         this.nickname = nickname;
         this.date = date;
         this.userId = userId;
         this.statusId = statusId;
+        this.reject_motive = reject_Motive;
     }
 
     public InitiativeResponseDTO toDTO() {
@@ -68,6 +70,7 @@ public class Initiative implements NGSISerializable {
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.DATE, DateUtil.dateToMilliUTC(this.date));
         json.addAttribute(Fields.USER_ID, this.userId);
+        json.addAttribute(Fields.REJECT_MOTIVE,this.reject_motive);
         json.addAttribute(Fields.STATUS_ID, this.statusId);
 
         return json;
@@ -81,6 +84,7 @@ public class Initiative implements NGSISerializable {
         NICKNAME("nickname", NGSIFieldType.TEXT),
         DATE("date", NGSIFieldType.LONG),
         USER_ID("refUser", NGSIFieldType.REFERENCE),
+        REJECT_MOTIVE("reject_motive", NGSIFieldType.TEXT),
         STATUS_ID("status_id", NGSIFieldType.INTEGER);
 
         private final String name;

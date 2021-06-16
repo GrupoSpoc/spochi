@@ -1,5 +1,6 @@
 package com.spochi.repository;
 
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.service.query.InitiativeQuery;
@@ -11,4 +12,5 @@ public interface InitiativeRepository extends EntityRepository<Initiative> {
     List<Initiative> getAllInitiatives(InitiativeQuery query);
     Optional<Initiative> findInitiativeById(String id);
     void changeStatus(Initiative initiative, InitiativeStatus status);
+    void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedDTOMotive);
 }

@@ -5,6 +5,7 @@ import com.spochi.controller.exception.BadRequestException;
 import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
@@ -72,7 +73,8 @@ public class InitiativeService {
                 user.getNickname(),
                 LocalDateTime.parse(request.getDate()),
                 user.getId(),
-                InitiativeStatus.PENDING.getId()
+                InitiativeStatus.PENDING.getId(),
+                null
         );
 
         final Initiative initiativeCreated = initiativeRepository.create(initiative);
@@ -114,11 +116,13 @@ public class InitiativeService {
         return updateStatus(initiativeId, InitiativeStatus.APPROVED);
     }
 
-    public InitiativeResponseDTO rejectInitiative(String initiativeId) {
-        return updateStatus(initiativeId, InitiativeStatus.REJECTED);
+    public InitiativeResponseDTO rejectInitiative(RejectedInitiativeDTO rejectedDTOMotive) {
+
+        return updateStatus(rejectedDTOMotive.getId(), InitiativeStatus.REJECTED, rejectedDTOMotive);
     }
 
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status) {
+    //For approve
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status){
 
         final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
 
@@ -129,12 +133,45 @@ public class InitiativeService {
 
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
             throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+
         }
+
         initiativeRepository.changeStatus(initiative, status);
 
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 
         return updatedInitiative.map(Initiative::toDTO).orElse(null);
+
+    }
+
+    // For reject
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status, RejectedInitiativeDTO rejectedDTOMotive) {
+
+        final Optional<Initiative> toBeRejected = initiativeRepository.findInitiativeById(initiativeId);
+
+        if (!toBeRejected.isPresent()) {
+            throw new InitiativeServiceException("There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
+        }
+        final Initiative initiative = toBeRejected.get();
+
+        if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
+            throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+
+        }
+
+        //Validar caracteres especiales y longitud
+
+        initiativeRepository.changeStatus(initiative, status, rejectedDTOMotive.getReject_Motive());
+
+        final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
+
+        return updatedInitiative.map(Initiative::toDTO).orElse(null);
+    }
+
+    private boolean validateFiwareSpecialCharacters(String reject_motive) {
+
+
+        return true;
     }
 
     public static class InitiativeServiceException extends BadRequestException {

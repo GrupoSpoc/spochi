@@ -1,5 +1,6 @@
 package com.spochi.repository.fiware;
 
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
@@ -32,9 +33,15 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
 
     @Override
     public void changeStatus(Initiative initiative, InitiativeStatus status) {
+
+        changeStatus(initiative,status, null);
+    }
+    @Override
+    public void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedDTOMotive) {
         final NGSIJson statusJson = new NGSIJson();
         statusJson.addAttribute(Initiative.Fields.STATUS_ID, status.getId());
-        update(initiative.get_id(), statusJson);
+        statusJson.addAttribute(Initiative.Fields.REJECT_MOTIVE, rejectedDTOMotive);
+        update(initiative.get_id(),statusJson);
     }
 
     @Override
@@ -53,6 +60,7 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         return buildId(String.valueOf(DateUtil.dateToMilliUTC(initiative.getDate())));
     }
 
+    //Checkear que onda con el ID vs el constructor de initiative
     @Override
     protected Initiative fromNGSIJson(NGSIJson json) {
         final String id = json.getId();
@@ -65,8 +73,9 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
 
         final String userId = json.getString(Initiative.Fields.USER_ID);
         final int statusId = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID)).getId();
+        final String rejectMotive = json.getString(Initiative.Fields.REJECT_MOTIVE);
 
-        return new Initiative(id, description, image, nickname, date, userId, statusId);
+        return new Initiative(description, image, nickname, date, userId, statusId, rejectMotive);
     }
 
     private NGSIQueryBuilder parseInitiativeQuery(InitiativeQuery initiativeQuery) {
