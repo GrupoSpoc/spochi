@@ -125,12 +125,16 @@ public class FiwareInitiativeRepositoryTest {
     @Test
     @DisplayName("getAll | having result | should call find with given query")
     void getAllInitiativesByDefaultOrder() {
-        final LocalDateTime dateTop = LocalDateTime.of(2020, Month.APRIL, 6, 12, 0, 0);
+        final LocalDateTime dateTo = LocalDateTime.of(2020, Month.APRIL, 6, 12, 0, 0);
+        final LocalDateTime dateFrom = LocalDateTime.of(2019, Month.APRIL, 9, 7, 34, 10);
+
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(performer);
 
         final InitiativeQuery initiativeQuery = new InitiativeQuery();
-        initiativeQuery.withDateTo(dateTop.toString());
+
+        initiativeQuery.withDateTo(dateTo.toString());
+        initiativeQuery.withDateFrom(dateFrom.toString());
         initiativeQuery.withStatuses(new Integer[]{InitiativeStatus.APPROVED.getId()});
         initiativeQuery.withLimit(3);
         initiativeQuery.withOffset(1);
@@ -141,7 +145,7 @@ public class FiwareInitiativeRepositoryTest {
 
         final List<Initiative> initiatives = repository.getAllInitiatives(initiativeQuery);
 
-        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==user-id;status_id==2;date<1586174400000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative"));
+        verify(performer, times(1)).get(contains("/v2/entities?q=refUser==user-id;status_id==2;date<1586174400000;date>1554795250000&offset=1&limit=3&options=keyValues&orderBy=!date&type=Initiative"));
 
         assertAll("Expected result",
                 () -> assertEquals(2, initiatives.size()),
