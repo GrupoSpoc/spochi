@@ -116,9 +116,9 @@ public class InitiativeService {
         return updateStatus(initiativeId, InitiativeStatus.APPROVED);
     }
 
-    public InitiativeResponseDTO rejectInitiative(RejectedInitiativeDTO rejectedDTOMotive) {
+    public InitiativeResponseDTO rejectInitiative(RejectedInitiativeDTO rejectedDTO) {
 
-        return updateStatus(rejectedDTOMotive.getId(), InitiativeStatus.REJECTED, rejectedDTOMotive);
+        return updateStatus(rejectedDTO.getId(), InitiativeStatus.REJECTED, rejectedDTO);
     }
 
     //For approve
@@ -145,7 +145,7 @@ public class InitiativeService {
     }
 
     // For reject
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status, RejectedInitiativeDTO rejectedDTOMotive) {
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status, RejectedInitiativeDTO rejectedDTO) {
 
         final Optional<Initiative> toBeRejected = initiativeRepository.findInitiativeById(initiativeId);
 
@@ -159,19 +159,36 @@ public class InitiativeService {
 
         }
 
-        //Validar caracteres especiales y longitud
+        if(!initiative.get_id().equals(rejectedDTO.getId())){
+          throw  new InitiativeServiceException(" There's an issue either with the initiative ID");
+        }
 
-        initiativeRepository.changeStatus(initiative, status, rejectedDTOMotive.getReject_Motive());
+        if(validateFiwareSpecialCharactersUsage(rejectedDTO.getReject_Motive())){
+            throw new InitiativeServiceException("Rejected motive is using restricted characters");
+        }
+
+
+        initiativeRepository.changeStatus(initiative, status, rejectedDTO.getReject_Motive());
 
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 
         return updatedInitiative.map(Initiative::toDTO).orElse(null);
     }
 
-    private boolean validateFiwareSpecialCharacters(String reject_motive) {
+    private boolean validateFiwareSpecialCharactersUsage(String reject_motive) {
 
+            boolean containRestricted = false;
+            char [] fiwareRestrictedChars = {',','-','.'};
 
-        return true;
+            for(char i : reject_motive.toCharArray()){
+                for(char j : fiwareRestrictedChars){
+                    if (i == j) {
+                        containRestricted = true;
+                        break;
+                    }
+                }
+            }
+        return containRestricted;
     }
 
     public static class InitiativeServiceException extends BadRequestException {

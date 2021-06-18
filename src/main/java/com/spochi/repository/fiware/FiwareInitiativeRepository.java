@@ -60,7 +60,6 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         return buildId(String.valueOf(DateUtil.dateToMilliUTC(initiative.getDate())));
     }
 
-    //Checkear que onda con el ID vs el constructor de initiative
     @Override
     protected Initiative fromNGSIJson(NGSIJson json) {
         final String id = json.getId();
@@ -75,7 +74,7 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         final int statusId = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID)).getId();
         final String rejectMotive = json.getString(Initiative.Fields.REJECT_MOTIVE);
 
-        return new Initiative(description, image, nickname, date, userId, statusId, rejectMotive);
+        return new Initiative(id, description, image, nickname, date, userId, rejectMotive,statusId);
     }
 
     private NGSIQueryBuilder parseInitiativeQuery(InitiativeQuery initiativeQuery) {

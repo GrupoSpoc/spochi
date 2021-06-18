@@ -5,6 +5,7 @@ import com.spochi.controller.exception.BadRequestException;
 import com.spochi.controller.handler.ControllerExceptionHandler;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.repository.InitiativeRepository;
@@ -85,19 +86,21 @@ public class InitiativeControllerTest {
     @Test
     @DisplayName("rejectInitiativeOk | having a proper initiative | change status to Rejected")
     void rejectInitiativeOk() throws Exception {
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
 
         final Initiative expectedInitiative = new Initiative();
-        expectedInitiative.set_id("2");
+        expectedInitiative.set_id(rejectedDto.getId());
         expectedInitiative.setUserId("UserId");
         expectedInitiative.setNickname("some Nickname");
         expectedInitiative.setDescription("Description");
         expectedInitiative.setDate(LocalDateTime.now().withNano(0));
         expectedInitiative.setStatusId(InitiativeStatus.REJECTED.getId());
         expectedInitiative.setImage("imageData");
+        expectedInitiative.setReject_motive(rejectedDto.getReject_Motive());
 
         final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO();
 
-        when(service.rejectInitiative(anyString())).thenReturn(expectedDTO);
+        when(service.rejectInitiative(rejectedDto)).thenReturn(expectedDTO);
 
         final MvcResult result = mvc.perform(post("/initiative/reject/{id}", expectedInitiative.get_id())
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + "jwt"))
@@ -137,7 +140,7 @@ public class InitiativeControllerTest {
         final InitiativeRequestDTO requestDTO = new InitiativeRequestDTO();
 
 
-        when(service.rejectInitiative("a")).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT Reject"));
+        when(service.rejectInitiative(null)).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT Reject"));
 
         final MvcResult result =  mvc.perform(post("/initiative/reject/{id}", "a")
                 .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(requestDTO))

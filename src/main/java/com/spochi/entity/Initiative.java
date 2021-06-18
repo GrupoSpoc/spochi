@@ -54,6 +54,7 @@ public class Initiative implements NGSISerializable {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
+        dto.setRejectMotive(this.reject_motive);
 
         return dto;
     }

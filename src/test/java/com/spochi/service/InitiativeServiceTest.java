@@ -4,6 +4,7 @@ import com.spochi.controller.HttpStatus;
 import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
@@ -304,6 +305,7 @@ class InitiativeServiceTest {
     @Test
     @DisplayName("rejectInitiative | for a pending initiative | change status to rejected")
     void rejectInitiative() {
+
         Initiative testInitiative = new Initiative();
         testInitiative.setStatusId(1);
         testInitiative.set_id("someID");
@@ -311,13 +313,33 @@ class InitiativeServiceTest {
         testInitiative.setDate(LocalDateTime.now().withNano(0));
         testInitiative.setDescription("SomeDescription");
         testInitiative.setNickname("User Nickname");
+        testInitiative.setReject_motive("some motive");
+
         initiativeRepository.create(testInitiative);
 
-        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(testInitiative.get_id());
+        rejectedDto.setReject_Motive("some motive");
 
-        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
+        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(rejectedDto);
+
+
+        assertAll("Rejected initiative",
+                () -> assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId()),
+                () -> assertEquals(initiativeResponseDTO.getRejectMotive(), rejectedDto.getReject_Motive()),
+                () -> assertEquals(initiativeResponseDTO.get_id(), testInitiative.get_id()));
     }
 
+    @Test
+    @DisplayName("rejectInitiativeException | for a invalid id initiative | throw invalid id exception")
+    void rejectInitiativeException() {
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId("unknown id");
+        rejectedDto.setReject_Motive("rejection motive test");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
+    }
     @Test
     @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")
     void getAllLimit1LastBatchFalse() {

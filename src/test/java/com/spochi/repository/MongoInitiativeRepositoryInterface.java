@@ -69,6 +69,15 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
     }
 
     @Override
+    default void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedMotive) {
+        Optional<Initiative> foundInitiative = findById(initiative.get_id());
+        Initiative initiative1 = foundInitiative.get();
+        initiative1.setStatusId(status.getId());
+        initiative1.setReject_motive(rejectedMotive);
+        save(initiative1);
+    }
+
+    @Override
     default Optional<Initiative> findInitiativeById(String id) {
         return findById(id);
     }
