@@ -122,7 +122,7 @@ public class InitiativeService {
     }
 
     //For approve
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status){
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status) {
 
         final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
 
@@ -159,13 +159,13 @@ public class InitiativeService {
 
         }
 
-        if(!initiative.get_id().equals(rejectedDTO.getId())){
-          throw  new InitiativeServiceException(" There's an issue either with the initiative ID");
+        if (!initiative.get_id().equals(rejectedDTO.getId())) {
+            throw new InitiativeServiceException(" There's an issue either with the initiative ID");
         }
 
-        if(validateFiwareSpecialCharactersUsage(rejectedDTO.getReject_Motive())){
-            throw new InitiativeServiceException("Rejected motive is using restricted characters");
-        }
+        //  if(validateFiwareSpecialCharactersUsage(rejectedDTO.getReject_Motive())){
+        //     throw new InitiativeServiceException("Rejected motive is using restricted characters");
+        // }
 
 
         initiativeRepository.changeStatus(initiative, status, rejectedDTO.getReject_Motive());
@@ -175,26 +175,11 @@ public class InitiativeService {
         return updatedInitiative.map(Initiative::toDTO).orElse(null);
     }
 
-    private boolean validateFiwareSpecialCharactersUsage(String reject_motive) {
-
-            boolean containRestricted = false;
-            char [] fiwareRestrictedChars = {',','-','.'};
-
-            for(char i : reject_motive.toCharArray()){
-                for(char j : fiwareRestrictedChars){
-                    if (i == j) {
-                        containRestricted = true;
-                        break;
-                    }
-                }
-            }
-        return containRestricted;
-    }
-
     public static class InitiativeServiceException extends BadRequestException {
         public InitiativeServiceException(String failField) {
             super(String.format("The Services fail because : %s", failField));
         }
+
         public InitiativeServiceException(String message, HttpStatus status) {
             super(String.format("The Services fail because : %s", message), status);
         }
