@@ -65,6 +65,11 @@ class InitiativeServiceTest {
         wrong_initiative.setDescription(EMPTY);
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Description is empty");
     }
+    @Test
+    void initiativeDescriptionContainsInvalidFiwareCharacter() {
+        wrong_initiative.setDescription("holas><");
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Description contains invalid fiware characters");
+    }
 
     @Test
     void initiativeImageIsEmpty() {

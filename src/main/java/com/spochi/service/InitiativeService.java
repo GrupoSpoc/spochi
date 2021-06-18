@@ -84,6 +84,9 @@ public class InitiativeService {
         if (request.getDescription().isEmpty()) {
             throw new InitiativeServiceException("Initiative Description is empty");
         }
+        if (containRestrictedFiwareCharacters(request.getDescription())){
+            throw new InitiativeServiceException("Initiative Description contains invalid fiware characters");
+        }
         if (request.getImage().isEmpty()) {
             throw new InitiativeServiceException("Initiative Image is empty");
         }
@@ -107,6 +110,20 @@ public class InitiativeService {
             return false;
         }
         return true;
+    }
+    private boolean containRestrictedFiwareCharacters(String description){
+        char[] fiwareRestrictedChars = {'<','>','"','=','(',')',';'};
+        boolean containRestricted = false;
+
+        for(char i : description.toCharArray()){
+            for(char j : fiwareRestrictedChars){
+                if(i == j){
+                    containRestricted = true;
+                    break;
+                }
+            }
+        }
+        return containRestricted;
     }
 
     public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
