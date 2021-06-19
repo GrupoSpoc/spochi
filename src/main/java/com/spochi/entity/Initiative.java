@@ -26,14 +26,14 @@ public class Initiative implements NGSISerializable {
     private String image;
     private String nickname;
     private LocalDateTime date;
-    private String reject_motive;
-
 
     @Field(name = "user_id")
     private String userId;
 
     @Field(name = "status_id")
     private int statusId;
+
+    private String reject_motive;
 
     public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId,String reject_Motive) {
         this.description = description;
@@ -54,7 +54,7 @@ public class Initiative implements NGSISerializable {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
-        dto.setRejectMotive(this.reject_motive);
+        dto.setReject_motive(this.reject_motive);
 
         return dto;
     }

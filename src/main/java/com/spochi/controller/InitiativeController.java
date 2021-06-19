@@ -43,10 +43,10 @@ public class InitiativeController {
         return service.approveInitiative(initiativeId);
     }
 
-    @RequestMapping(value = "/reject/{initiativeId}", method = RequestMethod.POST)
-    public InitiativeResponseDTO rejectInitiative(@RequestBody RejectedInitiativeDTO rejectedDTOMotive) {
+    @RequestMapping(value = "/reject", method = RequestMethod.POST)
+    public InitiativeResponseDTO rejectInitiative(@RequestBody RejectedInitiativeDTO rejectedDTO) {
 
-        return service.rejectInitiative(rejectedDTOMotive);
+        return service.rejectInitiative(rejectedDTO);
     }
 
     @PostMapping

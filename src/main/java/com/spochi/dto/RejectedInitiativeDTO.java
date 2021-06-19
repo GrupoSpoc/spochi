@@ -1,12 +1,14 @@
 package com.spochi.dto;
 
+import lombok.Data;
+
+
 public class RejectedInitiativeDTO {
 
     private String id;
     private String reject_motive;
 
-    public RejectedInitiativeDTO(){
-
+    public RejectedInitiativeDTO() {
     }
 
     public String getId() {
@@ -17,12 +19,13 @@ public class RejectedInitiativeDTO {
         this.id = id;
     }
 
-    public String getReject_Motive() {
+    public String getReject_motive() {
         return reject_motive;
     }
 
-    public void setReject_Motive(String reject_motive) {
+    public void setReject_motive(String reject_motive) {
         this.reject_motive = reject_motive;
     }
 
 }
+

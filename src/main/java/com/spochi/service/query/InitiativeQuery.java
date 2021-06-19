@@ -18,6 +18,7 @@ public class InitiativeQuery {
     private LocalDateTime dateTop;
     private Integer limit;
     private Integer offset;
+    private String reject_motive;
 
     public void withSorter(@Nullable Integer sorterId) {
         if (sorterId != null) {
@@ -29,6 +30,10 @@ public class InitiativeQuery {
         if (statusId != null) {
             this.statuses = Arrays.stream(statusId).map(InitiativeStatus::fromIdOrElseThrow).collect(Collectors.toList());
         }
+    }
+
+    public void withRejectionMotive(@Nullable String reject_motive){
+        this.reject_motive = reject_motive;
     }
 
     public void withUserId(@NotNull String userId) {

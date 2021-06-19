@@ -29,6 +29,7 @@ public class FiwareInitiativeRepositoryTest {
             .nickname("nickname1")
             .date(dateTime)
             .userId("userId1")
+            .reject_motive(null)
             .build();
 
     private static final Initiative initiative2 = Initiative.builder()
@@ -38,6 +39,7 @@ public class FiwareInitiativeRepositoryTest {
             .nickname("nickname2")
             .date(dateTime.minusHours(2))
             .userId("userId2")
+            .reject_motive(null)
             .build();
 
     private static final String id1 = "123";
@@ -99,6 +101,7 @@ public class FiwareInitiativeRepositoryTest {
         String nickname = "testNickname";
         LocalDateTime date = LocalDateTime.now();
         String userId = "testUserId";
+        String rejectMotive = "Rejection motive";
 
         final NGSIJson json = new NGSIJson();
         json.put(Initiative.Fields.ID.label(), id);
@@ -107,6 +110,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.IMAGE.label(), image);
         json.put(Initiative.Fields.NICKNAME.label(), nickname);
         json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(date));
+        json.put(Initiative.Fields.REJECT_MOTIVE.label(), rejectMotive);
         json.put(Initiative.Fields.USER_ID.label(), userId);
 
         final FiwareInitiativeRepository repository = new FiwareInitiativeRepository(mock(RestPerformer.class));
@@ -119,6 +123,7 @@ public class FiwareInitiativeRepositoryTest {
                 () -> assertEquals(image, testInitiative.getImage()),
                 () -> assertEquals(nickname, testInitiative.getNickname()),
                 () -> assertEquals(date.withNano(0), testInitiative.getDate().withNano(0)),
+                () -> assertEquals(rejectMotive, testInitiative.getReject_motive()),
                 () -> assertEquals(userId, testInitiative.getUserId()));
     }
 
@@ -215,6 +220,7 @@ public class FiwareInitiativeRepositoryTest {
         json.put(Initiative.Fields.NICKNAME.label(), initiative.getNickname());
         json.put(Initiative.Fields.USER_ID.label(), initiative.getUserId());
         json.put(Initiative.Fields.DATE.label(), DateUtil.dateToMilliUTC(initiative.getDate().withNano(0)));
+        json.put(Initiative.Fields.REJECT_MOTIVE.label(),initiative.getReject_motive());
 
         return json;
     }

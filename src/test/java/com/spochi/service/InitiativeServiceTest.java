@@ -319,14 +319,14 @@ class InitiativeServiceTest {
 
         final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
         rejectedDto.setId(testInitiative.get_id());
-        rejectedDto.setReject_Motive("some motive");
+        rejectedDto.setReject_motive("some motive");
 
         InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(rejectedDto);
 
 
         assertAll("Rejected initiative",
                 () -> assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId()),
-                () -> assertEquals(initiativeResponseDTO.getRejectMotive(), rejectedDto.getReject_Motive()),
+                () -> assertEquals(initiativeResponseDTO.getReject_motive(), rejectedDto.getReject_motive()),
                 () -> assertEquals(initiativeResponseDTO.get_id(), testInitiative.get_id()));
     }
 
@@ -336,7 +336,7 @@ class InitiativeServiceTest {
 
         final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
         rejectedDto.setId("unknown id");
-        rejectedDto.setReject_Motive("rejection motive test");
+        rejectedDto.setReject_motive("rejection motive test");
 
         AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
     }

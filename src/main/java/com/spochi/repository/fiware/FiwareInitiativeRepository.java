@@ -72,9 +72,9 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
 
         final String userId = json.getString(Initiative.Fields.USER_ID);
         final int statusId = InitiativeStatus.fromIdOrElseThrow(json.getInt(Initiative.Fields.STATUS_ID)).getId();
-        final String rejectMotive = json.getString(Initiative.Fields.REJECT_MOTIVE);
+        final String rejectMotive = json.getStringOrNull(Initiative.Fields.REJECT_MOTIVE);
 
-        return new Initiative(id, description, image, nickname, date, userId, rejectMotive,statusId);
+        return new Initiative(id, description, image, nickname, date, userId, statusId,rejectMotive);
     }
 
     private NGSIQueryBuilder parseInitiativeQuery(InitiativeQuery initiativeQuery) {
