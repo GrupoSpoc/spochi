@@ -1,6 +1,5 @@
 package com.spochi.repository.fiware;
 
-import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
@@ -16,7 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class FiwareInitiativeRepository extends FiwareRepository<Initiative> implements InitiativeRepository {
@@ -31,11 +31,6 @@ public class FiwareInitiativeRepository extends FiwareRepository<Initiative> imp
         return findById(id);
     }
 
-    @Override
-    public void changeStatus(Initiative initiative, InitiativeStatus status) {
-
-        changeStatus(initiative,status, null);
-    }
     @Override
     public void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedDTOMotive) {
         final NGSIJson statusJson = new NGSIJson();

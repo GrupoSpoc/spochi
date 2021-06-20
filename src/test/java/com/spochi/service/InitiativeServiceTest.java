@@ -26,7 +26,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static com.spochi.service.InitiativeService.MAX_CHARACTERS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +38,6 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("disable-firebase")
 class InitiativeServiceTest {
 
-    private static final int MAX_CHARACTERS = 114 ;
     @Autowired
     InitiativeService service;
 
@@ -380,10 +382,28 @@ class InitiativeServiceTest {
 
         final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
         rejectedDto.setId(badMotiveRejectionInitiative.get_id());
-        rejectedDto.setReject_motive("rejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetest");
+
+        final String exceededCharactersMotive = IntStream.rangeClosed(1, MAX_CHARACTERS + 1)
+                .mapToObj(i -> "a")
+                .collect(Collectors.joining());
+
+        rejectedDto.setReject_motive(exceededCharactersMotive);
 
         AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
     }
+
+    @Test
+    @DisplayName("nullRejectionMotiveException | for a null rejection motive | throw InitiativeServiceException")
+    void nullRejectionMotiveException() {
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId("a");
+        rejectedDto.setReject_motive(null);
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto),"The Services fail because : Reject motive cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
+
     @Test
     @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")
     void getAllLimit1LastBatchFalse() {

@@ -12,6 +12,7 @@ import com.spochi.entity.User;
 import com.spochi.repository.InitiativeRepository;
 import com.spochi.repository.UserRepository;
 import com.spochi.service.query.InitiativeQuery;
+import io.netty.util.internal.StringUtil;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class InitiativeService {
-    private static final int MAX_CHARACTERS = 114 ;
+    protected static final int MAX_CHARACTERS = 114;
+
     @Autowired
     InitiativeRepository initiativeRepository;
 
@@ -114,56 +116,38 @@ public class InitiativeService {
 
     public InitiativeResponseDTO approveInitiative(String initiativeId) throws InitiativeServiceException {
 
-        return updateStatus(initiativeId, InitiativeStatus.APPROVED);
+        return updateStatus(initiativeId, InitiativeStatus.APPROVED, null);
     }
 
     public InitiativeResponseDTO rejectInitiative(RejectedInitiativeDTO rejectedDTO) {
+        final String rejectMotive = rejectedDTO.getReject_motive();
 
-        return updateStatus(rejectedDTO.getId(), InitiativeStatus.REJECTED, rejectedDTO);
-    }
-
-    //For approve
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status) {
-
-        final Optional<Initiative> toBeApproved = initiativeRepository.findInitiativeById(initiativeId);
-
-        if (!toBeApproved.isPresent()) {
-            throw new InitiativeServiceException("There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
-        }
-        final Initiative initiative = toBeApproved.get();
-
-        if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
-            throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
-
+        if (StringUtil.isNullOrEmpty(rejectMotive)) {
+            throw new InitiativeServiceException("Reject motive cannot be null or empty");
         }
 
-        initiativeRepository.changeStatus(initiative, status);
+        if (validateMaxRejectionMotiveCharacters(rejectMotive)){
+            throw new InitiativeServiceException("Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
+        }
 
-        final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
-
-        return updatedInitiative.map(Initiative::toDTO).orElse(null);
-
+        return updateStatus(rejectedDTO.getId(), InitiativeStatus.REJECTED, rejectMotive);
     }
 
-    // For reject
-    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status, RejectedInitiativeDTO rejectedDTO) {
+    private InitiativeResponseDTO updateStatus(String initiativeId, InitiativeStatus status, String rejectedMotive) {
 
         final Optional<Initiative> toBeRejected = initiativeRepository.findInitiativeById(initiativeId);
 
         if (!toBeRejected.isPresent()) {
             throw new InitiativeServiceException("There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
         }
+
         final Initiative initiative = toBeRejected.get();
 
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
             throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
         }
 
-        if(validateMaxRejectionMotiveCharacters(rejectedDTO.getReject_motive())){
-            throw new InitiativeServiceException("Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
-        }
-
-        initiativeRepository.changeStatus(initiative, status, rejectedDTO.getReject_motive());
+        initiativeRepository.changeStatus(initiative, status, rejectedMotive);
 
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 
