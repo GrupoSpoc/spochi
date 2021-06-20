@@ -69,6 +69,7 @@ class InitiativeServiceTest {
         wrong_initiative.setDescription(EMPTY);
         AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.create(wrong_initiative, UID), "The Services fail because : Initiative Description is empty");
     }
+
     @Test
     void initiativeDescriptionContainsInvalidFiwareCharacter() {
         wrong_initiative.setDescription("holas><");
@@ -370,6 +371,16 @@ class InitiativeServiceTest {
 
         AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
     }
+
+    @Test
+    void rejectInvalidFiwareCharactersException() {
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId("a");
+        rejectedDto.setReject_motive("motiv=e");
+
+        AssertUtils.assertException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Reject motive contains invalid fiware characters");
+    }
+
 
     @Test
     @DisplayName("maxCharactersOnRejectionMotiveException | for a long rejection motive | throw bad characters amount exception")

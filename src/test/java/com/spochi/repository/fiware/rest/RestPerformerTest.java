@@ -84,26 +84,6 @@ class RestPerformerTest {
     }
 
     @Test
-    @DisplayName("patch | ok")
-    void patchOk() throws IOException {
-        final RestClient restClient = mock(RestClient.class);
-        final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenReturn(new FiwareResponse("ok", Collections.emptyMap()));
-
-        assertDoesNotThrow(() -> performer.patch(URL, "payload"));
-    }
-
-    @Test
-    @DisplayName("patch | exception")
-    void patchException() throws IOException {
-        final RestClient restClient = mock(RestClient.class);
-        final RestPerformer performer = new RestPerformer(restClient);
-        when(restClient.execute(any())).thenThrow(new FiwareException("patch-error"));
-
-        AssertUtils.assertException(FiwareException.class, () -> performer.patch(URL, "payload"), "patch-error");
-    }
-
-    @Test
     @DisplayName("count | ok")
     void count() throws IOException {
         final RestClient restClient = mock(RestClient.class);

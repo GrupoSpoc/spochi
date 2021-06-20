@@ -237,7 +237,7 @@ class FiwareRepositoryTest {
         final NGSIJson ngsiJson = new NGSIJson();
         ngsiJson.addAttribute(NGSITestFields.A_ATTRIBUTE, "aValue");
 
-        doNothing().when(performer).patch(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
 
         assertDoesNotThrow(() -> repository.update("id", ngsiJson));
     }
@@ -251,7 +251,7 @@ class FiwareRepositoryTest {
         final NGSIJson ngsiJson = new NGSIJson();
         ngsiJson.setId("id");
 
-        doNothing().when(performer).patch(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
 
         AssertUtils.assertException(FiwareException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
     }
@@ -265,7 +265,7 @@ class FiwareRepositoryTest {
         final NGSIJson ngsiJson = new NGSIJson();
         ngsiJson.setType(NGSISerializableEntityForTest.NGSIType);
 
-        doNothing().when(performer).patch(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
 
         AssertUtils.assertException(FiwareException.class, () -> repository.update("id", ngsiJson), "Update body cannot specify id or type");
     }
@@ -276,7 +276,7 @@ class FiwareRepositoryTest {
         final RestPerformer performer = mock(RestPerformer.class);
         final FiwareTestEntityRepository repository = new FiwareTestEntityRepository(performer);
 
-        doNothing().when(performer).patch(anyString(), anyString());
+        doNothing().when(performer).post(anyString(), anyString());
 
         AssertUtils.assertException(FiwareException.class, () -> repository.update("id", new NGSIJson()), "Update body cannot be empty");
     }

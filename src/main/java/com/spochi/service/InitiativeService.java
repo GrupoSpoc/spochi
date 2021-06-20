@@ -143,6 +143,10 @@ public class InitiativeService {
             throw new InitiativeServiceException("Reject motive cannot be null or empty");
         }
 
+        if (containRestrictedFiwareCharacters(rejectMotive)) {
+            throw new InitiativeServiceException("Reject motive contains invalid fiware characters");
+        }
+
         if (validateMaxRejectionMotiveCharacters(rejectMotive)){
             throw new InitiativeServiceException("Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
         }

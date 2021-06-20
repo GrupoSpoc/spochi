@@ -42,7 +42,7 @@ public abstract class FiwareRepository<T extends NGSISerializable> {
 
     public void update(String id, NGSIJson payload) {
         validateForUpdate(payload);
-        performer.patch(ENTITIES_URL + "/" + id + "/attrs", payload.toString());
+        performer.post(ENTITIES_URL + "/" + id + "/attrs", payload.toString());
     }
 
     protected abstract NGSIEntityType getEntityType();

@@ -186,7 +186,7 @@ public class FiwareInitiativeRepositoryTest {
         initiative1.set_id("123");
         repository.changeStatus(initiative1,InitiativeStatus.APPROVED, null);
 
-        verify(performer, times(1)).patch(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":2}}"));
+        verify(performer, times(1)).post(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":2}}"));
     }
 
     @Test
@@ -198,7 +198,7 @@ public class FiwareInitiativeRepositoryTest {
         initiative1.set_id("123");
         repository.changeStatus(initiative1,InitiativeStatus.REJECTED, "motive");
 
-        verify(performer, times(1)).patch(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":3},\"reject_motive\":{\"type\":\"Text\",\"value\":\"motive\"}}"));
+        verify(performer, times(1)).post(contains(initiative1.get_id()),eq("{\"status_id\":{\"type\":\"Number\",\"value\":3},\"reject_motive\":{\"type\":\"Text\",\"value\":\"motive\"}}"));
     }
 
     @Test
