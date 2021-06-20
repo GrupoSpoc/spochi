@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class InitiativeService {
+    private static final int MAX_CHARACTERS = 114 ;
     @Autowired
     InitiativeRepository initiativeRepository;
 
@@ -156,7 +157,10 @@ public class InitiativeService {
 
         if (initiative.getStatusId() != InitiativeStatus.PENDING.getId()) {
             throw new InitiativeServiceException("Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+        }
 
+        if(validateMaxRejectionMotiveCharacters(rejectedDTO.getReject_motive())){
+            throw new InitiativeServiceException("Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
         }
 
         initiativeRepository.changeStatus(initiative, status, rejectedDTO.getReject_motive());
@@ -164,6 +168,10 @@ public class InitiativeService {
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);
 
         return updatedInitiative.map(Initiative::toDTO).orElse(null);
+    }
+
+    private boolean validateMaxRejectionMotiveCharacters(String rejectionMotive){
+        return rejectionMotive.toCharArray().length > MAX_CHARACTERS;
     }
 
     public static class InitiativeServiceException extends BadRequestException {

@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("disable-firebase")
 class InitiativeServiceTest {
 
+    private static final int MAX_CHARACTERS = 114 ;
     @Autowired
     InitiativeService service;
 
@@ -361,6 +362,27 @@ class InitiativeServiceTest {
         rejectedDto.setReject_motive("rejection motive test");
 
         AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+    }
+
+    @Test
+    @DisplayName("maxCharactersOnRejectionMotiveException | for a long rejection motive | throw bad characters amount exception")
+    void maxCharactersOnRejectionMotiveException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+
+        Initiative badMotiveRejectionInitiative = initiativeRepository.create(testInitiative);
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(badMotiveRejectionInitiative.get_id());
+        rejectedDto.setReject_motive("rejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetestrejectionmotivetest");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
     }
     @Test
     @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")
