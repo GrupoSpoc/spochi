@@ -4,6 +4,7 @@ import com.spochi.controller.HttpStatus;
 import com.spochi.dto.InitiativeListResponseDTO;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.entity.User;
@@ -25,7 +26,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static com.spochi.service.InitiativeService.MAX_CHARACTERS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -309,6 +313,7 @@ class InitiativeServiceTest {
     @Test
     @DisplayName("rejectInitiative | for a pending initiative | change status to rejected")
     void rejectInitiative() {
+
         Initiative testInitiative = new Initiative();
         testInitiative.setStatusId(1);
         testInitiative.set_id("someID");
@@ -316,12 +321,93 @@ class InitiativeServiceTest {
         testInitiative.setDate(LocalDateTime.now().withNano(0));
         testInitiative.setDescription("SomeDescription");
         testInitiative.setNickname("User Nickname");
+        testInitiative.setReject_motive("some motive");
+
         initiativeRepository.create(testInitiative);
 
-        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(testInitiative.get_id());
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(testInitiative.get_id());
+        rejectedDto.setReject_motive("some motive");
 
-        assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId());
+        InitiativeResponseDTO initiativeResponseDTO = service.rejectInitiative(rejectedDto);
+
+
+        assertAll("Rejected initiative",
+                () -> assertEquals(initiativeResponseDTO.getStatus_id(), InitiativeStatus.REJECTED.getId()),
+                () -> assertEquals(initiativeResponseDTO.getReject_motive(), rejectedDto.getReject_motive()),
+                () -> assertEquals(initiativeResponseDTO.get_id(), testInitiative.get_id()));
     }
+
+    @Test
+    @DisplayName("rejectInitiativeException | for a invalid id initiative | throw invalid id exception")
+    void rejectInitiativeException() {
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId("unknown id");
+        rejectedDto.setReject_motive("rejection motive test");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("rejectNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+    void rejectNotPendingInitiativeException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(3);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        testInitiative.setReject_motive("some motive");
+
+        Initiative badStatusInitiative = initiativeRepository.create(testInitiative);
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(badStatusInitiative.get_id());
+        rejectedDto.setReject_motive("rejection motive test");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+    }
+
+    @Test
+    @DisplayName("maxCharactersOnRejectionMotiveException | for a long rejection motive | throw bad characters amount exception")
+    void maxCharactersOnRejectionMotiveException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(1);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+
+        Initiative badMotiveRejectionInitiative = initiativeRepository.create(testInitiative);
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(badMotiveRejectionInitiative.get_id());
+
+        final String exceededCharactersMotive = IntStream.rangeClosed(1, MAX_CHARACTERS + 1)
+                .mapToObj(i -> "a")
+                .collect(Collectors.joining());
+
+        rejectedDto.setReject_motive(exceededCharactersMotive);
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Max amount of characters reached "+ MAX_CHARACTERS +"", HttpStatus.BAD_CHARACTERS_AMOUNT);
+    }
+
+    @Test
+    @DisplayName("nullRejectionMotiveException | for a null rejection motive | throw InitiativeServiceException")
+    void nullRejectionMotiveException() {
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId("a");
+        rejectedDto.setReject_motive(null);
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto),"The Services fail because : Reject motive cannot be null or empty", HttpStatus.BAD_REQUEST);
+    }
+
 
     @Test
     @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")

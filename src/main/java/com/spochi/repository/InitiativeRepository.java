@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface InitiativeRepository extends EntityRepository<Initiative> {
     List<Initiative> getAllInitiatives(InitiativeQuery query);
     Optional<Initiative> findInitiativeById(String id);
-    void changeStatus(Initiative initiative, InitiativeStatus status);
+    void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedDTOMotive);
 }

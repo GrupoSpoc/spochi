@@ -9,9 +9,18 @@ public class InitiativeResponseDTO {
     private String image;
     private String date;
     private String nickname;
+    private String reject_motive;
     private int status_id;
 
     public InitiativeResponseDTO(){}
+
+    public String getReject_motive() {
+        return reject_motive;
+    }
+
+    public void setReject_motive(String reject_motive) {
+        this.reject_motive = reject_motive;
+    }
 
     public String get_id() {
         return _id;
@@ -71,6 +80,7 @@ public class InitiativeResponseDTO {
                 nullOrEquals(this.description, other.description) &&
                 nullOrEquals(this.image, other.image) &&
                 nullOrEquals(this.status_id, other.status_id) &&
+                nullOrEquals(this.reject_motive, other.reject_motive)&&
                 nullOrEquals(this._id, other._id);
     }
 }

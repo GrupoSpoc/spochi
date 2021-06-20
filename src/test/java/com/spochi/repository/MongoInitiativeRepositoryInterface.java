@@ -34,14 +34,6 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
                 .collect(Collectors.toList());
     }
 
-    @Override
-    default void changeStatus(Initiative initiative, InitiativeStatus status) {
-        Optional<Initiative> foundInitiative = findById(initiative.get_id());
-        Initiative initiative1 = foundInitiative.get();
-        initiative1.setStatusId(status.getId());
-        save(initiative1);
-    }
-
     default Predicate<Initiative> parseQuery(InitiativeQuery initiativeQuery) {
         List<Predicate<Initiative>> predicates = new ArrayList<>();
 
@@ -66,6 +58,15 @@ public interface MongoInitiativeRepositoryInterface extends MongoRepository<Init
     @Override
     default Initiative create(@NotNull Initiative initiative) {
         return save(initiative);
+    }
+
+    @Override
+    default void changeStatus(Initiative initiative, InitiativeStatus status, String rejectedMotive) {
+        Optional<Initiative> foundInitiative = findById(initiative.get_id());
+        Initiative initiative1 = foundInitiative.get();
+        initiative1.setStatusId(status.getId());
+        initiative1.setReject_motive(rejectedMotive);
+        save(initiative1);
     }
 
     @Override

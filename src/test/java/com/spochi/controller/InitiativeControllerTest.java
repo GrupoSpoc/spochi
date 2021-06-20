@@ -5,11 +5,14 @@ import com.spochi.controller.exception.BadRequestException;
 import com.spochi.controller.handler.ControllerExceptionHandler;
 import com.spochi.dto.InitiativeRequestDTO;
 import com.spochi.dto.InitiativeResponseDTO;
+import com.spochi.dto.RejectedInitiativeDTO;
 import com.spochi.entity.Initiative;
 import com.spochi.entity.InitiativeStatus;
 import com.spochi.repository.InitiativeRepository;
+import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.service.InitiativeService;
 
+import com.spochi.service.query.InitiativeSorter;
 import net.minidev.json.JSONValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,7 @@ import java.util.function.Supplier;
 import static com.spochi.auth.JwtFilter.AUTHORIZATION_HEADER;
 import static com.spochi.auth.JwtFilter.BEARER_SUFFIX;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -87,7 +91,7 @@ public class InitiativeControllerTest {
     void rejectInitiativeOk() throws Exception {
 
         final Initiative expectedInitiative = new Initiative();
-        expectedInitiative.set_id("2");
+        expectedInitiative.set_id("expected initiative ID");
         expectedInitiative.setUserId("UserId");
         expectedInitiative.setNickname("some Nickname");
         expectedInitiative.setDescription("Description");
@@ -95,11 +99,18 @@ public class InitiativeControllerTest {
         expectedInitiative.setStatusId(InitiativeStatus.REJECTED.getId());
         expectedInitiative.setImage("imageData");
 
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(expectedInitiative.get_id());
+        rejectedDto.setReject_motive("Some rejection motive");
+
+        expectedInitiative.setReject_motive(rejectedDto.getReject_motive());
+
         final InitiativeResponseDTO expectedDTO = expectedInitiative.toDTO();
 
-        when(service.rejectInitiative(anyString())).thenReturn(expectedDTO);
+        when(service.rejectInitiative(any(RejectedInitiativeDTO.class))).thenReturn(expectedDTO);
 
-        final MvcResult result = mvc.perform(post("/initiative/reject/{id}", expectedInitiative.get_id())
+        final MvcResult result = mvc.perform(post("/initiative/reject")
+                .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(rejectedDto))
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + "jwt"))
                 .andExpect(status().is(HttpStatus.OK.value()))
                 .andReturn();
@@ -134,12 +145,11 @@ public class InitiativeControllerTest {
     @DisplayName("rejectInitiativeException | when initiative is not found | 800 Bad_Request")
     void rejectInitiativeException() throws Exception {
 
-        final InitiativeRequestDTO requestDTO = new InitiativeRequestDTO();
+        final RejectedInitiativeDTO requestDTO = new RejectedInitiativeDTO();
 
+        when(service.rejectInitiative(any(RejectedInitiativeDTO.class))).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT Reject"));
 
-        when(service.rejectInitiative("a")).thenThrow(new InitiativeService.InitiativeServiceException("TEST RESULT Reject"));
-
-        final MvcResult result =  mvc.perform(post("/initiative/reject/{id}", "a")
+        final MvcResult result =  mvc.perform(post("/initiative/reject")
                 .contentType(MediaType.APPLICATION_JSON).content(JSONValue.toJSONString(requestDTO))
                 .header(AUTHORIZATION_HEADER, BEARER_SUFFIX + "jwt"))
                 .andDo(print())

@@ -27,20 +27,22 @@ public class Initiative implements NGSISerializable {
     private String nickname;
     private LocalDateTime date;
 
-
     @Field(name = "user_id")
     private String userId;
 
     @Field(name = "status_id")
     private int statusId;
 
-    public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId) {
+    private String reject_motive;
+
+    public Initiative(String description, String image, String nickname, LocalDateTime date, String userId, int statusId,String reject_Motive) {
         this.description = description;
         this.image = image;
         this.nickname = nickname;
         this.date = date;
         this.userId = userId;
         this.statusId = statusId;
+        this.reject_motive = reject_Motive;
     }
 
     public InitiativeResponseDTO toDTO() {
@@ -52,6 +54,7 @@ public class Initiative implements NGSISerializable {
         dto.setNickname(this.nickname);
         dto.setStatus_id(this.statusId);
         dto.setImage(this.image);
+        dto.setReject_motive(this.reject_motive);
 
         return dto;
     }
@@ -68,6 +71,7 @@ public class Initiative implements NGSISerializable {
         json.addAttribute(Fields.NICKNAME, this.nickname);
         json.addAttribute(Fields.DATE, DateUtil.dateToMilliUTC(this.date));
         json.addAttribute(Fields.USER_ID, this.userId);
+        json.addAttribute(Fields.REJECT_MOTIVE,this.reject_motive);
         json.addAttribute(Fields.STATUS_ID, this.statusId);
 
         return json;
@@ -81,6 +85,7 @@ public class Initiative implements NGSISerializable {
         NICKNAME("nickname", NGSIFieldType.TEXT),
         DATE("date", NGSIFieldType.LONG),
         USER_ID("refUser", NGSIFieldType.REFERENCE),
+        REJECT_MOTIVE("reject_motive", NGSIFieldType.TEXT),
         STATUS_ID("status_id", NGSIFieldType.INTEGER);
 
         private final String name;
