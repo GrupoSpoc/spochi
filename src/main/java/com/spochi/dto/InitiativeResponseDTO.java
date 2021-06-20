@@ -1,5 +1,7 @@
 package com.spochi.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import static com.spochi.dto.DTOComparisonUtil.nullOrEquals;
 
 public class InitiativeResponseDTO {
@@ -9,7 +11,10 @@ public class InitiativeResponseDTO {
     private String image;
     private String date;
     private String nickname;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String reject_motive;
+
     private int status_id;
 
     public InitiativeResponseDTO(){}
