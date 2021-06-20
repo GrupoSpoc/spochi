@@ -159,15 +159,6 @@ public class InitiativeService {
 
         }
 
-        if (!initiative.get_id().equals(rejectedDTO.getId())) {
-            throw new InitiativeServiceException(" There's an issue either with the initiative ID");
-        }
-
-        //  if(validateFiwareSpecialCharactersUsage(rejectedDTO.getReject_motive())){
-        //     throw new InitiativeServiceException("Rejected motive is using restricted characters");
-        // }
-
-
         initiativeRepository.changeStatus(initiative, status, rejectedDTO.getReject_motive());
 
         final Optional<Initiative> updatedInitiative = initiativeRepository.findInitiativeById(initiativeId);

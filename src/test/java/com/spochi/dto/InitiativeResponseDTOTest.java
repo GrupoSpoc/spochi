@@ -19,6 +19,7 @@ class InitiativeResponseDTOTest {
         final String description = "description";
         final String image = "image";
         final String userId = "user_id";
+        final String rejectMotive = "some rejection motive";
 
         final Initiative initiative = new Initiative();
         initiative.setImage(image);
@@ -27,6 +28,7 @@ class InitiativeResponseDTOTest {
         initiative.setStatusId(InitiativeStatus.APPROVED.getId());
         initiative.setUserId(userId);
         initiative.setDescription(description);
+        initiative.setReject_motive(rejectMotive);
 
         final InitiativeResponseDTO dto = initiative.toDTO();
 
@@ -36,6 +38,7 @@ class InitiativeResponseDTOTest {
         assertEquals(initiative.getImage(), dto.getImage());
         assertEquals(initiative.getStatusId(), dto.getStatus_id());
         assertEquals(initiative.getDescription(), dto.getDescription());
+        assertEquals(initiative.getReject_motive(), dto.getReject_motive());
     }
 
 }

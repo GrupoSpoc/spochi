@@ -340,6 +340,28 @@ class InitiativeServiceTest {
 
         AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : There are no initiatives with this id", HttpStatus.INITIATIVE_NOT_FOUND);
     }
+
+    @Test
+    @DisplayName("rejectNotPendingInitiativeException | for a not pending initiative | throw invalid status exception")
+    void rejectNotPendingInitiativeException() {
+
+        Initiative testInitiative = new Initiative();
+        testInitiative.setStatusId(3);
+        testInitiative.set_id("someID");
+        testInitiative.setUserId("userId");
+        testInitiative.setDate(LocalDateTime.now().withNano(0));
+        testInitiative.setDescription("SomeDescription");
+        testInitiative.setNickname("User Nickname");
+        testInitiative.setReject_motive("some motive");
+
+        Initiative badStatusInitiative = initiativeRepository.create(testInitiative);
+
+        final RejectedInitiativeDTO rejectedDto = new RejectedInitiativeDTO();
+        rejectedDto.setId(badStatusInitiative.get_id());
+        rejectedDto.setReject_motive("rejection motive test");
+
+        AssertUtils.assertBadRequestException(InitiativeService.InitiativeServiceException.class, () -> service.rejectInitiative(rejectedDto), "The Services fail because : Only pending initiatives can be approved", HttpStatus.BAD_INITIATIVE_STATUS);
+    }
     @Test
     @DisplayName("getAll | given limit 1 and repo has 2 initiatives | lastBatch should be false")
     void getAllLimit1LastBatchFalse() {
