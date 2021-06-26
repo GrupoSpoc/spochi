@@ -174,7 +174,7 @@ class InitiativeServiceTest {
     }
 
     @Test
-    @DisplayName("getAll | date desc comparator, by status, dateTop | from current user | ok")
+    @DisplayName("getAll | date desc comparator, by status, dateTo | from current user | ok")
     void getAllInitiativeFiltersOK() {
         final LocalDateTime date = LocalDateTime.now();
 
@@ -211,7 +211,7 @@ class InitiativeServiceTest {
         final InitiativeQuery query = new InitiativeQuery();
         query.withSorter(InitiativeSorter.DATE_DESC.getId()); // aplican las 3
         query.withStatuses(new Integer[]{InitiativeStatus.PENDING.getId()}); // aplican las 3
-        query.withDateTop(date.minusDays(3).toString()); // aplican 2 y 3
+        query.withDateTo(date.minusDays(3).toString()); // aplican 2 y 3
 
         // al ser currentUser = true solo me va a traer la 2
         List<InitiativeResponseDTO> list_dto = service.getAll(query, UID, true).getInitiatives();

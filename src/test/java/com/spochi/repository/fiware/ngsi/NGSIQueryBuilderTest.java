@@ -33,27 +33,36 @@ class NGSIQueryBuilderTest {
     @DisplayName("build | with single attributeEq | ok")
     void buildWithSingleAttributeEqOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue");
+        queryBuilder.attributeEQ(NGSITestFields.A_ATTRIBUTE, "aValue");
 
         assertEquals("?q=aAttribute==aValue", queryBuilder.build());
     }
 
     @Test
-    @DisplayName("build | with multiple values for same attributeEq | ok")
+    @DisplayName("build | with multiple values for same attributeEQ | ok")
     void buildWithMultipleAttributeEqOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue", "bValue");
+        queryBuilder.attributeEQ(NGSITestFields.A_ATTRIBUTE, "aValue", "bValue");
 
         assertEquals("?q=aAttribute==aValue,bValue", queryBuilder.build());
     }
 
     @Test
-    @DisplayName("build | with attributeLs | ok")
+    @DisplayName("build | with attributeLS | ok")
     void buildWithSingleAttributeLsOk() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attributeLs(NGSITestFields.A_ATTRIBUTE, "aValue");
+        queryBuilder.attributeLS(NGSITestFields.A_ATTRIBUTE, "aValue");
 
         assertEquals("?q=aAttribute<aValue", queryBuilder.build());
+    }
+
+    @Test
+    @DisplayName("build | with attributeGT | ok")
+    void buildWithSingleAttributeGtOk() {
+        final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
+        queryBuilder.attributeGT(NGSITestFields.A_ATTRIBUTE, "aValue");
+
+        assertEquals("?q=aAttribute>aValue", queryBuilder.build());
     }
 
     @Test
@@ -102,14 +111,16 @@ class NGSIQueryBuilderTest {
     }
 
     @Test
-    @DisplayName("build | ref eq two attributes and ls | ok")
+    @DisplayName("build | ref eq two attributes, one ls and same gt | ok")
     void buildRefAndTwoAttributes() {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attributeEq(NGSITestFields.A_ATTRIBUTE, "aValue", "bValue");
-        queryBuilder.attributeLs(NGSITestFields.A_ATTRIBUTE, "cValue");
+        queryBuilder.attributeEQ(NGSITestFields.A_ATTRIBUTE, "aValue", "bValue");
+        queryBuilder.attributeLS(NGSITestFields.A_ATTRIBUTE, "4");
+        queryBuilder.attributeGT(NGSITestFields.A_ATTRIBUTE, "1");
+
         queryBuilder.ref(testEntityType, "test-id");
 
-        assertEquals("?q=aAttribute==aValue,bValue;aAttribute<cValue;reftestEntity==test-id", queryBuilder.build());
+        assertEquals("?q=aAttribute==aValue,bValue;aAttribute<4;aAttribute>1;reftestEntity==test-id", queryBuilder.build());
     }
 
     @Test
@@ -152,7 +163,7 @@ class NGSIQueryBuilderTest {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
 
         queryBuilder.type(testEntityType)
-                .attributeEq(NGSITestFields.B_ATTRIBUTE, "bValue")
+                .attributeEQ(NGSITestFields.B_ATTRIBUTE, "bValue")
                 .getAttribute(NGSITestFields.B_ATTRIBUTE)
                 .keyValues()
                 .offset(2)

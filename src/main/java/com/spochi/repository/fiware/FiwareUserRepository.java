@@ -9,12 +9,9 @@ import com.spochi.repository.fiware.ngsi.NGSIEntityType;
 import com.spochi.repository.fiware.ngsi.NGSIJson;
 import com.spochi.repository.fiware.ngsi.NGSIQueryBuilder;
 import com.spochi.repository.fiware.rest.RestPerformer;
-import com.spochi.service.query.InitiativeQuery;
-import com.spochi.service.query.InitiativeSorter;
 
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Repository;
@@ -55,7 +52,7 @@ public class FiwareUserRepository extends FiwareRepository<User> implements User
     @Override
     public Optional<User> findByNickname(String nickname) {
         final NGSIQueryBuilder queryBuilder = new NGSIQueryBuilder();
-        queryBuilder.attributeEq(User.Fields.NICKNAME, nickname);
+        queryBuilder.attributeEQ(User.Fields.NICKNAME, nickname);
 
         return findFirst(queryBuilder);
     }
